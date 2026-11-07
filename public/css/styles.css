@@ -1513,3 +1513,27 @@ dialog, .sheet, .d-media, .d-info { overflow-x: hidden; max-width: 100%; }
   .d-stat small { font-size: 11px; }
   .d-stat:not(:first-child) b { font-size: 13.5px; overflow-wrap: normal; word-break: normal; white-space: nowrap; }
 }
+
+/* Mobile: reflexo do carro inteiro (carro sobe, faixa fica mais perto) */
+@media (max-width: 860px) {
+  .hero-car { bottom: 22vw; }
+  .hero-mark { bottom: 55vw; }
+  .car-reflect { height: 34%; top: 95%; }
+  .hero-grid { padding-bottom: 66vw; }
+
+  /* Como funciona: 2 por linha, centralizado */
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 18px; }
+  .steps li { grid-template-columns: auto auto 1fr; column-gap: 10px; }
+  .steps .step-n { font-size: 32px; }
+  .steps h3 { font-size: 16px; }
+  .steps p { max-width: none; font-size: 13.5px; }
+
+  /* Modal: fim da página escuro (a barra do navegador não fica azul) */
+  .d-actions { position: static; background: none; padding: 18px 0 56px; }
+  .sheet, .sheet-body, .d-info { background: var(--bg); }
+}
+@media (max-width: 860px) {
+  .car-reflect { height: 62%; top: 94%; -webkit-mask-image: linear-gradient(#000, transparent 92%); mask-image: linear-gradient(#000, transparent 92%); }
+  .steps { align-items: start; }
+  .steps li { align-self: start; align-items: center; align-content: start; }
+}
