@@ -6,6 +6,18 @@
 // e coloque a foto em public/img/carros/.
 // Na etapa do Firebase, esta lista vai sair daqui e passar a vir do Firestore.
 
+// Adicionais que acompanham a entrega do carro (iguais para todos; para mudar em um carro só,
+// coloque um campo "adicionais" dentro dele). Cada item: [título, descrição].
+// EXEMPLO: confirme o que realmente está incluso e o que é cobrado à parte.
+window.ADICIONAIS = [
+  ["Carro lavado e higienizado", "Lavagem completa por fora e por dentro antes da entrega."],
+  ["PPF com polimento", "Película de proteção da pintura aplicada e polida."],
+  ["Laço de entrega", "O carro sai com laço, como um presente."],
+  ["Entrega no local", "Levamos o carro até o endereço que você escolher."],
+  ["Documentação e transferência", "Cuidamos da papelada para você."],
+  ["Revisão final", "Checagem de itens e nível de fluidos na entrega."]
+];
+
 window.CARROS = [
   {
     slug: "bmw-m4-competition",

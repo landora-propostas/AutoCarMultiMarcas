@@ -1409,3 +1409,9 @@ html, html *, .cur-on, .cur-on a, .cur-on button, .cur-on summary { cursor: reve
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 @media (max-width: 860px) { .sort { width: 100%; } .sort select { flex: 1; } .adv-toggle { flex: 1; justify-content: center; } .adv-wrap.open .adv-inner { padding: 20px; } }
 @media (prefers-reduced-motion: reduce) { .adv-wrap, .adv-inner { transition: none; } }
+
+.d-extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+.d-extras li { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.02); }
+.d-extras svg { width: 20px; height: 20px; flex: none; margin-top: 2px; color: #4ade80; }
+.d-extras b { display: block; font-size: 14px; }
+.d-extras span { color: var(--muted); font-size: 13px; line-height: 1.4; }

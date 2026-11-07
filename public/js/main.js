@@ -403,7 +403,10 @@
         '<section class="d-sec d-i" style="--i:7"><h3>Histórico</h3><ul class="d-checks">' +
           c.historico.map(function (o) { return '<li>' + icon('check') + esc(o) + '</li>'; }).join('') +
         '</ul></section>' +
-        '<section class="d-sec d-i" style="--i:8"><h3>Sobre o carro</h3><p class="d-desc">' + esc(c.descricao) + '</p></section>' +
+        '<section class="d-sec d-i" style="--i:8"><h3>Adicionais da entrega</h3><ul class="d-extras">' +
+          (c.adicionais || window.ADICIONAIS || []).map(function (a) { return '<li>' + icon('check') + '<div><b>' + esc(a[0]) + '</b><span>' + esc(a[1]) + '</span></div></li>'; }).join('') +
+        '</ul></section>' +
+        '<section class="d-sec d-i" style="--i:9"><h3>Sobre o carro</h3><p class="d-desc">' + esc(c.descricao) + '</p></section>' +
         '<div class="d-actions">' +
           '<button class="btn btn-primary" type="button" data-open-lead data-car="' + esc(c.nome) + '">Falar com consultor ' + icon('arrow') + '</button>' +
           '<button class="btn btn-ghost" type="button" data-copiar>' + icon('link') + '<span>Copiar link</span></button>' +
