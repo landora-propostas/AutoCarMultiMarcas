@@ -6,33 +6,6 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-  /* ---------- Cursor ---------- */
-  if (fino && !reduce) {
-    var anel = document.createElement('div'), ponto = document.createElement('div');
-    anel.className = 'cur-ring'; ponto.className = 'cur-dot';
-    document.body.appendChild(anel); document.body.appendChild(ponto);
-    var mx = -100, my = -100, rx = -100, ry = -100;
-    addEventListener('pointermove', function (e) {
-      mx = e.clientX; my = e.clientY; ponto.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
-      document.documentElement.classList.add('cur-on');
-    });
-    document.addEventListener('pointerleave', function () { document.documentElement.classList.remove('cur-on'); });
-    (function seguir() {
-      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
-      anel.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
-      requestAnimationFrame(seguir);
-    })();
-    // Janelas <dialog> abertas ficam na "camada de cima" do navegador: levamos o cursor para dentro delas.
-    addEventListener('pointermove', function () {
-      var d = document.querySelector('dialog[open]'), alvo = d || document.body;
-      if (anel.parentNode !== alvo) { alvo.appendChild(anel); alvo.appendChild(ponto); }
-    }, true);
-    document.addEventListener('pointerover', function (e) {
-      var t = e.target.closest && e.target.closest('a, button, summary, .car-card, [data-open-lead]');
-      anel.classList.toggle('big', !!t);
-    });
-  }
-
   /* ---------- Inclinação 3D com brilho que segue o mouse ---------- */
   if (fino && !reduce) {
     $$('.car-card, .adv, .about-values li').forEach(function (el) {
