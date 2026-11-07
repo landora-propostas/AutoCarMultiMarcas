@@ -1415,3 +1415,20 @@ html, html *, .cur-on, .cur-on a, .cur-on button, .cur-on summary { cursor: reve
 .d-extras svg { width: 20px; height: 20px; flex: none; margin-top: 2px; color: #4ade80; }
 .d-extras b { display: block; font-size: 14px; }
 .d-extras span { color: var(--muted); font-size: 13px; line-height: 1.4; }
+
+/* ============================================================
+   MOBILE — nav com fade escuro, carro e reflexo inteiros dentro do hero, nome em contorno completo
+   ============================================================ */
+@media (max-width: 860px) {
+  .site-header { background: linear-gradient(180deg, rgba(3,6,9,.97) 0%, rgba(3,6,9,.6) 55%, rgba(3,6,9,0) 100%); backdrop-filter: none; -webkit-backdrop-filter: none; border-bottom-color: transparent; }
+  .site-header.scrolled { background: linear-gradient(180deg, rgba(3,6,9,.97) 0%, rgba(3,6,9,.6) 55%, rgba(3,6,9,0) 100%); border-bottom-color: transparent; }
+
+  .hero-grid { padding: 24px 0 62vw; }
+  .hero-car { left: 0; right: 0; margin: 0 auto; width: 100vw; bottom: 14vw; }
+  .car-reflect { height: 28%; top: 96%; }
+  .scroll-hint { display: none; }
+  .hero-mark { overflow: visible; inset: auto 0 15vw 0; line-height: 1; }
+  .hero-mark span { font-size: 15.5vw; letter-spacing: .02em; white-space: nowrap; padding-top: .08em; transform: none; }
+}
+@media (max-width: 860px) { .hero-mark { bottom: 40vw; } }
+@media (max-width: 860px) { .hero-mark { bottom: 47vw; } .hero-mark span { -webkit-text-stroke-color: rgba(107,155,255,.28); } }
