@@ -1432,3 +1432,10 @@ html, html *, .cur-on, .cur-on a, .cur-on button, .cur-on summary { cursor: reve
 }
 @media (max-width: 860px) { .hero-mark { bottom: 40vw; } }
 @media (max-width: 860px) { .hero-mark { bottom: 47vw; } .hero-mark span { -webkit-text-stroke-color: rgba(107,155,255,.28); } }
+
+/* Mobile: barra do topo opaca (mesma cor da área do relógio/notificações) e só a borda inferior esmaece */
+html { background-color: #050b10; }
+@media (max-width: 860px) {
+  .site-header, .site-header.scrolled { background: linear-gradient(180deg, #030609 0%, #030609 68%, rgba(3,6,9,.55) 88%, rgba(3,6,9,0) 100%); }
+  .site-header::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 120px; background: #030609; pointer-events: none; }
+}
