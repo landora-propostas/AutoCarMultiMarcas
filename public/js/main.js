@@ -219,7 +219,9 @@
     var q = norm(input.value.trim());
     var shown = 0;
     cards.forEach(function (c) {
-      var ok = (filter === 'todos' || c.dataset.cat === filter) && norm(c.dataset.name).indexOf(q) !== -1;
+      var car = window.BUSCA ? window.BUSCA.porSlug(c.dataset.slug) : null;
+      var ok = (filter === 'todos' || c.dataset.cat === filter) && norm(c.dataset.name).indexOf(q) !== -1 &&
+        (!window.BUSCA || window.BUSCA.passa(car, q));
       var wasHidden = c.hidden;
       c.hidden = !ok;
       if (ok) {
@@ -232,7 +234,13 @@
     });
     count.textContent = shown;
     empty.hidden = shown !== 0;
+    if (window.BUSCA) {
+      window.BUSCA.ordenar(cards.map(function (c) { return c.dataset.slug; })).forEach(function (slug) {
+        list.appendChild(cards.filter(function (c) { return c.dataset.slug === slug; })[0]);
+      });
+    }
   }
+  document.addEventListener('busca', update);
   function update() {
     if (document.startViewTransition && !reduce) document.startViewTransition(applyFilter);
     else applyFilter();
@@ -252,6 +260,7 @@
   var reset = $('[data-reset]');
   if (reset) reset.addEventListener('click', function () {
     input.value = '';
+    if (window.BUSCA) window.BUSCA.limpar(true);
     filter = 'todos';
     pills.forEach(function (o) {
       var on = o.dataset.filter === 'todos';

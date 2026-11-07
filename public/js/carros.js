@@ -9,6 +9,9 @@
 window.CARROS = [
   {
     slug: "bmw-m4-competition",
+    marca: "BMW",
+    adicionado: "2026-10-28",   // EXEMPLO: data em que o carro entrou no estoque
+    procura: 182,        // EXEMPLO: visitas ao anúncio (na etapa do Firebase vira contador real)
     nome: "BMW M4 Competition",
     categoria: "cupe",
     condicao: "Seminovo",
@@ -44,6 +47,9 @@ window.CARROS = [
   },
   {
     slug: "chevrolet-onix-plus-black",
+    marca: "Chevrolet",
+    adicionado: "2026-10-02",   // EXEMPLO: data em que o carro entrou no estoque
+    procura: 96,        // EXEMPLO: visitas ao anúncio (na etapa do Firebase vira contador real)
     nome: "Chevrolet Onix Plus Black",
     categoria: "sedan",
     condicao: "Seminovo",
@@ -74,6 +80,9 @@ window.CARROS = [
   },
   {
     slug: "hyundai-creta-platinum",
+    marca: "Hyundai",
+    adicionado: "2026-11-04",   // EXEMPLO: data em que o carro entrou no estoque
+    procura: 143,        // EXEMPLO: visitas ao anúncio (na etapa do Firebase vira contador real)
     nome: "Hyundai Creta Platinum",
     categoria: "suv",
     condicao: "Novo",
@@ -104,6 +113,9 @@ window.CARROS = [
   },
   {
     slug: "honda-civic-sedan",
+    marca: "Honda",
+    adicionado: "2026-09-15",   // EXEMPLO: data em que o carro entrou no estoque
+    procura: 58,        // EXEMPLO: visitas ao anúncio (na etapa do Firebase vira contador real)
     nome: "Honda Civic Sedan",
     categoria: "sedan",
     condicao: "Seminovo",

@@ -33,6 +33,7 @@
     <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="chat" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-5 4v-4H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
     <symbol id="doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="filtro" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m11 12 8-8m-3 3 3 3m-6-0 2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5v7l6-3.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
     <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -223,9 +224,18 @@
         </div>
         <label class="search">
           <svg aria-hidden="true"><use href="#search"/></svg>
-          <input id="busca" type="search" placeholder="Buscar por modelo" autocomplete="off">
+          <input id="busca" type="search" placeholder="Buscar por marca ou modelo" autocomplete="off">
+        </label>
+        <button class="btn btn-ghost adv-toggle" type="button" id="adv-toggle" aria-expanded="false" aria-controls="busca-avancada">
+          <svg aria-hidden="true"><use href="#filtro"/></svg>Busca avançada<span class="badge" id="adv-badge" hidden>0</span>
+        </button>
+        <label class="sort">
+          <span>Ordenar por</span>
+          <select id="ordem" aria-label="Ordenar carros"></select>
         </label>
       </div>
+      <div class="adv-wrap" id="busca-avancada"><div class="adv-inner" id="adv-inner"></div></div>
+      <div class="tags" id="adv-tags" hidden></div>
       <p class="result-count" aria-live="polite"><span id="contagem">4</span> carros em estoque</p>
 
       <div class="cars" id="lista-carros"></div>
@@ -353,6 +363,7 @@
 </dialog>
 
 <script src="js/carros.js"></script>
+<script src="js/busca.js"></script>
 <script src="js/main.js"></script>
 <script src="js/fx.js"></script>
 </body>
