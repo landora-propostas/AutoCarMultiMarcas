@@ -1234,3 +1234,24 @@ body::before { content: ""; position: fixed; inset: -50%; z-index: 150; pointer-
 .hero-mark span { -webkit-text-stroke-color: rgba(107,155,255,.12); }
 @media (prefers-reduced-motion: reduce) { .hero::before, .hero-road::before { animation: none; } }
 .hero-road { opacity: .55; -webkit-mask-image: linear-gradient(180deg, transparent, #000 55%), linear-gradient(90deg, transparent 18%, #000 60%); -webkit-mask-composite: source-in; mask-image: linear-gradient(180deg, transparent, #000 55%), linear-gradient(90deg, transparent 18%, #000 60%); mask-composite: intersect; }
+
+
+/* ============================================================
+   Carro do hero mais realista: sombra de contato, luz de contorno, reflexo e profundidade 3D
+   ============================================================ */
+.hero-car { perspective: 1500px; }
+.car-tilt { position: relative; transform-style: preserve-3d; transform-origin: 55% 80%;
+  transform: rotateY(calc(var(--hx, 0) * 9deg)) rotateX(calc(var(--hy, 0) * -2.5deg)) translateX(calc(var(--hx, 0) * -10px));
+  transition: transform .7s var(--ease); }
+.hero-car img { filter: brightness(1.02) contrast(1.08) saturate(1.05)
+  drop-shadow(0 0 1px rgba(170, 205, 255, .55)) drop-shadow(-6px -2px 14px rgba(70, 130, 255, .22)) drop-shadow(0 10px 10px rgba(0, 0, 0, .55)); }
+/* Sombra de contato sob a carroceria e os pneus: "assenta" o carro no piso */
+.car-shadow { position: absolute; z-index: -1; left: 4%; right: 0%; top: 86%; height: 17%; pointer-events: none; opacity: 0; animation: fade-in 1.2s var(--ease) 1.2s forwards;
+  background:
+    radial-gradient(7% 42% at 54% 62%, rgba(0,0,0,.95), transparent 100%),
+    radial-gradient(7% 42% at 93% 62%, rgba(0,0,0,.95), transparent 100%),
+    radial-gradient(48% 40% at 52% 55%, rgba(0,0,0,.8), transparent 100%);
+  filter: blur(5px); }
+.car-reflect { opacity: .3; top: 97%; }
+.car-sweep { z-index: 2; }
+@media (prefers-reduced-motion: reduce) { .car-tilt { transform: none; } .car-shadow { animation: none; opacity: 1; } }

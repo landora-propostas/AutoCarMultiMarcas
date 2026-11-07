@@ -28,6 +28,17 @@
     });
   }
 
+  /* ---------- Profundidade do carro do hero: gira alguns graus acompanhando o mouse ---------- */
+  var heroEl = $('.hero');
+  if (heroEl && fino && !reduce) {
+    heroEl.addEventListener('pointermove', function (e) {
+      var r = heroEl.getBoundingClientRect();
+      heroEl.style.setProperty('--hx', (((e.clientX - r.left) / r.width - 0.5) * 2).toFixed(3));
+      heroEl.style.setProperty('--hy', (((e.clientY - r.top) / r.height - 0.5) * 2).toFixed(3));
+    });
+    heroEl.addEventListener('pointerleave', function () { heroEl.style.setProperty('--hx', 0); heroEl.style.setProperty('--hy', 0); });
+  }
+
   /* ---------- Inclinação 3D com brilho que segue o mouse ---------- */
   if (fino && !reduce) {
     $$('.car-card, .adv, .about-values li').forEach(function (el) {
