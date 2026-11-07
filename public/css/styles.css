@@ -1284,3 +1284,35 @@ body::before { content: ""; position: fixed; inset: -50%; z-index: 150; pointer-
 .car-tilt { transform: none !important; transition: none; }
 .car-sweep { display: none !important; }
 .hero-car { transform: none; }
+
+
+/* ============================================================
+   CTA v3 — "entrega de chave": chave do carro em destaque sobre fundo de showroom
+   ============================================================ */
+.cta2 { display: grid; grid-template-columns: 1.25fr .75fr; align-items: center; gap: 24px; text-align: left; }
+.cta2-bg { background:
+  radial-gradient(46% 70% at 78% 52%, rgba(24,86,214,.45), rgba(10,40,110,.2) 50%, transparent 74%),
+  linear-gradient(180deg, #04080d, #07121d 70%, #050b10); }
+.cta2-bg img { display: none; }
+.cta2::after { background: linear-gradient(90deg, rgba(4,8,13,.55), transparent 55%); }
+.cta2-road, .cta2-road i { display: none; }
+.cta2-floor { position: absolute; left: -20%; right: -20%; bottom: 0; height: 46%; z-index: -1; pointer-events: none; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 70%); mask-image: linear-gradient(180deg, transparent, #000 70%); opacity: .5; }
+.cta2-floor::before { content: ""; position: absolute; inset: 0 0 -30% 0; transform-origin: 50% 0; transform: perspective(360px) rotateX(64deg);
+  background: repeating-linear-gradient(90deg, rgba(107,155,255,.34) 0 1.5px, transparent 1.5px 80px), repeating-linear-gradient(0deg, rgba(107,155,255,.28) 0 1.5px, transparent 1.5px 80px);
+  animation: piso 3.2s linear infinite; }
+.cta2-body { margin: 0; max-width: 620px; }
+.cta2-text { margin: 0 0 30px; }
+.cta2-actions, .cta2-contact { justify-content: flex-start; }
+.cta2-key { position: relative; display: grid; place-items: center; min-height: 380px; }
+.key-glow { position: absolute; width: 90%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(40,110,255,.45), transparent 72%); filter: blur(14px); animation: glow-breathe 5s ease-in-out infinite; }
+.key-float { position: relative; width: min(220px, 56%); animation: key-in 1.4s var(--ease) both, key-float 6s ease-in-out 1.4s infinite; filter: drop-shadow(0 28px 30px rgba(0,0,0,.6)); transform: rotate(14deg); }
+.key-svg { display: block; width: 100%; height: auto; }
+@keyframes key-in { from { opacity: 0; transform: translateY(-60px) rotate(40deg); } }
+@keyframes key-float { 0%, 100% { transform: rotate(14deg) translateY(0); } 50% { transform: rotate(9deg) translateY(-12px); } }
+.key-tag { position: absolute; bottom: 10%; right: 0; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; color: #dfe7ee;
+  background: rgba(13,19,26,.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.12); }
+.key-tag svg { width: 16px; height: 16px; color: #4ade80; }
+@media (max-width: 860px) { .cta2 { grid-template-columns: 1fr; } .cta2-key { min-height: 300px; order: -1; } .cta2-body { max-width: none; } .key-tag { right: 6%; } }
+@media (prefers-reduced-motion: reduce) { .key-float, .key-glow, .cta2-floor::before { animation: none; } }
+.cta2 h2 { font-size: clamp(32px, 4.4vw, 62px); }

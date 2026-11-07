@@ -22,6 +22,11 @@
       anel.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
       requestAnimationFrame(seguir);
     })();
+    // Janelas <dialog> abertas ficam na "camada de cima" do navegador: levamos o cursor para dentro delas.
+    addEventListener('pointermove', function () {
+      var d = document.querySelector('dialog[open]'), alvo = d || document.body;
+      if (anel.parentNode !== alvo) { alvo.appendChild(anel); alvo.appendChild(ponto); }
+    }, true);
     document.addEventListener('pointerover', function (e) {
       var t = e.target.closest && e.target.closest('a, button, summary, .car-card, [data-open-lead]');
       anel.classList.toggle('big', !!t);
