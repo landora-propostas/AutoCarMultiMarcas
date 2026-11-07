@@ -1255,3 +1255,27 @@ body::before { content: ""; position: fixed; inset: -50%; z-index: 150; pointer-
 .car-reflect { opacity: .3; top: 97%; }
 .car-sweep { z-index: 2; }
 @media (prefers-reduced-motion: reduce) { .car-tilt { transform: none; } .car-shadow { animation: none; opacity: 1; } }
+
+/* ============================================================
+   Carro integrado ao cenário: iluminação coerente com o spot, sombreado, névoa no piso
+   ============================================================ */
+.hero-car { width: min(52vw, 860px); right: 4%; bottom: 14%; }
+.hero-car img { filter: brightness(.88) contrast(1.1) saturate(.95) hue-rotate(-4deg)
+  drop-shadow(0 0 1px rgba(170, 205, 255, .4)) drop-shadow(0 12px 12px rgba(0, 0, 0, .6)); animation-name: car-chegada; }
+/* Luz do spot (vem de cima e da direita) batendo na lataria */
+.car-tilt::before, .car-tilt::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  -webkit-mask: url("../img/carros/bmw-m4-hero.webp") center / 100% 100% no-repeat; mask: url("../img/carros/bmw-m4-hero.webp") center / 100% 100% no-repeat; }
+.car-tilt::before { mix-blend-mode: screen; opacity: .8;
+  background:
+    radial-gradient(60% 50% at 72% 10%, rgba(120, 170, 255, .55), transparent 70%),
+    radial-gradient(35% 40% at 12% 45%, rgba(70, 130, 255, .3), transparent 70%),
+    linear-gradient(100deg, transparent 55%, rgba(160, 200, 255, .22)); }
+/* Parte de baixo mais escura, como se a luz não chegasse ao piso */
+.car-tilt::after { mix-blend-mode: multiply;
+  background: linear-gradient(180deg, transparent 38%, rgba(3, 8, 20, .55) 78%, rgba(3, 8, 20, .85) 100%), linear-gradient(90deg, rgba(3, 8, 20, .5), transparent 40%); }
+/* Névoa azul na frente das rodas: integra o carro ao piso */
+.hero-car::after { content: ""; position: absolute; z-index: 3; left: -8%; right: -8%; top: 78%; height: 40%; pointer-events: none;
+  background: radial-gradient(60% 55% at 50% 30%, rgba(20, 70, 190, .28), transparent 70%); filter: blur(10px); }
+.car-reflect { opacity: .38; filter: blur(3px) brightness(.8); }
+.car-sweep { opacity: .55; }
+@media (max-width: 860px) { .hero-car { width: 118vw; right: -14vw; bottom: 3%; } }
