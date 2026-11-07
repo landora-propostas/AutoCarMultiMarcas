@@ -1279,3 +1279,8 @@ body::before { content: ""; position: fixed; inset: -50%; z-index: 150; pointer-
 .car-reflect { opacity: .38; filter: blur(3px) brightness(.8); }
 .car-sweep { opacity: .55; }
 @media (max-width: 860px) { .hero-car { width: 118vw; right: -14vw; bottom: 3%; } }
+
+/* Carro estático: sem inclinação pelo mouse, sem brilho passando; só entra separado na animação */
+.car-tilt { transform: none !important; transition: none; }
+.car-sweep { display: none !important; }
+.hero-car { transform: none; }
