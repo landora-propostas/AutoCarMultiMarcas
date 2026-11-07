@@ -1492,3 +1492,24 @@ body { overflow-x: clip; max-width: 100%; touch-action: pan-y; }
 dialog { touch-action: pan-y; }
 a, button, summary, input, select, label { touch-action: manipulation; }
 dialog, .sheet, .d-media, .d-info { overflow-x: hidden; max-width: 100%; }
+
+/* Modal no mobile: tudo termina na borda da tela, com a mesma margem da esquerda */
+@media (max-width: 860px) {
+  .sheet-body { grid-template-columns: minmax(0, 1fr); }
+  .sheet-body > *, .d-info > *, .d-media > * { min-width: 0; max-width: 100%; }
+  .d-info { box-sizing: border-box; width: 100%; }
+  .d-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .d-stat { min-width: 0; padding: 12px 12px; }
+  .d-stat b { font-size: 16px; overflow-wrap: anywhere; }
+  .d-stat:first-child b { font-size: 30px; }
+  .d-specs { grid-template-columns: minmax(0, 1fr); }
+  .d-specs div { min-width: 0; }
+  .d-specs dd { overflow-wrap: anywhere; }
+  .d-checks li, .d-extras li, .d-desc, .d-sub { overflow-wrap: anywhere; }
+}
+@media (max-width: 860px) {
+  .d-stats { gap: 8px; }
+  .d-stat { padding: 11px 10px; }
+  .d-stat small { font-size: 11px; }
+  .d-stat:not(:first-child) b { font-size: 13.5px; overflow-wrap: normal; word-break: normal; white-space: nowrap; }
+}
