@@ -1480,3 +1480,8 @@ html { background-color: #050b10; }
   .round { display: inline-grid; width: 30px; height: 30px; }
 }
 @media (max-width: 860px) { .site-header, .site-header.scrolled { background: linear-gradient(180deg, #030609 0%, #030609 86%, rgba(3,6,9,.5) 94%, rgba(3,6,9,0) 100%); } }
+
+/* Preço sempre na base do card, alinhado entre os carros */
+.car-card { display: flex; flex-direction: column; }
+.car-card .car-info { flex: 1; display: flex; flex-direction: column; }
+.car-card .car-foot { margin-top: auto; padding-top: 10px; }
