@@ -9,12 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Manrope:wght@400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" id="favicon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/styles.css">
   <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-  <div class="loader" aria-hidden="true"><img src="img/logo-landora.png" alt=""><span></span></div>
+  <div class="loader" aria-hidden="true"><img data-img="logo" src="img/logo-landora.png" alt=""><span></span></div>
 <div class="progress" aria-hidden="true"></div>
 
 <!-- Símbolos SVG reutilizáveis -->
@@ -60,7 +60,7 @@
 <header class="site-header" id="topo">
   <div class="wrap header-row">
     <a class="brand" href="#topo" aria-label="Landora Motors, início">
-        <img class="brand-logo" src="img/logo-landora.png" width="220" height="44" alt="Landora">
+        <img class="brand-logo" data-img="logo" src="img/logo-landora.png" width="220" height="44" alt="Landora">
         <span class="brand-sub" aria-hidden="true"><i>M</i><i>O</i><i>T</i><i>O</i><i>R</i><i>S</i></span>
       </a>
 
@@ -73,8 +73,8 @@
       <a href="#contato">Contato</a>
     </nav>
 
-    <a class="header-phone" href="tel:+551100000000">
-      <svg aria-hidden="true"><use href="#phone"/></svg>(11) 0000-0000
+    <a class="header-phone" href="tel:+551100000000" data-href="telefone">
+      <svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span>
     </a>
     <button class="btn btn-primary btn-sm header-cta" type="button" data-open-lead>Quero uma proposta</button>
 
@@ -88,7 +88,7 @@
   <!-- HERO -->
   <section class="hero" id="topo">
     <div class="hero-bg" aria-hidden="true">
-      <img src="img/hero-fundo.webp" alt="" width="1920" height="1080">
+      <img data-img="heroFundo" src="img/hero-fundo.webp" alt="" width="1920" height="1080">
     </div>
     <div class="hero-mark" aria-hidden="true"><span>LANDORA</span></div>
     <div class="hero-road" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -97,7 +97,7 @@
     <div class="hero-car" aria-hidden="true">
       <span class="car-shadow"></span>
       <div class="car-tilt">
-        <img src="img/carros/bmw-m4-hero.webp" width="1400" height="577" alt="" fetchpriority="high">
+        <img data-img="heroCarro" src="img/carros/bmw-m4-hero.webp" width="1400" height="577" alt="" fetchpriority="high">
       </div>
       <span class="car-reflect"></span>
     </div>
@@ -110,14 +110,14 @@
 
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow"><i class="pulse"></i>Seu próximo carro, sem enrolação</p>
+        <p class="eyebrow"><i class="pulse"></i><span data-s="textos.heroEyebrow">Seu próximo carro, sem enrolação</span></p>
         <h1 aria-label="Escolha mais rápido. Dirija com prazer.">
           <span class="ln" aria-hidden="true"><span style="--i:0">Escolha</span></span>
           <span class="ln" aria-hidden="true"><span style="--i:1"><em>mais rápido.</em></span></span>
           <span class="ln" aria-hidden="true"><span style="--i:2">Dirija</span></span>
           <span class="ln" aria-hidden="true"><span style="--i:3"><em>com prazer.</em></span></span>
         </h1>
-        <p class="lead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
+        <p class="lead" data-s="textos.heroLead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
         <div class="hero-actions">
           <a class="btn btn-primary magnetic" href="#carros">Ver carros <svg aria-hidden="true"><use href="#arrow"/></svg></a>
           <button class="btn btn-ghost magnetic" type="button" data-open-lead>Quero uma proposta</button>
@@ -216,7 +216,7 @@
       </header>
 
       <div class="toolbar">
-        <div class="pills" role="group" aria-label="Filtrar por tipo">
+        <div class="pills" id="pills" role="group" aria-label="Filtrar por tipo">
           <button class="pill is-on" type="button" data-filter="todos" aria-pressed="true">Todos</button>
           <button class="pill" type="button" data-filter="cupe" aria-pressed="false">Cupês</button>
           <button class="pill" type="button" data-filter="sedan" aria-pressed="false">Sedãs</button>
@@ -252,9 +252,9 @@
     <div class="wrap about-grid">
       <div class="about-copy">
         <p class="eyebrow">Sobre nós</p>
-        <h2>Uma concessionária feita para você escolher com segurança</h2>
-        <p>A Landora Motors nasceu para tornar a compra de um carro mais simples e transparente. Selecionamos cada veículo do nosso estoque, revisamos item por item e mostramos tudo com clareza, do quilômetro rodado ao histórico.</p>
-        <p>Do primeiro contato até a entrega das chaves, um consultor acompanha você, tira as dúvidas e apresenta as melhores condições de financiamento e de troca.</p>
+        <h2 data-s="textos.sobreTitulo">Uma concessionária feita para você escolher com segurança</h2>
+        <p data-s="textos.sobreP1">A Landora Motors nasceu para tornar a compra de um carro mais simples e transparente. Selecionamos cada veículo do nosso estoque, revisamos item por item e mostramos tudo com clareza, do quilômetro rodado ao histórico.</p>
+        <p data-s="textos.sobreP2">Do primeiro contato até a entrega das chaves, um consultor acompanha você, tira as dúvidas e apresenta as melhores condições de financiamento e de troca.</p>
         <ul class="about-values">
           <li><svg aria-hidden="true"><use href="#shield"/></svg><div><b>Transparência</b><span>Informações completas e sem surpresas.</span></div></li>
           <li><svg aria-hidden="true"><use href="#check"/></svg><div><b>Carros selecionados</b><span>Vistoria mecânica e jurídica antes da venda.</span></div></li>
@@ -263,7 +263,7 @@
         <button class="btn btn-primary" type="button" data-open-lead>Falar com a Landora <svg aria-hidden="true"><use href="#arrow"/></svg></button>
       </div>
       <figure class="about-photo">
-        <img src="img/carros/bmw-m4-wide.webp" alt="Carro do estoque da Landora Motors" width="1200" height="750" loading="lazy">
+        <img data-img="sobre" src="img/carros/bmw-m4-wide.webp" alt="Carro do estoque da Landora Motors" width="1200" height="750" loading="lazy">
       </figure>
     </div>
   </section>
@@ -272,20 +272,20 @@
   <section class="section cta-section" id="contato">
     <div class="wrap">
       <div class="cta2">
-        <div class="cta2-bg" aria-hidden="true"><img src="img/carros/hyundai-creta.webp" alt="" loading="lazy" width="736" height="414"><img class="refl" src="img/carros/hyundai-creta.webp" alt="" loading="lazy" width="736" height="414"></div>
+        <div class="cta2-bg" aria-hidden="true"><img data-img="cta" src="img/carros/hyundai-creta.webp" alt="" loading="lazy" width="736" height="414"><img data-img="cta" class="refl" src="img/carros/hyundai-creta.webp" alt="" loading="lazy" width="736" height="414"></div>
         <div class="cta2-beam" aria-hidden="true"></div>
                 <div class="cta2-body">
           <p class="eyebrow">Vamos conversar</p>
           <h2>Seu próximo carro<br><em>começa aqui.</em></h2>
-          <p class="cta2-text">Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca. </p>
+          <p class="cta2-text" data-s="textos.ctaTexto">Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.</p>
           <div class="cta2-actions">
             <button class="btn btn-primary magnetic" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
             <a class="btn btn-ghost magnetic" href="#carros">Ver estoque</a>
           </div>
           <ul class="cta2-contact">
-            <li><svg aria-hidden="true"><use href="#phone"/></svg>(11) 0000-0000</li>
-            <li><svg aria-hidden="true"><use href="#mail"/></svg>E-mail da loja</li>
-            <li><svg aria-hidden="true"><use href="#pin"/></svg>Endereço da loja</li>
+            <li><svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span></li>
+            <li><svg aria-hidden="true"><use href="#mail"/></svg><span data-s="contato.email">E-mail da loja</span></li>
+            <li><svg aria-hidden="true"><use href="#pin"/></svg><span data-s="contato.endereco">Endereço da loja</span></li>
           </ul>
         </div>
       </div>
@@ -297,10 +297,10 @@
   <div class="wrap foot-grid">
     <div class="foot-brand">
       <a class="brand" href="#topo" aria-label="Landora Motors, início">
-        <img class="brand-logo" src="img/logo-landora.png" width="220" height="44" alt="Landora">
+        <img class="brand-logo" data-img="logo" src="img/logo-landora.png" width="220" height="44" alt="Landora">
         <span class="brand-sub" aria-hidden="true"><i>M</i><i>O</i><i>T</i><i>O</i><i>R</i><i>S</i></span>
       </a>
-      <p>Carros premium para quem escolhe o melhor.</p>
+      <p data-s="textos.rodape">Carros premium para quem escolhe o melhor.</p>
     </div>
     <nav aria-label="Navegação">
       <h4>Navegação</h4>
@@ -320,14 +320,15 @@
     </nav>
     <div class="foot-contact">
       <h4>Contato</h4>
-      <a href="tel:+551100000000"><svg aria-hidden="true"><use href="#phone"/></svg>(11) 0000-0000</a>
-      <a href="mailto:E-mail da loja"><svg aria-hidden="true"><use href="#mail"/></svg>contato@landora.com.br</a>
-      <p><svg aria-hidden="true"><use href="#pin"/></svg>Rua Exemplo, 123, Vinhedo, SP</p>
-      <p class="hours">Todos os dias, das 9h às 19h</p>
+      <a href="tel:+551100000000" data-href="telefone"><svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span></a>
+      <a href="mailto:contato@landora.com.br" data-href="email"><svg aria-hidden="true"><use href="#mail"/></svg><span data-s="contato.email">contato@landora.com.br</span></a>
+      <p><svg aria-hidden="true"><use href="#pin"/></svg><span data-s="contato.endereco">Rua Exemplo, 123, Vinhedo, SP</span></p>
+      <p class="hours" data-s="contato.horario">Todos os dias, das 9h às 19h</p>
+      <div class="foot-social" id="redes" hidden></div>
     </div>
   </div>
   <div class="wrap legal">
-    <p>© 2026 Landora Motors. Todos os direitos reservados.</p>
+    <p>© 2026 <span data-s="marca.nome">Landora Motors</span>. Todos os direitos reservados.</p>
     <a href="#topo">Política de privacidade</a>
     <a href="#topo">Termos de uso</a>
   </div>
@@ -362,9 +363,7 @@
   <div class="sheet-body" id="detalhe-corpo"></div>
 </dialog>
 
-<script src="js/carros.js"></script>
-<script src="js/busca.js"></script>
-<script src="js/main.js"></script>
-<script src="js/fx.js"></script>
+<!-- dados.js lê o Firestore (ou js/carros.js, no modo de demonstração) e só então inicia busca.js, main.js e fx.js -->
+<script type="module" src="js/dados.js"></script>
 </body>
 </html>

@@ -1537,3 +1537,8 @@ dialog, .sheet, .d-media, .d-info { overflow-x: hidden; max-width: 100%; }
   .steps { align-items: start; }
   .steps li { align-self: start; align-items: center; align-content: start; }
 }
+
+/* ---------- Redes sociais no rodapé (preenchidas pelo painel) ---------- */
+.foot-social { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
+.foot-social a { color: var(--muted); font-size: 14px; font-weight: 600; transition: color .2s; }
+.foot-social a:hover { color: var(--brand-light); }

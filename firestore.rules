@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// Regras do Firestore da Landora Motors.
+//  - O público (site) só lê o que precisa e só consegue: enviar um pedido (leads) e somar +1 visita num carro publicado.
+//  - Tudo o mais (criar/editar/excluir) exige login com e-mail CONFIRMADO e autorizado na coleção "admins".
+//  - O ID de cada documento em "admins" é o e-mail da pessoa, em minúsculas.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function admin() {
+      return logado() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
+
+    // Quem pode entrar no painel. Cada pessoa só consegue ler o próprio documento.
+    match /admins/{email} {
+      allow get: if logado() && request.auth.token.email == email;
+      allow list, write: if admin();
+    }
+
+    // Configurações do site, categorias e catálogo de adicionais: leitura pública.
+    match /config/{doc} {
+      allow read: if true;
+      allow write: if admin();
+    }
+    match /categorias/{id} {
+      allow read: if true;
+      allow write: if admin();
+    }
+    match /adicionais/{id} {
+      allow read: if true;
+      allow write: if admin();
+    }
+
+    // Carros: o público só enxerga os publicados (rascunhos e vendidos ficam só no painel).
+    match /carros/{id} {
+      allow read: if resource.data.status == 'publicado' || admin();
+      allow create, delete: if admin();
+      allow update: if admin() || (
+        // contador de visitas: o site só pode somar exatamente +1 no campo "procura"
+        resource.data.status == 'publicado' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['procura']) &&
+        request.resource.data.procura == resource.data.get('procura', 0) + 1
+      );
+    }
+
+    // Fotos guardadas no Firestore (armazenamento "firestore"): o site lê pelo ID, sem listar.
+    match /midia/{id} {
+      allow get: if true;
+      allow list: if admin();
+      allow create: if admin() && request.resource.data.data.size() < 1000000;
+      allow update, delete: if admin();
+    }
+
+    // Pedidos de proposta: qualquer visitante pode criar (com campos validados); só o painel lê e gerencia.
+    match /leads/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['nome', 'whatsapp', 'carro', 'status', 'origem', 'criadoEm'])
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 100
+        && request.resource.data.whatsapp is string
+        && request.resource.data.whatsapp.size() >= 8 && request.resource.data.whatsapp.size() <= 20
+        && request.resource.data.carro is string && request.resource.data.carro.size() <= 120
+        && request.resource.data.status == 'novo'
+        && request.resource.data.criadoEm == request.time;
+      allow read, update, delete: if admin();
+    }
+  }
+}

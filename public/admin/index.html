@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#050b10">
+  <title>Painel | Landora Motors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div class="boot" id="boot"><div class="spin"></div><p>Carregando o painel…</p></div>
+
+  <!-- Entrar / criar conta / verificar e-mail / sem permissão -->
+  <section class="auth" id="tela-auth" hidden>
+    <div class="auth-card">
+      <img class="auth-logo" src="/img/logo-landora.png" alt="Landora" width="160">
+      <p class="auth-sub">Painel administrativo</p>
+
+      <div id="auth-form">
+        <div class="tabs auth-tabs" role="tablist">
+          <button type="button" class="tab is-on" data-modo="entrar" role="tab">Entrar</button>
+          <button type="button" class="tab" data-modo="criar" role="tab">Criar conta</button>
+        </div>
+        <form id="form-auth" novalidate>
+          <label>E-mail<input type="email" name="email" autocomplete="email" required placeholder="voce@exemplo.com"></label>
+          <label>Senha<input type="password" name="senha" autocomplete="current-password" required minlength="6" placeholder="Sua senha"></label>
+          <label class="so-criar" hidden>Repita a senha<input type="password" name="senha2" autocomplete="new-password" minlength="6" placeholder="Repita a senha"></label>
+          <p class="auth-erro" id="auth-erro" role="alert" hidden></p>
+          <button class="btn primary grande" type="submit" id="auth-enviar">Entrar</button>
+          <button class="link" type="button" id="auth-esqueci">Esqueci minha senha</button>
+        </form>
+        <p class="auth-nota so-criar" hidden>Depois de criar a conta, confirme o e-mail pelo link que enviaremos. O acesso ao painel só é liberado se um administrador já tiver autorizado esse e-mail.</p>
+      </div>
+
+      <div id="auth-verificar" hidden>
+        <h1>Confirme seu e-mail</h1>
+        <p>Enviamos um link de confirmação para <b id="ver-email"></b>. Abra o e-mail, clique no link e volte aqui.</p>
+        <button class="btn primary grande" type="button" id="ver-ja">Já confirmei</button>
+        <button class="btn" type="button" id="ver-reenviar">Reenviar e-mail</button>
+        <button class="link" type="button" data-sair>Sair</button>
+      </div>
+
+      <div id="auth-negado" hidden>
+        <h1>Sem acesso ao painel</h1>
+        <p>O e-mail <b id="neg-email"></b> ainda não foi autorizado.</p>
+        <p class="auth-nota">Peça a um administrador para adicioná-lo em <b>Equipe</b>. Se você é o primeiro administrador, crie manualmente a autorização: no <b>Console do Firebase → Firestore Database</b>, crie a coleção <code>admins</code> e um documento cujo <b>ID seja o seu e-mail, em minúsculas</b> (pode deixar um campo qualquer, como <code>ativo = true</code>). O passo a passo completo está no README do repositório.</p>
+        <button class="btn" type="button" id="neg-ja">Já autorizei, tentar de novo</button>
+        <button class="link" type="button" data-sair>Sair</button>
+      </div>
+
+      <div id="auth-config" hidden>
+        <h1>Firebase não encontrado</h1>
+        <p id="cfg-msg"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Painel -->
+  <div class="app" id="app" hidden>
+    <header class="topbar">
+      <button class="icon-btn" type="button" id="menu-abrir" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+      <img src="/img/logo-landora.png" alt="Landora" height="22">
+    </header>
+    <div class="veu" id="veu"></div>
+    <aside class="side" id="side">
+      <a class="side-brand" href="#/painel"><img src="/img/logo-landora.png" alt="Landora" height="26"><span>Painel</span></a>
+      <nav class="side-nav" id="nav" aria-label="Seções">
+        <a href="#/painel" data-r="painel"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zm10 7h6V4h-6zM4 20h6v-4H4z"/></svg>Visão geral</a>
+        <a href="#/carros" data-r="carros"><svg viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M3 16h18M7.5 19.5v-3m9 3v-3M6 12h12"/></svg>Carros</a>
+        <a href="#/categorias" data-r="categorias"><svg viewBox="0 0 24 24"><path d="M4 5h7v7H4zm9 0h7v7h-7zM4 14h7v6H4zm9 0h7v6h-7z"/></svg>Categorias</a>
+        <a href="#/adicionais" data-r="adicionais"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M7 7l10 10M17 7 7 17"/></svg>Adicionais de entrega</a>
+        <a href="#/pedidos" data-r="pedidos"><svg viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4zM9 9h6M9 12h4"/></svg>Pedidos<span class="contador" id="nav-pedidos" hidden></span></a>
+        <a href="#/site" data-r="site"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>Site e marca</a>
+        <a href="#/equipe" data-r="equipe"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5M16 5.5a3 3 0 0 1 0 5.6M18 14.8c2 .6 3 2.2 3 5.2"/></svg>Equipe</a>
+      </nav>
+      <div class="side-foot">
+        <a class="btn peq" href="/" target="_blank" rel="noopener">Ver o site ↗</a>
+        <p class="side-user" id="usuario"></p>
+        <button class="link" type="button" data-sair>Sair</button>
+      </div>
+    </aside>
+    <main class="main"><div id="view" class="view"></div></main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <dialog class="modal" id="modal"></dialog>
+
+  <script type="module" src="/admin/js/app.js"></script>
+</body>
+</html>

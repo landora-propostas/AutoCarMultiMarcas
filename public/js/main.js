@@ -347,13 +347,22 @@
     e.preventDefault();
     var nome = form.elements.nome.value.trim();
     var zap = form.elements.whatsapp.value.replace(/\D/g, '');
-    if (!nome || zap.length < 10) { erro.hidden = false; return; }
-    // Versão visual: os dados NÃO são enviados nem salvos em lugar nenhum.
-    // Na etapa do Firebase, gravar o pedido no Firestore (coleção "leads") aqui.
+    if (!nome || zap.length < 10) { erro.textContent = 'Preencha seu nome e WhatsApp para continuar.'; erro.hidden = false; return; }
     erro.hidden = true;
-    form.hidden = true;
-    ok.hidden = false;
-    form.reset();
+    var concluir = function () { form.hidden = true; ok.hidden = false; form.reset(); };
+    var L = window.LANDORA;
+    // Com o Firebase ativo (js/dados.js), o pedido é gravado na coleção "leads" e aparece no painel.
+    // No modo de demonstração (carros de exemplo), apenas simula o envio.
+    if (L && L.salvarLead) {
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      L.salvarLead({ nome: nome, whatsapp: form.elements.whatsapp.value.trim(), carro: select.value }).then(concluir, function () {
+        erro.textContent = 'Não foi possível enviar agora. Tente de novo em instantes.';
+        erro.hidden = false;
+      }).then(function () { btn.disabled = false; });
+    } else {
+      concluir();
+    }
   });
 
   /* ---------- Tela de detalhes do carro ---------- */
@@ -370,6 +379,7 @@
     atual = c.slug;
     var n = CARROS.length;
     var g = c.galeria && c.galeria.length ? c.galeria : [c.foto];
+    var extras = c.adicionais || window.ADICIONAIS || [];
     var stat = function (rot, val, extra) { return '<div class="d-stat"><small>' + rot + '</small><b' + (extra || '') + '>' + val + '</b></div>'; };
 
     corpo.className = 'sheet-body' + (troca ? ' swap' : '');
@@ -388,22 +398,22 @@
         '</div>' +
         '<p class="eyebrow d-i" style="--i:0">' + esc(c.condicao) + ' · ' + esc(c.ano) + '</p>' +
         '<h2 class="d-i" style="--i:1">' + esc(c.nome) + '</h2>' +
-        '<p class="d-sub d-i" style="--i:2">' + esc(c.motor) + ' · ' + esc(c.potencia) + ' · ' + esc(c.cambio) + '</p>' +
+        '<p class="d-sub d-i" style="--i:2">' + [c.motor, c.potencia, c.cambio].filter(Boolean).map(esc).join(' · ') + '</p>' +
         '<p class="d-price d-i" style="--i:3">' + brl(c.preco) + '</p>' +
         '<div class="d-stats d-i" style="--i:4">' +
           stat('Quilometragem', c.km === 0 ? '0 km' : '0 km', ' data-km="' + c.km + '"') +
           stat('Ano', esc(c.ano)) + stat('Câmbio', esc(c.cambio)) + stat('Combustível', esc(c.combustivel)) +
         '</div>' +
-        '<section class="d-sec d-i" style="--i:5"><h3>Ficha técnica</h3><dl class="d-specs">' +
+        (c.ficha.length ? '<section class="d-sec d-i" style="--i:5"><h3>Ficha técnica</h3><dl class="d-specs">' +
           c.ficha.map(function (f) { return '<div><dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') +
-        '</dl></section>' +
-        '<section class="d-sec d-i" style="--i:7"><h3>Histórico</h3><ul class="d-checks">' +
+        '</dl></section>' : '') +
+        (c.historico.length ? '<section class="d-sec d-i" style="--i:7"><h3>Histórico</h3><ul class="d-checks">' +
           c.historico.map(function (o) { return '<li>' + icon('check') + esc(o) + '</li>'; }).join('') +
-        '</ul></section>' +
-        '<section class="d-sec d-i" style="--i:8"><h3>Adicionais da entrega</h3><ul class="d-extras">' +
-          (c.adicionais || window.ADICIONAIS || []).map(function (a) { return '<li>' + icon('check') + '<div><b>' + esc(a[0]) + '</b><span>' + esc(a[1]) + '</span></div></li>'; }).join('') +
-        '</ul></section>' +
-        '<section class="d-sec d-i" style="--i:9"><h3>Sobre o carro</h3><p class="d-desc">' + esc(c.descricao) + '</p></section>' +
+        '</ul></section>' : '') +
+        (extras.length ? '<section class="d-sec d-i" style="--i:8"><h3>Adicionais da entrega</h3><ul class="d-extras">' +
+          extras.map(function (a) { return '<li>' + icon('check') + '<div><b>' + esc(a[0]) + '</b><span>' + esc(a[1]) + '</span></div></li>'; }).join('') +
+        '</ul></section>' : '') +
+        (c.descricao ? '<section class="d-sec d-i" style="--i:9"><h3>Sobre o carro</h3><p class="d-desc">' + esc(c.descricao) + '</p></section>' : '') +
         '<div class="d-actions">' +
           '<button class="btn btn-primary" type="button" data-open-lead data-car="' + esc(c.nome) + '">Falar com consultor ' + icon('arrow') + '</button>' +
           '<button class="btn btn-ghost" type="button" data-copiar>' + icon('link') + '<span>Copiar link</span></button>' +
@@ -418,16 +428,25 @@
     sheet.scrollTop = 0;
   }
 
+  // As fotos da galeria vêm do banco só quando o carro é aberto (window.LANDORA.preparar).
+  function preparar(c) {
+    var L = window.LANDORA;
+    return L && L.preparar ? L.preparar(c) : Promise.resolve();
+  }
   function abrirDetalhe(slug) {
     var i = find(slug);
     if (i < 0) return;
-    if (!sheet.open) {
-      renderDetalhe(i, false);
-      sheet.showModal();
-      document.documentElement.classList.add('lock');
-    } else if (atual !== slug) {
-      renderDetalhe(i, true);
-    }
+    var mostrar = function () {
+      if (!sheet.open) {
+        renderDetalhe(i, false);
+        sheet.showModal();
+        document.documentElement.classList.add('lock');
+      } else if (atual !== slug) {
+        renderDetalhe(i, true);
+      }
+    };
+    preparar(CARROS[i]).then(mostrar, mostrar);
+    if (window.LANDORA && window.LANDORA.contarVisita) window.LANDORA.contarVisita(slug);
   }
   function fecharDetalheAnimado() {
     if (!sheet.open) return;
@@ -469,8 +488,12 @@
     if (prox) {
       var i = find(atual);
       var j = (i + (prox.hasAttribute('data-next') ? 1 : -1) + CARROS.length) % CARROS.length;
-      history.replaceState(null, '', '#carro/' + CARROS[j].slug);
-      renderDetalhe(j, true);
+      var ir = function () {
+        history.replaceState(null, '', '#carro/' + CARROS[j].slug);
+        renderDetalhe(j, true);
+      };
+      preparar(CARROS[j]).then(ir, ir);
+      if (window.LANDORA && window.LANDORA.contarVisita) window.LANDORA.contarVisita(CARROS[j].slug);
       return;
     }
     var t = e.target.closest('[data-foto]');
