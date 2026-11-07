@@ -14,6 +14,7 @@
   <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <div class="loader" aria-hidden="true"><img src="img/logo-landora.png" alt=""><span></span></div>
 <div class="progress" aria-hidden="true"></div>
 
 <!-- Símbolos SVG reutilizáveis -->
@@ -84,14 +85,29 @@
 
 <main>
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="topo">
     <div class="hero-bg" aria-hidden="true">
       <img src="img/hero-fundo.webp" alt="" width="1920" height="1080">
     </div>
-    <img class="hero-car" src="img/carros/bmw-m4-hero.webp" width="1400" height="577" alt="BMW M4 preto" fetchpriority="high">
+    <div class="hero-mark" aria-hidden="true"><span>LANDORA</span></div>
+    <div class="hero-road" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+    <div class="hero-light" aria-hidden="true"></div>
+    <div class="hero-car" aria-hidden="true">
+      <img src="img/carros/bmw-m4-hero.webp" width="1400" height="577" alt="" fetchpriority="high">
+      <span class="car-sweep"></span>
+      <span class="car-reflect"></span>
+    </div>
+    <div class="hud" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <ul class="hero-chips" aria-hidden="true">
+      <li><svg><use href="#shield"/></svg>Vistoria completa</li>
+      <li><svg><use href="#percent"/></svg>Financiamento facilitado</li>
+      <li><svg><use href="#key"/></svg>Entrega com segurança</li>
+    </ul>
+
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow">Seu próximo carro, sem enrolação</p>
+        <p class="eyebrow"><i class="pulse"></i>Seu próximo carro, sem enrolação</p>
         <h1 aria-label="Escolha mais rápido. Dirija com prazer.">
           <span class="ln" aria-hidden="true"><span style="--i:0">Escolha</span></span>
           <span class="ln" aria-hidden="true"><span style="--i:1"><em>mais rápido.</em></span></span>
@@ -100,13 +116,26 @@
         </h1>
         <p class="lead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#carros">Ver carros <svg aria-hidden="true"><use href="#arrow"/></svg></a>
-          <button class="btn btn-ghost" type="button" data-open-lead>Quero uma proposta</button>
+          <a class="btn btn-primary magnetic" href="#carros">Ver carros <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+          <button class="btn btn-ghost magnetic" type="button" data-open-lead>Quero uma proposta</button>
         </div>
+        <ul class="hero-meta">
+          <li><b data-count="4" data-live="estoque">4</b><span>carros em estoque</span></li>
+          <li><b>100%</b><span>vistoriados</span></li>
+          <li><b>15<small>min</small></b><span>para escolher</span></li>
+        </ul>
       </div>
-
     </div>
+    <a class="scroll-hint" href="#carros" aria-label="Rolar para o estoque"><i></i></a>
   </section>
+
+  <!-- FAIXA EM MOVIMENTO -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Financiamento</span><i></i><span>Troca com avaliação</span><i></i><span>Vistoria completa</span><i></i><span>Garantia</span><i></i><span>Entrega com segurança</span><i></i>
+      <span>Financiamento</span><i></i><span>Troca com avaliação</span><i></i><span>Vistoria completa</span><i></i><span>Garantia</span><i></i><span>Entrega com segurança</span><i></i>
+    </div>
+  </div>
 
   <!-- COMO FUNCIONA -->
   <section class="section" id="como-funciona">
@@ -230,17 +259,23 @@
   <!-- CTA -->
   <section class="section cta-section" id="contato">
     <div class="wrap">
-      <div class="cta">
-        <div class="cta-art" aria-hidden="true">
-          <img src="img/carros/honda-civic-wide.webp" alt="" loading="lazy" width="544" height="340">
-        </div>
-        <div class="cta-title">
-          <p class="eyebrow">Seu carro está esperando</p>
-          <h2>Pronto para<br><em>acelerar?</em></h2>
-        </div>
-        <div class="cta-side">
-          <p>Envie seus dados e um consultor escolhe o melhor carro para você ainda hoje.</p>
-          <button class="btn btn-primary" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+      <div class="cta2">
+        <div class="cta2-bg" aria-hidden="true"><img src="img/hero-fundo.webp" alt="" loading="lazy" width="1920" height="1080"></div>
+        <div class="cta2-beam" aria-hidden="true"></div>
+        <div class="cta2-road" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="cta2-body">
+          <p class="eyebrow">Vamos conversar</p>
+          <h2>Seu próximo carro<br><em>começa aqui.</em></h2>
+          <p class="cta2-text">Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.</p>
+          <div class="cta2-actions">
+            <button class="btn btn-primary magnetic" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+            <a class="btn btn-ghost magnetic" href="#carros">Ver estoque</a>
+          </div>
+          <ul class="cta2-contact">
+            <li><svg aria-hidden="true"><use href="#phone"/></svg>(11) 0000-0000</li>
+            <li><svg aria-hidden="true"><use href="#mail"/></svg>E-mail da loja</li>
+            <li><svg aria-hidden="true"><use href="#pin"/></svg>Endereço da loja</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -275,7 +310,7 @@
     <div class="foot-contact">
       <h4>Contato</h4>
       <a href="tel:+551100000000"><svg aria-hidden="true"><use href="#phone"/></svg>(11) 0000-0000</a>
-      <a href="mailto:contato@landora.com.br"><svg aria-hidden="true"><use href="#mail"/></svg>contato@landora.com.br</a>
+      <a href="mailto:E-mail da loja"><svg aria-hidden="true"><use href="#mail"/></svg>contato@landora.com.br</a>
       <p><svg aria-hidden="true"><use href="#pin"/></svg>Rua Exemplo, 123, Vinhedo, SP</p>
       <p class="hours">Todos os dias, das 9h às 19h</p>
     </div>
@@ -318,5 +353,6 @@
 
 <script src="js/carros.js"></script>
 <script src="js/main.js"></script>
+<script src="js/fx.js"></script>
 </body>
 </html>

@@ -121,7 +121,7 @@
   $$('[data-live="estoque"]').forEach(function (el) { el.setAttribute('data-count', cards.length); });
 
   /* ---------- Entrada ao rolar ---------- */
-  var revealTargets = $$('.section-head .eyebrow, .section-head h2, .steps li, .adv, .car-card, .faq-list details, .cta, .toolbar');
+  var revealTargets = $$('.section-head .eyebrow, .section-head h2, .steps li, .adv, .car-card, .faq-list details, .cta, .cta2, .toolbar');
   var groups = new Map();
   revealTargets.forEach(function (el) {
     var key = el.parentElement;
