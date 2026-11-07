@@ -397,9 +397,6 @@
         '<section class="d-sec d-i" style="--i:5"><h3>Ficha técnica</h3><dl class="d-specs">' +
           c.ficha.map(function (f) { return '<div><dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') +
         '</dl></section>' +
-        '<section class="d-sec d-i" style="--i:6"><h3>Opcionais</h3><ul class="d-chips">' +
-          c.opcionais.map(function (o) { return '<li>' + esc(o) + '</li>'; }).join('') +
-        '</ul></section>' +
         '<section class="d-sec d-i" style="--i:7"><h3>Histórico</h3><ul class="d-checks">' +
           c.historico.map(function (o) { return '<li>' + icon('check') + esc(o) + '</li>'; }).join('') +
         '</ul></section>' +

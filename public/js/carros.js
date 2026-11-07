@@ -1,6 +1,6 @@
 // Estoque da Landora Motors.
 //
-// ATENÇÃO: os valores abaixo (quilometragem, preço, ano, cor, opcionais e histórico) são
+// ATENÇÃO: os valores abaixo (quilometragem, preço, ano, cor e histórico) são
 // EXEMPLOS para montar o visual. Troque pelos dados reais de cada carro antes de divulgar.
 // Para adicionar um carro, copie um bloco, mude o "slug" (precisa ser único, sem espaços)
 // e coloque a foto em public/img/carros/.
@@ -53,7 +53,6 @@ window.CARROS = [
       ["Cor", "Cinza metálico"],
       ["Final da placa", "4"]
     ],
-    opcionais: ["Bancos esportivos em couro", "Pacote M Carbon", "Rodas aro 19/20", "Pinças de freio amarelas", "Teto solar", "Head-up display", "Câmera 360°", "Som premium"],
     historico: ["Único dono", "Revisões em dia na concessionária", "IPVA pago", "Sem registro de sinistro", "Aceita troca e financiamento"],
     descricao: "Cupê esportivo com visual agressivo e entrega de potência imediata. Exemplo de texto: descreva aqui o estado do carro, itens de série e o que o torna especial."
   },
@@ -86,7 +85,6 @@ window.CARROS = [
       ["Cor", "Preto"],
       ["Final da placa", "7"]
     ],
-    opcionais: ["Aerofólio traseiro", "Rodas esportivas pretas", "Teto solar", "Kit de carroceria esportivo", "Central multimídia", "Ar-condicionado digital", "Sensor de estacionamento"],
     historico: ["Segundo dono", "Revisões em dia", "IPVA pago", "Laudo cautelar aprovado", "Aceita troca e financiamento"],
     descricao: "Sedã com visual esportivo e acabamento todo preto. Exemplo de texto: informe aqui as modificações feitas e o que acompanha o carro."
   },
@@ -119,7 +117,6 @@ window.CARROS = [
       ["Cor", "Bege"],
       ["Porta-malas", "422 L"]
     ],
-    opcionais: ["Teto solar panorâmico", "Central multimídia", "Câmera de ré", "Piloto automático", "Rodas aro 17", "Faróis em LED", "Chave presencial"],
     historico: ["Zero quilômetro", "Garantia de fábrica", "Documentação inclusa", "Aceita troca e financiamento"],
     descricao: "SUV espaçoso e econômico para o dia a dia. Exemplo de texto: informe aqui a versão, o prazo de garantia e as condições de entrega."
   },
@@ -154,7 +151,6 @@ window.CARROS = [
       ["Cor", "Prata"],
       ["Final da placa", "9"]
     ],
-    opcionais: ["Suspensão rebaixada", "Rodas esportivas aro 17", "Para-choque esportivo", "Ar-condicionado", "Direção elétrica", "Som com Bluetooth"],
     historico: ["Terceiro dono", "Manutenção recente", "IPVA pago", "Laudo cautelar aprovado", "Aceita troca"],
     descricao: "Clássico da categoria, com preparação visual. Exemplo de texto: conte o histórico de manutenção e o que foi modificado."
   }

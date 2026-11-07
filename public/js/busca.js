@@ -15,16 +15,14 @@
     c._anoModelo = parseInt(String(c.ano).split('/').pop(), 10);
     c._cv = parseInt(String(c.potencia).replace(/\D/g, ''), 10) || 0;
     c._marca = c.marca || String(c.nome).split(' ')[0];
-    var texto = (c.opcionais || []).concat(c.historico || []).join(' | ').toLowerCase();
+    var texto = (c.historico || []).join(' | ').toLowerCase();
     c._dif = {
-      'Teto solar': /teto solar/.test(texto),
       'Único dono': /único dono/.test(texto),
       'Aceita troca': /aceita troca/.test(texto),
       'Aceita financiamento': /financiamento/.test(texto),
       'Laudo cautelar': /laudo cautelar/.test(texto),
       'IPVA pago': /ipva pago/.test(texto),
-      'Garantia': /garantia/.test(texto),
-      'Câmera': /câmera/.test(texto)
+      'Garantia': /garantia/.test(texto)
     };
   });
   function porSlug(s) { return CARROS.filter(function (c) { return c.slug === s; })[0]; }
