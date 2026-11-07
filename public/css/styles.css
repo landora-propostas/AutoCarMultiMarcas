@@ -1485,3 +1485,10 @@ html { background-color: #050b10; }
 .car-card { display: flex; flex-direction: column; }
 .car-card .car-info { flex: 1; display: flex; flex-direction: column; }
 .car-card .car-foot { margin-top: auto; padding-top: 10px; }
+
+/* Sem rolagem lateral e sem zoom por toque (pinça ou toque duplo) */
+html { overflow-x: hidden; max-width: 100%; touch-action: pan-y; -webkit-text-size-adjust: 100%; }
+body { overflow-x: clip; max-width: 100%; touch-action: pan-y; }
+dialog { touch-action: pan-y; }
+a, button, summary, input, select, label { touch-action: manipulation; }
+dialog, .sheet, .d-media, .d-info { overflow-x: hidden; max-width: 100%; }

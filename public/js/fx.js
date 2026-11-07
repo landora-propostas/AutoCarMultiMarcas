@@ -58,3 +58,17 @@
   }
   if (!reduce) requestAnimationFrame(tick); else fab.style.display = 'none';
 })();
+
+// Impede o zoom por pinça no iOS (o Safari ignora user-scalable=no) e o zoom por toque duplo.
+(function () {
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (n) {
+    document.addEventListener(n, function (e) { e.preventDefault(); }, { passive: false });
+  });
+  document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  var ultimo = 0;
+  document.addEventListener('touchend', function (e) {
+    var agora = Date.now();
+    if (agora - ultimo < 350 && !e.target.closest('input, textarea, select')) e.preventDefault();
+    ultimo = agora;
+  }, { passive: false });
+})();
