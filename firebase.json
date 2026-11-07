@@ -9,7 +9,16 @@
     "cleanUrls": true,
     "headers": [
       {
-        "source": "**/*.@(css|js|svg|png|jpg|jpeg|webp|avif|woff2)",
+        "source": "**/*.@(css|js|html)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(svg|png|jpg|jpeg|webp|avif|woff2)",
         "headers": [
           {
             "key": "Cache-Control",
