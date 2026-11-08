@@ -43,20 +43,24 @@
   var val = $('.val', fab), num = $('b', fab), CIRC = 2 * Math.PI * 25;
   val.style.strokeDasharray = CIRC;
   var ultimo = scrollY, vel = 0, topoAlvo = 0, tAnt = performance.now(), ocioso = 0;
+  var rodando = false;
   function tick(t) {
     var dt = Math.max(t - tAnt, 1); tAnt = t;
     var d = Math.abs(scrollY - ultimo); ultimo = scrollY;
     var inst = Math.min(d / dt * 120, 240);                 // px/ms → "km/h"
     vel += (inst - vel) * 0.12;
-    if (anim && !reduce) anim.playbackRate = 1 + Math.min(vel / 25, 7);
     var v = Math.round(vel);
-    num.textContent = v;
-    val.style.strokeDashoffset = CIRC * (1 - Math.min(v / 200, 1) * 0.75);
-    fab.classList.toggle('on', v > 3 || scrollY > 600);
-    document.documentElement.style.setProperty('--sy', Math.min(scrollY / innerHeight, 1).toFixed(3));
-    requestAnimationFrame(tick);
+    if (anim && !reduce) anim.playbackRate = 1 + Math.min(vel / 25, 7);
+    if (v !== ultimoV) { num.textContent = v; val.style.strokeDashoffset = CIRC * (1 - Math.min(v / 200, 1) * 0.75); ultimoV = v; }
+    if (scrollY < innerHeight * 1.2) document.documentElement.style.setProperty('--sy', Math.min(scrollY / innerHeight, 1).toFixed(3));
+    var on = v > 3 || scrollY > 600;
+    if (on !== ligado) { fab.classList.toggle('on', on); ligado = on; }
+    if (d > 0 || v > 0) requestAnimationFrame(tick); else { rodando = false; if (anim) anim.playbackRate = 1; }
   }
-  if (!reduce) requestAnimationFrame(tick); else fab.style.display = 'none';
+  var ultimoV = -1, ligado = null;
+  function acorda() { if (!rodando) { rodando = true; tAnt = performance.now(); requestAnimationFrame(tick); } }
+  addEventListener('scroll', acorda, { passive: true });
+  if (!reduce) acorda(); else fab.style.display = 'none';
 })();
 
 // Impede o zoom por pinça no iOS (o Safari ignora user-scalable=no) e o zoom por toque duplo.
@@ -71,4 +75,11 @@
     if (agora - ultimo < 350 && !e.target.closest('input, textarea, select')) e.preventDefault();
     ultimo = agora;
   }, { passive: false });
+})();
+
+// Pausa as animações do hero quando ele sai da tela.
+(function () {
+  var h = document.querySelector('.hero');
+  if (!h || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function (e) { h.classList.toggle('fora', !e[0].isIntersecting); }).observe(h);
 })();

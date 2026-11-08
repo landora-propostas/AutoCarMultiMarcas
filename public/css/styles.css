@@ -1542,3 +1542,28 @@ dialog, .sheet, .d-media, .d-info { overflow-x: hidden; max-width: 100%; }
 .foot-social { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
 .foot-social a { color: var(--muted); font-size: 14px; font-weight: 600; transition: color .2s; }
 .foot-social a:hover { color: var(--brand-light); }
+/* ============================================================
+   DESEMPENHO + brilho inferior sem corte
+   ============================================================ */
+/* granulado de filme: tela cheia animada com blend era o item mais pesado */
+body::before { display: none !important; }
+
+/* brilhos: sem animação contínua e sem encostar na borda inferior do hero */
+.hero-light { animation: none !important; filter: none; bottom: 16%; height: min(40vw, 520px); background: radial-gradient(closest-side, rgba(40,110,255,.34), rgba(0,87,255,.08) 58%, transparent 74%); }
+.hero-car::after { filter: none; top: 70%; height: 30%; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 100%); mask-image: linear-gradient(180deg, #000 30%, transparent 100%); }
+.hero::before { animation: none !important; }
+.hero-bg img, .cta2-bg img { animation: none !important; }
+.key-glow { animation: none !important; filter: none; }
+.car-reflect { filter: none; }
+.cta2-bg img.refl { filter: none; }
+
+/* backdrop-filter é caro em PCs mais fracos: troca por fundo sólido translúcido */
+.site-header, .site-header.scrolled, .d-bar, .dlg::backdrop, .cta2-card, .hero-chips li, .toast { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.site-header.scrolled { background: rgba(3,6,9,.94); }
+.dlg::backdrop { background: rgba(3,6,9,.88); }
+
+/* seções abaixo da primeira tela só renderizam quando se aproximam */
+#como-funciona, #vantagens, #carros, #sobre, #contato, footer { content-visibility: auto; contain-intrinsic-size: auto 700px; }
+
+/* animações só rodam enquanto o hero está visível (classe aplicada por JS) */
+.hero.fora *, .hero.fora::before { animation-play-state: paused !important; }
