@@ -1567,3 +1567,11 @@ body::before { display: none !important; }
 
 /* animações só rodam enquanto o hero está visível (classe aplicada por JS) */
 .hero.fora *, .hero.fora::before { animation-play-state: paused !important; }
+
+/* PC: nav sempre acima de tudo; faixa sólida acima do nav flutuante */
+@media (min-width: 861px) {
+  .site-header { z-index: 1000; }
+  .site-header.scrolled { background: transparent !important; }
+  .site-header.scrolled::before { content: ""; position: fixed; left: 0; right: 0; top: 0; height: 24px; background: #030609; pointer-events: none; z-index: -1; }
+}
+@media (min-width: 861px) { .site-header.scrolled .header-row { background: rgba(10,16,22,.97) !important; } }
