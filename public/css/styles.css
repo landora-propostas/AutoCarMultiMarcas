@@ -981,7 +981,7 @@ html.lock { overflow: hidden; }
 .about-values b { display: block; font-size: 15px; }
 .about-values span { color: var(--muted); font-size: 14px; }
 .about-photo { margin: 0; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 4 / 4.4; position: relative; }
-.about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 60%; filter: brightness(.85); }
+.about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; filter: none; }
 .about-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(5, 11, 16, .6)); }
 @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; gap: 28px; } .about-photo { aspect-ratio: 16 / 11; } }
 
