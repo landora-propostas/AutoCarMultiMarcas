@@ -738,3 +738,11 @@ img, video, iframe { max-width: 100%; }
   .hero-dock { margin-top: 20px; }
 }
 @media (min-width: 901px) { .header-row { width: min(100% - 80px, 1560px); } }
+/* Ajuste fino: bloco centralizado na altura, carro maior, busca mais perto do carro */
+@media (min-width: 901px) {
+  .hero-pin { justify-content: center; padding: 120px 0 40px; }
+  .hero-grid { flex: 0 0 auto; grid-template-columns: minmax(0, 4.6fr) minmax(0, 7.4fr); align-items: center; }
+  .hero-copy { align-self: center; }
+  .hero-cars { align-self: center; margin-top: 0; }
+  .hero-dock { margin-top: clamp(24px, 6vh, 90px); }
+}
