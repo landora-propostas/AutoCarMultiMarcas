@@ -702,3 +702,9 @@ body::before {
   .hero h1 .h-l1 { white-space: nowrap; position: relative; z-index: 3; }
   .hero-copy { z-index: 3; }
 }
+
+/* Celular: título em duas linhas — "Escolha mais rápido." / "Dirija com prazer." */
+@media (max-width: 900px) {
+  .hero h1 .so-cel, .hero h1 .so-pc { display: none; }
+  .hero h1 { font-size: clamp(26px, 8.4vw, 46px); line-height: 1.04; white-space: nowrap; }
+}
