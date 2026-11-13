@@ -218,3 +218,7 @@ td.acoes-col > * { margin-left: 6px; }
 .toast { background: var(--surface-2); border: 1px solid var(--line-2); border-left: 4px solid var(--ok); border-radius: 10px; padding: 12px 14px; font-weight: 600; box-shadow: 0 14px 40px rgba(0, 0, 0, .5); animation: entra .25s var(--ease) both; }
 .toast.erro { border-left-color: var(--erro); }
 .toast.info { border-left-color: var(--brand-light); }
+
+/* UID na tela "Sem acesso" */
+.uid-caixa { display: flex; align-items: center; gap: 10px; margin: 4px 0 16px; padding: 10px 10px 10px 14px; border-radius: 12px; border: 1px dashed var(--line-2, #3a3a3a); background: rgba(252, 211, 8, .05); }
+.uid-caixa code { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 13px; color: #fcd308; background: none; }

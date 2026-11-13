@@ -48,7 +48,8 @@
       <div id="auth-negado" hidden>
         <h1>Sem acesso ao painel</h1>
         <p>O e-mail <b id="neg-email"></b> ainda não foi autorizado.</p>
-        <p class="auth-nota">Peça a um administrador para adicioná-lo em <b>Equipe</b>. Se você é o primeiro administrador, crie manualmente a autorização: no <b>Console do Firebase → Firestore Database</b>, crie a coleção <code>admins</code> e um documento cujo <b>ID seja o seu e-mail, em minúsculas</b> (pode deixar um campo qualquer, como <code>ativo = true</code>). O passo a passo completo está no README do repositório.</p>
+        <p class="auth-nota">Envie o código abaixo (UID da sua conta) para um administrador autorizar você em <b>Equipe</b>. Se você é o primeiro administrador: no <b>Console do Firebase → Firestore Database</b>, crie a coleção <code>admins</code> e um documento cujo <b>ID seja este UID</b> (pode deixar um campo como <code>ativo = true</code>).</p>
+        <div class="uid-caixa"><code id="neg-uid"></code><button class="btn peq" type="button" id="neg-copiar">Copiar UID</button></div>
         <button class="btn" type="button" id="neg-ja">Já autorizei, tentar de novo</button>
         <button class="link" type="button" data-sair>Sair</button>
       </div>

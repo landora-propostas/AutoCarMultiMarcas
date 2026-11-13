@@ -85,9 +85,9 @@ Painel em `https://SEU-PROJETO.web.app/admin` para gerenciar tudo sem mexer em c
    ```bash
    firebase deploy --only firestore:rules,firestore:indexes
    ```
-5. **Crie o primeiro administrador à mão**: no Console, Firestore → coleção `admins` → documento com **ID = seu e-mail em minúsculas** (ex.: `voce@email.com`) e um campo qualquer (ex.: `nome`: texto). Sem isso ninguém entra, de propósito.
-6. Publique o site (`git push` na `main` ou `firebase deploy --only hosting`).
-7. Abra `/admin`, clique em **Criar conta** com esse mesmo e-mail, confirme o e-mail recebido e entre.
+5. Publique o site (`git push` na `main` ou `firebase deploy --only hosting`).
+6. Abra `/admin`, clique em **Criar conta**, confirme o e-mail recebido e entre. Vai aparecer “Sem acesso” com o **UID** da sua conta (também em Authentication → Usuários → UID do usuário).
+7. **Crie o primeiro administrador à mão**: no Console, Firestore → coleção `admins` → documento com **ID = esse UID** e um campo qualquer (ex.: `ativo`: true). Sem isso ninguém entra, de propósito. Clique em “Já autorizei, tentar de novo”. As próximas pessoas você autoriza pela tela **Equipe**, colando o UID delas.
 8. Na primeira visita, escolha **Importar os carros de exemplo** ou **Começar do zero**. Depois disso o site passa a ler tudo do painel (até lá mostra os carros de exemplo).
 
 Novos administradores: crie o documento em `admins` pela tela **Equipe**, depois a pessoa cria a conta em `/admin` e confirma o e-mail.

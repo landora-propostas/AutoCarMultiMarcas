@@ -88,6 +88,10 @@ function ligarLogin() {
     aoMudarUsuario(app.ctx.auth.currentUser);
   };
   $("#neg-ja").onclick = function () { aoMudarUsuario(app.ctx.auth.currentUser); };
+  $("#neg-copiar").onclick = function () {
+    const t = $("#neg-uid").textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { toast("UID copiado."); }, function () { toast("Selecione e copie o código acima.", "info"); });
+  };
   $$("[data-sair]").forEach(function (b) { b.onclick = sair; });
 }
 async function sair() { app.sujo = false; try { await app.ctx.authSdk.signOut(app.ctx.auth); } catch (e) { /* ok */ } }
@@ -98,9 +102,10 @@ async function aoMudarUsuario(user) {
   if (!user.emailVerified) { $("#ver-email").textContent = user.email; mostrar("verificar"); return; }
   const email = String(user.email || "").toLowerCase();
   let autorizado = false;
-  try { autorizado = !!(await app.repo.obter("admins", email)); } catch (e) { autorizado = false; }
-  if (!autorizado) { $("#neg-email").textContent = email; mostrar("negado"); return; }
+  try { autorizado = !!(await app.repo.obter("admins", user.uid)); } catch (e) { autorizado = false; }
+  if (!autorizado) { $("#neg-email").textContent = email; $("#neg-uid").textContent = user.uid; mostrar("negado"); return; }
   app.email = email;
+  app.uid = user.uid;
   entrarNoApp();
 }
 
@@ -147,7 +152,7 @@ function rotear() {
     console.error(e);
     const negado = e && (e.code === "permission-denied" || /permission/i.test(e.message || ""));
     view.innerHTML = '<div class="aviso erro"><div><b>Não consegui carregar esta tela.</b><p>' +
-      (negado ? "O Firestore recusou o acesso. Confirme que as regras do arquivo <code>firestore.rules</code> foram publicadas e que seu e-mail está na coleção <code>admins</code>." : esc((e && e.message) || "Erro desconhecido.")) +
+      (negado ? "O Firestore recusou o acesso. Confirme que as regras do arquivo <code>firestore.rules</code> foram publicadas e que o UID da sua conta está na coleção <code>admins</code>." : esc((e && e.message) || "Erro desconhecido.")) +
       '</p></div><div class="acoes"><button class="btn" type="button" id="tentar">Tentar de novo</button></div></div>';
     const b = $("#tentar"); if (b) b.onclick = rotear;
   });
