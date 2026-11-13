@@ -126,7 +126,7 @@ async function resolverImagens(ctx, cfg) {
    A primeira visita lê o Firestore e guarda tudo no aparelho. As visitas seguintes abrem
    na hora com o que está guardado, sem ler o banco. Passado o prazo (VALIDADE), o site
    ainda abre com o guardado e atualiza em segundo plano para a próxima visita. */
-const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v2", VALIDADE = 30 * 60 * 1000;
+const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v3", VALIDADE = 30 * 60 * 1000;
 function abrirCache() {
   return new Promise(function (ok, erro) {
     if (!("indexedDB" in window)) return erro(new Error("sem-indexeddb"));
@@ -151,6 +151,73 @@ async function gravarCache(dados) {
     const db = await abrirCache();
     db.transaction("kv", "readwrite").objectStore("kv").put({ t: Date.now(), dados: dados }, CACHE_CHAVE);
   } catch (e) { /* sem espaço ou modo privado: segue sem cache */ }
+}
+
+/* ---------- Leitura rápida pela API REST do Firestore ----------
+   Evita baixar o SDK do Firebase (centenas de KB) e a conexão em tempo real só para mostrar
+   o estoque. Se algo falhar, cai no SDK normal (buscarDoFirebase). */
+function valorRest(v) {
+  if (!v) return null;
+  if ("stringValue" in v) return v.stringValue;
+  if ("integerValue" in v) return Number(v.integerValue);
+  if ("doubleValue" in v) return v.doubleValue;
+  if ("booleanValue" in v) return v.booleanValue;
+  if ("nullValue" in v) return null;
+  if ("timestampValue" in v) return v.timestampValue;
+  if ("mapValue" in v) return docRest(v.mapValue);
+  if ("arrayValue" in v) return (v.arrayValue.values || []).map(valorRest);
+  return null;
+}
+function docRest(d) {
+  const o = {}, f = (d && d.fields) || {};
+  Object.keys(f).forEach(function (k) { o[k] = valorRest(f[k]); });
+  if (d && d.name) o.id = d.name.split("/").pop();
+  return o;
+}
+async function buscarRest() {
+  const r0 = await fetch("/__/firebase/init.json");
+  if (!r0.ok) throw new Error("config-indisponivel");
+  const cfg0 = await r0.json();
+  const base = "https://firestore.googleapis.com/v1/projects/" + cfg0.projectId + "/databases/(default)/documents";
+  const chave = "?key=" + encodeURIComponent(cfg0.apiKey);
+  const pega = async function (url, opt) {
+    const r = await fetch(url, opt);
+    if (!r.ok) throw new Error("rest-" + r.status);
+    return r.json();
+  };
+  const lista = function (caminho) {
+    return pega(base + "/" + caminho + chave + "&pageSize=300").then(function (j) { return (j.documents || []).map(docRest); });
+  };
+  const [cfgDoc, categorias, adicionais, carrosQ] = await Promise.all([
+    pega(base + "/config/site" + chave).then(docRest),
+    lista("categorias"),
+    lista("adicionais"),
+    pega(base + ":runQuery" + chave, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "carros" }], where: { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "publicado" } } } } })
+    })
+  ]);
+  if (!cfgDoc.inicializado) throw new Error("nao-iniciado");
+  const carros = carrosQ.filter(function (x) { return x.document; }).map(function (x) { return carroParaSite(docRest(x.document), adicionais); })
+    .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+  // Imagens do site (logo, fundo do topo...) guardadas como mídia no Firestore
+  const urls = {}, jobs = [];
+  const img = function (k, im) {
+    if (!im) return;
+    if (im.src) { urls[k] = im.src; return; }
+    if (!im.midia) return;
+    jobs.push(pega(base + "/midia/" + encodeURIComponent(im.midia) + chave).then(function (d) { const o = docRest(d); if (o.data) urls[k] = o.data; }).catch(function () {}));
+  };
+  img("logo", cfgDoc.marca && cfgDoc.marca.logo);
+  img("favicon", cfgDoc.marca && cfgDoc.marca.favicon);
+  Object.keys(cfgDoc.imagens || {}).forEach(function (k) { img(k, cfgDoc.imagens[k]); });
+  await Promise.all(jobs);
+  delete cfgDoc.id;
+  return { cfg: cfgDoc, categorias: categorias, carros: carros, urls: urls };
+}
+async function buscarDados() {
+  try { return await buscarRest(); }
+  catch (e) { if (e && e.message === "nao-iniciado") throw e; return buscarDoFirebase(await iniciar()); }
 }
 
 /* ---------- Modo real (Firestore) ---------- */
@@ -226,12 +293,11 @@ async function carregarDoFirebase() {
   if (guardado && guardado.dados) {
     montarSite(guardado.dados);
     if (Date.now() - guardado.t > VALIDADE) {
-      iniciar().then(buscarDoFirebase).then(gravarCache).catch(function () {});
+      buscarDados().then(gravarCache).catch(function () {});
     }
     return;
   }
-  const ctx = await iniciar();
-  const dados = await buscarDoFirebase(ctx);
+  const dados = await buscarDados();
   montarSite(dados);
   gravarCache(dados);
 }

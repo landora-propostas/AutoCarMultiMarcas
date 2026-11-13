@@ -219,7 +219,7 @@ function barraProgresso(nCarros, total) {
 let otimizando = false;
 async function otimizarCapas(app, carros) {
   if (otimizando || app.ctx.opcoes.armazenamento === "storage") return;
-  const pesadas = carros.filter(function (c) { return c.foto && c.foto.thumb && c.foto.thumb.length > 60000; });
+  const pesadas = carros.filter(function (c) { return c.foto && c.foto.thumb && c.foto.thumb.length > 40000; });
   if (!pesadas.length) return;
   otimizando = true;
   let n = 0;
