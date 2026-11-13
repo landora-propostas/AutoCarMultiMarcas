@@ -85,7 +85,9 @@
   }
   // Entrada inicial: espera a imagem estar pronta (decodificada) e a tela de carregamento sair;
   // assim o carro nunca "pula" na tela atrasado em aparelhos/conexões mais lentos.
-  if (figs.length) {
+  if (figs.length && window.HERO_ENTRADA) {
+    setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) { im.loading = 'eager'; pronta(im); } }); }, 1400);
+  } else if (figs.length) {
     var primeiro = fig('todos');
     figs.forEach(function (f) { f.classList.remove('is-on'); });
     var limite = new Promise(function (r) { setTimeout(r, 4000); });

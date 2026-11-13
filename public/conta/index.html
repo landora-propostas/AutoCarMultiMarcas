@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Minha conta | AutoCar Multimarcas</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#121212">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/site.css">
+  <link rel="stylesheet" href="/css/conta.css">
+</head>
+<body class="pg-conta">
+<header class="ct-topo">
+  <a href="/" class="ct-logo" aria-label="Voltar ao site"><img src="/img/logo-autocar.png" width="173" height="52" alt="AutoCar Multimarcas"></a>
+  <a href="/" class="btn btn-ghost btn-sm">Voltar ao site</a>
+</header>
+
+<main class="ct-main">
+  <div class="ct-carregando" id="ct-carregando"><span></span></div>
+
+  <!-- Entrar / criar conta -->
+  <section class="ct-card ct-auth" id="ct-auth" hidden>
+    <span class="eyebrow"><span class="dot"></span>Minha conta</span>
+    <h1 id="ct-auth-titulo">Entrar</h1>
+    <p class="ct-sub" id="ct-auth-sub">Acompanhe seus pedidos e propostas e fale mais rápido com um consultor.</p>
+    <div class="ct-abas" role="tablist">
+      <button type="button" role="tab" data-aba="entrar" aria-selected="true">Entrar</button>
+      <button type="button" role="tab" data-aba="criar" aria-selected="false">Criar conta</button>
+    </div>
+    <form id="ct-form" novalidate>
+      <label class="ct-campo" data-so="criar" hidden>Nome<input name="nome" autocomplete="name" maxlength="80" placeholder="Seu nome"></label>
+      <label class="ct-campo">E-mail<input name="email" type="email" autocomplete="email" maxlength="120" placeholder="voce@email.com" required></label>
+      <label class="ct-campo">Senha<input name="senha" type="password" autocomplete="current-password" minlength="6" maxlength="64" placeholder="Mínimo 6 caracteres" required></label>
+      <p class="ct-erro" id="ct-erro" hidden></p>
+      <button class="btn btn-primary" type="submit" id="ct-enviar">Entrar</button>
+      <button class="ct-link" type="button" id="ct-esqueci" data-so="entrar">Esqueci minha senha</button>
+    </form>
+  </section>
+
+  <!-- Perfil do cliente -->
+  <section class="ct-perfil" id="ct-perfil" hidden>
+    <div class="ct-card ct-dados">
+      <div class="ct-cab">
+        <div class="ct-avatar" id="ct-avatar"></div>
+        <div class="ct-cab-txt"><span class="eyebrow">Meu perfil</span><h1 id="ct-ola">Olá!</h1><p class="ct-sub" id="ct-mail"></p></div>
+      </div>
+      <div class="ct-foto-acoes">
+        <label class="btn btn-ghost btn-sm">Escolher foto<input type="file" accept="image/*" id="ct-arq" hidden></label>
+        <button class="btn btn-ghost btn-sm" type="button" id="ct-tirar" hidden>Remover foto</button>
+      </div>
+      <form id="ct-pf" class="ct-grade" novalidate>
+        <label class="ct-campo">Nome<input name="nome" maxlength="80" autocomplete="name"></label>
+        <label class="ct-campo">WhatsApp<input name="telefone" type="tel" maxlength="20" autocomplete="tel" placeholder="(14) 99999-9999"></label>
+        <label class="ct-campo ct-span">E-mail<input name="email" disabled></label>
+        <div class="ct-span ct-acoes">
+          <button class="ct-link" type="button" id="ct-senha">Mudar senha</button>
+          <button class="ct-link" type="button" id="ct-sair">Sair da conta</button>
+          <button class="btn btn-primary btn-sm" type="submit">Salvar perfil</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="ct-card ct-pedidos">
+      <div class="ct-pedidos-cab"><div><span class="eyebrow">Histórico</span><h2>Meus pedidos e propostas</h2></div>
+        <a class="btn btn-primary btn-sm" href="/#proposta">Pedir uma proposta</a></div>
+      <div id="ct-lista"></div>
+    </div>
+  </section>
+</main>
+
+<div class="ct-toast" id="ct-toast" role="status" hidden></div>
+<script type="module" src="/js/conta.js"></script>
+</body>
+</html>

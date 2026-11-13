@@ -191,10 +191,14 @@ function montarSite(d) {
     modo: "firebase",
     salvarLead: async function (dd) {
       const c = await ctx(), f = c.fs;
-      return f.addDoc(f.collection(c.db, "leads"), {
+      const lead = {
         nome: String(dd.nome).slice(0, 100), whatsapp: String(dd.whatsapp).slice(0, 20), carro: String(dd.carro || "").slice(0, 120),
         status: "novo", origem: "site", criadoEm: f.serverTimestamp()
-      });
+      };
+      // Logado no site: o pedido fica salvo no perfil da pessoa (página /conta/).
+      const s = window.SESSAO;
+      if (s && s.user) { lead.uid = s.user.uid; if (s.user.email) lead.email = String(s.user.email).slice(0, 120); }
+      return f.addDoc(f.collection(c.db, "leads"), lead);
     },
     contarVisita: function (slug) {
       if (jaContou[slug]) return;

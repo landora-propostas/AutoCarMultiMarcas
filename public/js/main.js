@@ -473,6 +473,8 @@
     else if (sheet.open) fecharDetalheAnimado();
   }
   window.addEventListener('hashchange', rota);
+  // /#proposta (vindo do perfil) abre o pedido de proposta direto
+  if (location.hash === '#proposta') { history.replaceState(null, '', location.pathname); setTimeout(function () { openLead(); }, 900); }
 
   document.addEventListener('click', function (e) {
     var l = e.target.closest('a[href^="#carro/"]');

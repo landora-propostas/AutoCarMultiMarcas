@@ -82,6 +82,16 @@
     </a>
     <button class="btn btn-primary btn-sm header-cta" type="button" data-open-lead>Quero uma proposta</button>
 
+    <div class="header-user" id="hu">
+      <a class="hu-btn" id="hu-btn" href="/conta/" aria-label="Entrar ou criar conta" title="Minha conta"><svg aria-hidden="true"><use href="#person"/></svg></a>
+      <div class="hu-menu" id="hu-menu" hidden>
+        <div class="hu-quem"><b id="hu-nome"></b><small id="hu-email"></small></div>
+        <a href="/admin/" id="hu-adm" hidden><svg aria-hidden="true"><use href="#gear"/></svg>Administrativo</a>
+        <a href="/conta/"><svg aria-hidden="true"><use href="#person"/></svg>Meu perfil</a>
+        <button type="button" id="hu-sair"><svg aria-hidden="true"><use href="#arrow"/></svg>Sair</button>
+      </div>
+    </div>
+
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu">
       <span></span><span></span><span></span>
     </button>
@@ -113,6 +123,29 @@
           <figure class="hc" data-cls="sedan"><img src="img/carros/hero-sedan.webp?v=2" srcset="img/carros/hero-sedan-900.webp?v=2 900w, img/carros/hero-sedan-1200.webp?v=2 1200w, img/carros/hero-sedan.webp?v=2 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="597" alt="" loading="lazy"></figure>
           <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp?v=2" srcset="img/carros/hero-suv-900.webp?v=2 900w, img/carros/hero-suv-1200.webp?v=2 1200w, img/carros/hero-suv.webp?v=2 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="727" alt="" loading="lazy"></figure>
         </div>
+        <script>
+        /* Entrada do carro junto com os textos (≈1,05 s), sem esperar o estoque carregar do Firebase. */
+        (function () {
+          var f = document.querySelector('.hc[data-cls="todos"]'); if (!f) return;
+          var img = f.querySelector('img');
+          if (matchMedia('(prefers-reduced-motion: reduce)').matches || !Element.prototype.animate) { f.classList.add('is-on'); window.HERO_ENTRADA = 1; return; }
+          window.HERO_ENTRADA = 1; var foi = false;
+          function vai() {
+            if (foi) return; foi = true;
+            f.classList.add('is-on');
+            var an = img.animate([
+              { offset: 0, transform: 'translate3d(110%,0,0)', opacity: 0, easing: 'cubic-bezier(.16,.7,.3,1)' },
+              { offset: .1, opacity: 1 },
+              { offset: .58, transform: 'translate3d(-2.4%,0,0) rotate(-1deg)', easing: 'cubic-bezier(.4,0,.3,1)' },
+              { offset: .8, transform: 'translate3d(.5%,0,0) rotate(.28deg)', easing: 'cubic-bezier(.4,0,.4,1)' },
+              { offset: 1, transform: 'translate3d(0,0,0) rotate(0deg)', opacity: 1 }
+            ], { duration: 1150, delay: Math.max(0, 1000 - performance.now()), fill: 'backwards' });
+            an.onfinish = function () { an.cancel(); };
+          }
+          var pronta = img.complete && img.naturalWidth ? Promise.resolve() : new Promise(function (r) { img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true }); });
+          Promise.race([pronta.then(function () { return img.decode ? img.decode().catch(function () {}) : 0; }), new Promise(function (r) { setTimeout(r, 2200); })]).then(vai);
+        })();
+        </script>
       </div>
 
       <div class="wrap hero-dock">
@@ -361,5 +394,6 @@ Domingo: fechado</p>
 
 <!-- dados.js lê o Firestore (ou js/carros.js, no modo de demonstração) e só então inicia busca.js, main.js e cinema.js -->
 <script type="module" src="js/dados.js"></script>
+<script type="module" src="js/sessao.js"></script>
 </body>
 </html>

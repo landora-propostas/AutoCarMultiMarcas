@@ -114,6 +114,13 @@ async function aoMudarUsuario(user) {
   if (!autorizado) { $("#neg-email").textContent = email; $("#neg-uid").textContent = user.uid; mostrar("negado"); return; }
   app.email = email;
   app.uid = user.uid;
+  // Administrador principal: o primeiro que abre o painel fica registrado em config/equipe.
+  try {
+    let eq = await app.repo.obter("config", "equipe");
+    if (!eq) { await app.repo.salvar("config", "equipe", { master: user.uid, criadoEm: app.ctx.fs.serverTimestamp() }, true); eq = { master: user.uid }; }
+    app.master = eq.master === user.uid;
+    app.masterUid = eq.master;
+  } catch (e) { app.master = false; }
   entrarNoApp();
 }
 

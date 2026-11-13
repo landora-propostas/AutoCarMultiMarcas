@@ -32,6 +32,7 @@ export async function equipe(root, app) {
   let membros = await repo.listar("admins");
 
   function desenhar() {
+    if (!app.master) { desenharLeitura(); return; }
     const lista = membros.slice().sort(function (a, b) { return milis(a.criadoEm) - milis(b.criadoEm) || a.id.localeCompare(b.id); });
     root.innerHTML =
       '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div></div>' +
@@ -54,9 +55,19 @@ export async function equipe(root, app) {
         const eu = m.id === app.uid;
         const quem = m.nome || m.email || (eu ? app.email : "—");
         const sub = m.nome && m.email ? '<div style="font-size:12px;opacity:.65;margin-top:2px">' + esc(m.email) + "</div>" : "";
-        return "<tr data-id=\"" + esc(m.id) + "\"><td><b>" + esc(quem) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + sub + "</td>" +
+        return "<tr data-id=\"" + esc(m.id) + "\"><td><b>" + esc(quem) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + (m.id === app.masterUid ? ' <span class="selo">principal</span>' : "") + sub + "</td>" +
           '<td><code style="font-size:12px">' + esc(m.id) + "</code></td><td>" + esc(m.adicionadoPor || "—") + "</td><td>" + esc(dataHora(m.criadoEm)) + "</td>" +
           '<td class="acoes-col">' + (eu ? "" : '<button class="btn peq perigo" type="button" data-del>Remover acesso</button>') + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+  }
+  function desenharLeitura() {
+    root.innerHTML =
+      '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div></div>' +
+      '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> pode criar ou remover acessos ao painel. Peça a ele caso precise liberar alguém.</p></section>' +
+      '<div class="tabela-rolagem"><table><thead><tr><th>Pessoa</th><th>Função</th></tr></thead><tbody>' +
+      membros.map(function (m) {
+        const eu = m.id === app.uid;
+        return "<tr><td><b>" + esc(m.nome || m.email || (eu ? app.email : "—")) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + "</td><td>" + (m.id === app.masterUid ? "Administrador principal" : "Administrador") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
   desenhar();
@@ -91,6 +102,7 @@ export async function equipe(root, app) {
 
   root.onsubmit = async function (e) {
     e.preventDefault();
+    if (!app.master) return;
     if (e.target.id === "f-novo") { criarAcesso(e.target); return; }
     const uid = e.target.elements.uid.value.trim();
     const nome = e.target.elements.nome.value.trim();

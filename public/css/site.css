@@ -897,3 +897,22 @@ main::before { background:
 .scene::before { -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); inset: -6% 0; }
 /* sem faixa lisa entre o hero e o estoque: o degradê sólido cobria a textura e marcava um corte */
 .hero-pin::after { content: none; }
+
+/* Conta do visitante no cabeçalho */
+.header-user { position: relative; flex: none; margin-left: 4px; }
+.hu-btn { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line-2); color: #e6e6e6; background: rgba(255, 255, 255, .04); transition: border-color .25s, color .25s; cursor: pointer; padding: 0; font: 800 15px "Archivo", sans-serif; }
+.hu-btn:hover, .hu-btn[aria-expanded="true"] { border-color: var(--brand); color: var(--brand); }
+.hu-btn svg { width: 19px; height: 19px; }
+.hu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hu-btn.logado { border-color: rgba(252, 211, 8, .45); color: var(--brand); background: rgba(252, 211, 8, .1); }
+.hu-menu { position: absolute; right: 0; top: calc(100% + 12px); width: 240px; padding: 8px; border-radius: 16px; background: #1a1a1a; border: 1px solid var(--line-2); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .9); display: grid; gap: 2px; z-index: 5; animation: hu-in .2s var(--ease) both; }
+.hu-menu[hidden] { display: none; }
+@keyframes hu-in { from { opacity: 0; transform: translateY(-6px); } }
+.hu-quem { padding: 8px 10px 10px; border-bottom: 1px solid var(--line); margin-bottom: 4px; display: grid; min-width: 0; }
+.hu-quem b { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hu-quem small { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hu-menu a, .hu-menu button { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; font: 600 14px inherit; font-family: inherit; color: #e6e6e6; background: none; border: 0; text-align: left; cursor: pointer; }
+.hu-menu a:hover, .hu-menu button:hover { background: rgba(255, 255, 255, .06); color: var(--brand); }
+.hu-menu svg { width: 17px; height: 17px; color: var(--brand); flex: none; }
+#hu-adm { color: var(--brand); }
+@media (max-width: 900px) { .header-user { margin-left: auto; } .header-user + .menu-toggle, .header-user ~ .menu-toggle { margin-left: 8px; } }

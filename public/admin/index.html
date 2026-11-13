@@ -42,12 +42,14 @@
         <p>Enviamos um link de confirmação para <b id="ver-email"></b>. Abra o e-mail, clique no link e volte aqui.</p>
         <button class="btn primary grande" type="button" id="ver-ja">Já confirmei</button>
         <button class="btn" type="button" id="ver-reenviar">Reenviar e-mail</button>
+        <a class="btn" href="/conta/">É cliente? Ir para minha conta</a>
         <button class="link" type="button" data-sair>Sair</button>
       </div>
 
       <div id="auth-negado" hidden>
         <h1>Sem acesso ao painel</h1>
-        <p>O e-mail <b id="neg-email"></b> ainda não foi autorizado.</p>
+        <p>O e-mail <b id="neg-email"></b> não é de um administrador.</p>
+        <a class="btn primary grande" href="/conta/">Ir para minha conta no site</a>
         <p class="auth-nota">Envie o código abaixo (UID da sua conta) para um administrador autorizar você em <b>Equipe</b>. Se você é o primeiro administrador: no <b>Console do Firebase → Firestore Database</b>, crie a coleção <code>admins</code> e um documento cujo <b>ID seja este UID</b> (pode deixar um campo como <code>ativo = true</code>).</p>
         <div class="uid-caixa"><code id="neg-uid"></code><button class="btn peq" type="button" id="neg-copiar">Copiar UID</button></div>
         <button class="btn" type="button" id="neg-ja">Já autorizei, tentar de novo</button>
