@@ -293,3 +293,21 @@ label > small, label > .dica { margin-top: -1px; line-height: 1.45; }
 .campo-img .previa.clara { background: repeating-conic-gradient(#f4f4f4 0 25%, #e9e9e9 0 50%) 0 0 / 18px 18px; border-color: #d0d0d0; }
 @media (max-width: 640px) { .campo-img { grid-template-columns: minmax(0, 1fr); } }
 button, input, select, textarea { font-family: "Manrope", system-ui, sans-serif; }
+
+/* Perfil */
+.side-perfil { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: 12px; }
+.side-perfil > div { min-width: 0; flex: 1; display: grid; }
+.side-perfil:hover b { color: var(--brand); }
+.side-perfil:hover .side-avatar { border-color: var(--brand); }
+.side-user { gap: 8px; }
+.side-avatar { overflow: hidden; transition: border-color .2s; }
+.side-avatar img, .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.perfil-topo { display: flex; align-items: center; justify-content: space-between; }
+.perfil-topo h2 { margin: 0; }
+.perfil-foto { display: flex; align-items: center; gap: 20px; padding: 18px; border-radius: 14px; background: #1a1a1a; border: 1px solid #2a2a2a; }
+.perfil-avatar { width: 96px; height: 96px; flex: none; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: rgba(252, 211, 8, .12); color: var(--brand); border: 2px solid rgba(252, 211, 8, .45); font: 800 36px "Archivo", sans-serif; }
+.perfil-foto-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.perfil-foto-acoes small { flex-basis: 100%; color: var(--muted); font-size: 12px; }
+.perfil-foto-acoes label.btn { cursor: pointer; }
+@media (max-width: 520px) { .perfil-foto { flex-direction: column; text-align: center; } .perfil-foto-acoes { justify-content: center; } }
+#pf-form { grid-template-columns: 1fr 1fr; } #pf-form .modal-acoes { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; } @media (max-width: 520px) { #pf-form { grid-template-columns: 1fr; } }

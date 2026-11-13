@@ -3,6 +3,7 @@ import { iniciar } from "/js/firebase-boot.js";
 import { OPCOES } from "/js/firebase-config.js";
 import { $, $$, esc, toast } from "./ui.js";
 import { criarRepo } from "./repo.js";
+import { aplicarPerfil, abrirPerfil } from "./perfil.js";
 
 // Sem zoom por pinça (o iPhone ignora user-scalable=no).
 ["gesturestart", "gesturechange", "gestureend"].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
@@ -107,7 +108,9 @@ async function aoMudarUsuario(user) {
   const email = String(user.email || "").toLowerCase();
   let autorizado = false;
   app.repo.esquecer("admins");
-  try { autorizado = !!(await app.repo.obter("admins", user.uid)); } catch (e) { autorizado = false; }
+  let doc = null;
+  try { doc = await app.repo.obter("admins", user.uid); autorizado = !!doc; } catch (e) { autorizado = false; }
+  app.perfil = doc ? { nome: doc.nome || "", foto: doc.foto || null } : {};
   if (!autorizado) { $("#neg-email").textContent = email; $("#neg-uid").textContent = user.uid; mostrar("negado"); return; }
   app.email = email;
   app.uid = user.uid;
@@ -118,9 +121,8 @@ async function aoMudarUsuario(user) {
 let rotaAtual = "", ignorar = false, jaLigou = false, seq = 0;
 
 function entrarNoApp() {
-  $("#usuario").textContent = app.email;
-  $("#usuario-ini").textContent = (app.email || "A").charAt(0).toUpperCase();
-  $("#usuario-nome").textContent = (app.email || "").split("@")[0] || "Administrador";
+  aplicarPerfil(app);
+  $("#abrir-perfil").onclick = function () { abrirPerfil(app); };
   mostrar("app");
   if (!jaLigou) {
     jaLigou = true;
