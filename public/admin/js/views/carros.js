@@ -1,7 +1,8 @@
 // Lista de carros (estoque) e roteamento para o formulário de cadastro/edição.
 import { esc, toast, confirmar, debounce, ordenarPor } from "../ui.js";
 import { carroForm } from "./carro-form.js";
-import { apagarSemUso } from "../fotos.js";
+import { apagarSemUso, persistir } from "../fotos.js";
+import { processar } from "/js/midia.js";
 import { STATUS, reais, milhar, hoje, SEM_FOTO } from "/js/modelo.js";
 
 export async function carros(root, app, args) {
@@ -18,7 +19,7 @@ async function lista(root, app) {
   const norm = function (t) { return String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); };
 
   root.innerHTML =
-    '<div class="cab"><div><h1>Carros</h1><p id="resumo"></p></div><div class="acoes"><a class="btn primary" href="#/carros/novo">+ Novo carro</a></div></div>' +
+    '<div class="cab"><div><h1>Carros</h1><p id="resumo"></p></div><div class="acoes"><button class="btn" type="button" id="b-importar">Importar catálogo</button><input type="file" id="f-importar" webkitdirectory multiple hidden><a class="btn primary" href="#/carros/novo">+ Novo carro</a></div></div>' +
     '<div class="barra-filtros"><input type="search" id="f-q" placeholder="Buscar por nome ou marca" aria-label="Buscar">' +
     '<select id="f-cat" aria-label="Categoria"><option value="">Todas as categorias</option>' +
       ordenarPor(cats, "ordem").map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.nome) + "</option>"; }).join("") + "</select>" +
@@ -58,6 +59,57 @@ async function lista(root, app) {
       }).join("") + "</tbody></table></div>";
   }
   desenhar();
+
+  // Importa a pasta "autocar-importacao": importar.json + fotos/<endereço>/01.jpg...
+  // Carros com endereço já existente são pulados. Tudo entra como rascunho.
+  const inp = root.querySelector("#f-importar");
+  root.querySelector("#b-importar").onclick = function () { inp.click(); };
+  inp.onchange = async function () {
+    const arqs = Array.from(inp.files || []); inp.value = "";
+    const js = arqs.find(function (a) { return /(^|\/)importar\.json$/.test(a.webkitRelativePath || a.name); });
+    if (!js) { toast("Escolha a pasta autocar-importacao (ela tem o arquivo importar.json)."); return; }
+    try {
+      const dados = JSON.parse(await js.text());
+      const porCaminho = {};
+      arqs.forEach(function (a) { const m = (a.webkitRelativePath || "").match(/fotos\/([^/]+)\/([^/]+)$/); if (m) porCaminho[m[1] + "/" + m[2]] = a; });
+      const existentes = new Set(todos.map(function (c) { return c.id; }));
+      const catIds = new Set(cats.map(function (c) { return c.id; }));
+      const NOMES = { picape: "Picapes", moto: "Motos", hatch: "Hatches", sedan: "Sedãs", suv: "SUVs" };
+      const novos = dados.filter(function (c) { return c.slug && !existentes.has(c.slug); });
+      if (!novos.length) { toast("Nenhum carro novo para importar."); return; }
+      if (!(await confirmar({ titulo: "Importar catálogo", texto: "Importar " + novos.length + " carros com fotos, como rascunho? Pode levar alguns minutos; não feche a página.", ok: "Importar" }))) return;
+      const fs = app.ctx.fs, agora = fs.serverTimestamp(), storage = app.ctx.opcoes.armazenamento === "storage";
+      const resumo = root.querySelector("#resumo");
+      let ordem = cats.length, feitos = 0, falhas = 0;
+      for (const c of novos) {
+        resumo.textContent = "Importando " + (feitos + 1) + " de " + novos.length + ": " + c.nome + "…";
+        if (!catIds.has(c.categoria)) {
+          catIds.add(c.categoria);
+          await app.repo.salvar("categorias", c.categoria, { nome: NOMES[c.categoria] || c.categoria, ordem: ++ordem, ativa: true, criadoEm: agora });
+        }
+        const galeria = [];
+        let capa = null;
+        for (let i = 0; i < (c.fotos || []).length; i++) {
+          const arq = porCaminho[c.slug + "/" + c.fotos[i]];
+          if (!arq) continue;
+          try {
+            const proc = await processar(arq, { max: 1600, limite: storage ? Infinity : undefined, miniatura: i === 0 ? 800 : 0 });
+            const g = await persistir(app, { _novo: proc, alt: c.nome }, "carros/" + c.slug);
+            if (i === 0 || !capa) capa = Object.assign({}, g);
+            const sem = Object.assign({}, g); delete sem.thumb; galeria.push(sem);
+          } catch (e) { console.error(e); falhas++; }
+        }
+        if (capa && storage) delete capa.thumb;
+        const d = Object.assign({}, c, { foto: capa, galeria: galeria, adicionado: hoje(), criadoEm: agora, atualizadoEm: agora });
+        delete d.slug; delete d.fotos;
+        await app.repo.salvar("carros", c.slug, d, true);
+        feitos++;
+      }
+      toast(feitos + " carros importados como rascunho" + (falhas ? " (" + falhas + " fotos falharam)" : "") + ".");
+      lista_recarregar();
+    } catch (e) { console.error(e); toast("Não consegui importar: " + e.message); }
+  };
+  function lista_recarregar() { lista(root, app); }
 
   root.querySelector("#f-q").oninput = debounce(function (e) { f.q = e.target.value; desenhar(); }, 150);
   root.querySelector("#f-cat").onchange = function (e) { f.cat = e.target.value; desenhar(); };
