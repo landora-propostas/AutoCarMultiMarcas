@@ -10,8 +10,8 @@
 export const FIREBASE_CONFIG = null;
 // Exemplo:
 // export const FIREBASE_CONFIG = {
-//   apiKey: "...", authDomain: "concessionaria-landora.firebaseapp.com",
-//   projectId: "concessionaria-landora", storageBucket: "concessionaria-landora.firebasestorage.app",
+//   apiKey: "...", authDomain: "autocar-multimarcas.firebaseapp.com",
+//   projectId: "autocar-multimarcas", storageBucket: "autocar-multimarcas.firebasestorage.app",
 //   messagingSenderId: "...", appId: "..."
 // };
 

@@ -9,7 +9,7 @@ Site de concessionária de carros premium. Versão atual: **somente visual** (HT
 ## Estrutura
 
 ```
-concessionaria-landora/
+autocar-multimarcas/
 ├── public/              # tudo que vai para o ar (Firebase Hosting)
 │   ├── index.html
 │   ├── css/styles.css
@@ -29,7 +29,7 @@ concessionaria-landora/
 
 ## 2. Criar o projeto no Firebase
 
-1. Acesse https://console.firebase.google.com e clique em **Adicionar projeto**. Nome sugerido: `landora-motors`.
+1. Acesse https://console.firebase.google.com e clique em **Adicionar projeto**. Nome sugerido: `autocar-multimarcas`.
 2. Dentro do projeto, ative os serviços:
    - **Build → Authentication → Começar** e habilite **E-mail/senha** (e Google, se quiser).
    - **Build → Firestore Database → Criar banco de dados** (modo produção; região `southamerica-east1`).

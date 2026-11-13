@@ -1,7 +1,7 @@
 {
   "projects": {
-    "concessionaria-landora": "concessionaria-landora",
-    "default": "concessionaria-landora"
+    "autocar-multimarcas": "autocar-multimarcas",
+    "default": "autocar-multimarcas"
   },
   "targets": {},
   "etags": {}

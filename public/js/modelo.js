@@ -38,7 +38,7 @@ export const SITE_PADRAO = {
     ctaTexto: "Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.",
     rodape: "Carros premium para quem escolhe o melhor."
   },
-  contato: { telefone: "(11) 0000-0000", whatsapp: "", email: "contato@autocarmultimarcas.com.br", endereco: "Rua Exemplo, 123, Vinhedo, SP", horario: "Todos os dias, das 9h às 19h" },
+  contato: { telefone: "(11) 0000-0000", whatsapp: "", email: "landora.proposta@gmail.com", endereco: "Rua Exemplo, 123, Vinhedo, SP", horario: "Todos os dias, das 9h às 19h" },
   redes: { instagram: "", facebook: "", youtube: "", tiktok: "" },
   seo: { titulo: "AutoCar Multimarcas | Carros premium", descricao: "Carros premium para quem valoriza desempenho, tecnologia e estilo. Escolha online e fale com um consultor." }
 };
