@@ -727,3 +727,14 @@ html, body { touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-siz
   .d-specs dd { overflow-wrap: anywhere; }
 }
 img, video, iframe { max-width: 100%; }
+
+/* Hero no computador: mais espaçado — texto no alto, carro ao centro, busca na base, menos margem lateral */
+@media (min-width: 901px) {
+  .hero .wrap { width: min(100% - 80px, 1560px); }
+  .hero-pin { justify-content: flex-start; padding: 118px 0 34px; }
+  .hero-grid { flex: 1; align-items: stretch; }
+  .hero-copy { align-self: start; }
+  .hero-cars { align-self: center; margin-top: 4vh; }
+  .hero-dock { margin-top: 20px; }
+}
+@media (min-width: 901px) { .header-row { width: min(100% - 80px, 1560px); } }
