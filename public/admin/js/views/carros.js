@@ -79,10 +79,11 @@ async function lista(root, app) {
       if (!novos.length) { toast("Nenhum carro novo para importar."); return; }
       if (!(await confirmar({ titulo: "Importar catálogo", texto: "Importar " + novos.length + " carros com fotos, como rascunho? Pode levar alguns minutos; não feche a página.", ok: "Importar" }))) return;
       const fs = app.ctx.fs, agora = fs.serverTimestamp(), storage = app.ctx.opcoes.armazenamento === "storage";
-      const resumo = root.querySelector("#resumo");
       let ordem = cats.length, feitos = 0, falhas = 0;
+      const total = novos.reduce(function (t, c) { return t + (c.fotos || []).length + 1; }, 0);
+      const prog = barraProgresso(novos.length, total);
       for (const c of novos) {
-        resumo.textContent = "Importando " + (feitos + 1) + " de " + novos.length + ": " + c.nome + "…";
+        prog.carro(feitos + 1, c.nome);
         if (!catIds.has(c.categoria)) {
           catIds.add(c.categoria);
           await app.repo.salvar("categorias", c.categoria, { nome: NOMES[c.categoria] || c.categoria, ordem: ++ordem, ativa: true, criadoEm: agora });
@@ -98,16 +99,23 @@ async function lista(root, app) {
             if (i === 0 || !capa) capa = Object.assign({}, g);
             const sem = Object.assign({}, g); delete sem.thumb; galeria.push(sem);
           } catch (e) { console.error(e); falhas++; }
+          prog.passo();
         }
         if (capa && storage) delete capa.thumb;
         const d = Object.assign({}, c, { foto: capa, galeria: galeria, adicionado: hoje(), criadoEm: agora, atualizadoEm: agora });
         delete d.slug; delete d.fotos;
         await app.repo.salvar("carros", c.slug, d, true);
         feitos++;
+        // Já mostra o carro na lista assim que ele termina.
+        todos.push(Object.assign({ id: c.slug }, d));
+        if (!cats.some(function (x) { return x.id === c.categoria; })) { cats.push({ id: c.categoria, nome: NOMES[c.categoria] || c.categoria }); nomeCat[c.categoria] = NOMES[c.categoria] || c.categoria; }
+        desenhar();
+        prog.passo();
       }
+      prog.fechar();
       toast(feitos + " carros importados como rascunho" + (falhas ? " (" + falhas + " fotos falharam)" : "") + ".");
       lista_recarregar();
-    } catch (e) { console.error(e); toast("Não consegui importar: " + e.message); }
+    } catch (e) { console.error(e); const pr = document.getElementById("imp-prog"); if (pr) pr.remove(); toast("Não consegui importar: " + e.message); }
   };
   function lista_recarregar() { lista(root, app); }
 
@@ -152,5 +160,46 @@ async function lista(root, app) {
         await apagarSemUso(app, [c.foto].concat(c.galeria || []));
       } catch (err) { toast("Não consegui excluir: " + (err.code || err.message), "erro"); }
     }
+  };
+}
+
+// Tela de carregamento da importação: barra, porcentagem e tempo restante estimado.
+function barraProgresso(nCarros, total) {
+  const el = document.createElement("div");
+  el.id = "imp-prog";
+  el.style.cssText = "position:fixed;right:24px;bottom:24px;z-index:9999";
+  el.innerHTML =
+    '<div style="width:min(400px,calc(100vw - 48px));background:#1e1f22;border:1px solid #2e2f33;border-radius:16px;padding:28px;color:#f2f2f2;font-family:inherit;box-shadow:0 20px 60px rgba(0,0,0,.5)">' +
+      '<div style="font-weight:800;font-size:20px;margin-bottom:4px">Importando catálogo</div>' +
+      '<div data-carro style="color:#a8a8ad;font-size:14px;min-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>' +
+      '<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px">' +
+        '<span data-pct style="font-size:40px;font-weight:800;color:#FCD308;line-height:1">0%</span>' +
+        '<span data-tempo style="color:#a8a8ad;font-size:14px">calculando tempo…</span></div>' +
+      '<div style="height:10px;background:#2e2f33;border-radius:99px;overflow:hidden">' +
+        '<div data-barra style="height:100%;width:0;background:#FCD308;border-radius:99px;transition:width .3s"></div></div>' +
+      '<div style="margin-top:16px;color:#7d7d83;font-size:13px">Os carros já aparecem na lista conforme terminam. Não feche nem atualize a página.</div></div>';
+  document.body.appendChild(el);
+  const $ = function (k) { return el.querySelector("[data-" + k + "]"); };
+  const inicio = Date.now();
+  let feito = 0;
+  const fmt = function (seg) {
+    seg = Math.max(0, Math.round(seg));
+    if (seg < 60) return seg + " s";
+    const m = Math.floor(seg / 60), s = seg % 60;
+    return m + " min" + (s ? " " + s + " s" : "");
+  };
+  const antes = window.onbeforeunload;
+  window.onbeforeunload = function () { return "A importação ainda está em andamento."; };
+  return {
+    carro: function (i, nome) { $("carro").textContent = "Carro " + i + " de " + nCarros + " · " + nome; },
+    passo: function () {
+      feito++;
+      const pct = Math.min(100, Math.round(feito / total * 100));
+      $("pct").textContent = pct + "%";
+      $("barra").style.width = pct + "%";
+      const decorrido = (Date.now() - inicio) / 1000;
+      if (feito >= 3) $("tempo").textContent = "faltam ~" + fmt(decorrido / feito * (total - feito));
+    },
+    fechar: function () { window.onbeforeunload = antes || null; el.remove(); }
   };
 }
