@@ -49,7 +49,7 @@ async function lista(root, app) {
           "<td>" + esc(nomeCat[c.categoria] || c.categoria || "—") + "</td>" +
           "<td>" + (c.preco ? esc(reais(c.preco)) : "—") + "</td>" +
           "<td>" + (c.km === 0 ? "0 km" : esc(milhar(c.km)) + " km") + "</td>" +
-          '<td><select data-status aria-label="Situação de ' + esc(c.nome) + '" style="width:auto;padding:6px 10px">' +
+          '<td><select data-status data-st="' + st + '" aria-label="Situação de ' + esc(c.nome) + '" style="width:auto;padding:6px 34px 6px 12px">' +
             Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (k === st ? " selected" : "") + ">" + STATUS[k] + "</option>"; }).join("") + "</select></td>" +
           "<td>" + (c.procura || 0) + "</td>" +
           '<td class="acoes-col"><a class="btn peq" href="#/carros/editar/' + encodeURIComponent(c.id) + '">Editar</a>' +
@@ -127,14 +127,15 @@ async function lista(root, app) {
     if (!e.target.matches("[data-status]")) return;
     const id = e.target.closest("tr").dataset.id, c = todos.filter(function (x) { return x.id === id; })[0];
     const novo = e.target.value;
+    e.target.dataset.st = novo;
     if (novo === "publicado" && (!c.foto || !c.preco)) {
       toast("Para publicar, o carro precisa de preço e de ao menos uma foto. Abra a edição para completar.", "erro");
-      e.target.value = c.status || "rascunho"; return;
+      e.target.value = c.status || "rascunho"; e.target.dataset.st = e.target.value; return;
     }
     try {
       await app.repo.atualizar("carros", id, { status: novo });
       c.status = novo; toast("Situação atualizada: " + STATUS[novo] + "."); desenhar();
-    } catch (err) { toast("Não consegui atualizar: " + (err.code || err.message), "erro"); e.target.value = c.status || "rascunho"; }
+    } catch (err) { toast("Não consegui atualizar: " + (err.code || err.message), "erro"); e.target.value = c.status || "rascunho"; e.target.dataset.st = e.target.value; }
   };
 
   root.onclick = async function (e) {
