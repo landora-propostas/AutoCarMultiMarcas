@@ -24,10 +24,10 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 96px; background: var(--bg); }
+html { scroll-behavior: smooth; scroll-padding-top: 96px; background: var(--bg); overflow-x: hidden; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
-  font: 400 16px/1.6 "Manrope", system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: clip;
+  font: 400 16px/1.6 "Manrope", system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; max-width: 100%;
 }
 img, svg { display: block; max-width: 100%; }
 img { height: auto; }
@@ -105,7 +105,7 @@ svg { fill: none; }
    HERO — título + carro que entra acelerando e freia + busca do estoque
    O carro muda conforme a categoria escolhida em "Buscar no estoque".
    ============================================================ */
-.hero { position: relative; height: 190vh; --hp: 0; background: var(--bg); }
+.hero { position: relative; height: 165vh; --hp: 0; background: var(--bg); }
 .hero-pin { position: sticky; top: 0; height: 100svh; min-height: 640px; overflow: hidden;
   display: flex; flex-direction: column; justify-content: center; padding: 96px 0 28px; }
 .hero-pin::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18%; z-index: 2; pointer-events: none; background: linear-gradient(transparent, var(--bg)); opacity: var(--hp); }
@@ -128,12 +128,12 @@ svg { fill: none; }
 @keyframes up-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 
 /* Palco do carro: a "câmera" se aproxima com o scroll */
-.hero-cars { position: relative; z-index: 1; aspect-ratio: 1800 / 700; margin-right: calc((100vw - min(100vw - 48px, var(--wrap))) / -2 + 8px); margin-bottom: -6px;
-  transform-origin: 40% 85%; transform: translate3d(calc(var(--hp) * -18vw), calc(var(--hp) * 5vh), 0) scale(calc(1 + var(--hp) * .6)); will-change: transform; }
+.hero-cars { position: relative; z-index: 1; aspect-ratio: 1800 / 700; margin: 0 2% -6px 4%;
+  transform-origin: 45% 85%; transform: translate3d(calc(var(--hp) * -12vw), calc(var(--hp) * 4vh), 0) scale(calc(1 + var(--hp) * .42)); will-change: transform; }
 .hc { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; }
 .hc.is-on { opacity: 1; }
 .hc img { width: 100%; height: auto; max-height: 100%; object-fit: contain; object-position: bottom; transform-origin: 50% 100%;
-  filter: brightness(.94) contrast(1.05) drop-shadow(0 26px 26px rgba(0, 0, 0, .55)); will-change: transform, filter; }
+  filter: brightness(.94) contrast(1.05) drop-shadow(0 26px 26px rgba(0, 0, 0, .55)); backface-visibility: hidden; }
 .hero-shadow { position: absolute; left: 8%; right: 6%; bottom: -4%; height: 13%; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(0, 0, 0, .85), transparent); filter: blur(10px); transition: opacity .4s; }
 .hero-cars.correndo .hero-shadow { opacity: .35; }
@@ -143,7 +143,7 @@ svg { fill: none; }
 .hero-search { display: flex; align-items: center; gap: 14px; padding: 12px 12px 12px 18px; border-radius: 999px;
   background: rgba(22, 22, 22, .88); border: 1px solid var(--line-2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9); }
-.hs-head { display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.hs-head { display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 600; white-space: nowrap; min-width: 0; }
 .hs-head > span { padding-left: 4px; }
 .seg { display: inline-flex; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); }
 .seg button { height: 36px; padding: 0 15px; border: 0; border-radius: 999px; background: none; color: #bdbdbd; font: 600 13px/1 "Manrope", sans-serif; cursor: pointer; transition: background .35s var(--ease), color .35s; }
@@ -289,7 +289,7 @@ svg { fill: none; }
 /* ---------- Cena em tela cheia + contato ---------- */
 .scene { position: relative; min-height: 92svh; display: grid; place-items: center; overflow: hidden; padding: 140px 0; isolation: isolate; text-align: center; --ss: 1.18; --sy: 0px; }
 .scene-media { position: absolute; inset: 0; z-index: -2; }
-.scene-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; transform: translate3d(0, var(--sy), 0) scale(var(--ss)); will-change: transform; filter: brightness(.62) saturate(.8); }
+.scene-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; transform: translate3d(0, var(--sy), 0) scale(var(--ss)); will-change: transform; filter: brightness(.62) saturate(.8); }
 .scene::before { content: ""; position: absolute; inset: 0; z-index: -1;
   background: radial-gradient(70% 60% at 50% 45%, rgba(14, 14, 14, .35), rgba(14, 14, 14, .9)), linear-gradient(180deg, var(--bg) 0%, transparent 22%, transparent 70%, var(--bg-2) 100%); }
 .scene-line { position: absolute; z-index: -1; width: 1px; height: 70vh; background: linear-gradient(transparent, rgba(252, 211, 8, .7), transparent); transform: rotate(38deg); filter: drop-shadow(0 0 6px rgba(252, 211, 8, .6)); opacity: .45; }
@@ -314,15 +314,19 @@ svg { fill: none; }
 .site-footer nav a:hover, .foot-contact a:hover { color: var(--brand); }
 .foot-contact a, .foot-contact p { display: flex; gap: 10px; align-items: center; }
 .foot-contact svg { width: 17px; height: 17px; color: var(--brand); flex: none; }
-.foot-contact .hours { padding-left: 27px; color: var(--muted); }
+.foot-contact .hours { padding-left: 27px; color: var(--muted); white-space: pre-line; line-height: 1.7; }
 .foot-social { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
 .foot-social a { color: var(--muted); font-weight: 600; }
 .foot-car { position: absolute; right: 36px; top: 0; width: 300px; height: auto; transform: translateY(-70%); filter: drop-shadow(0 20px 20px rgba(0, 0, 0, .6)) brightness(.92); pointer-events: none; }
-.foot-mark { margin: 34px 0 10px; text-align: center; font: 700 clamp(90px, 21vw, 330px)/.8 "Archivo", sans-serif; font-stretch: var(--cond); letter-spacing: -.01em;
-  color: transparent; -webkit-text-stroke: 1px rgba(255, 255, 255, .1); user-select: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .07), transparent 80%); -webkit-background-clip: text; background-clip: text;
-  transform: translate3d(0, var(--fy, 0px), 0); }
-.legal { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 22px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.site-footer { isolation: isolate; }
+.site-footer > .wrap { position: relative; z-index: 1; }
+.foot-mark { position: absolute; left: 50%; bottom: 58px; z-index: 0; margin: 0; transform: translate3d(-50%, var(--fy, 0px), 0); white-space: nowrap; pointer-events: none; user-select: none;
+  font: 400 clamp(34px, 6.6vw, 112px)/1 "Michroma", "Archivo", sans-serif; letter-spacing: .02em;
+  color: transparent; -webkit-text-stroke: 1px rgba(252, 211, 8, .16); }
+.legal { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 120px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.legal .credit { text-align: center; }
+.legal .credit b { color: #fff; font-weight: 700; }
+.legal > div { justify-content: flex-end; }
 .legal div { display: flex; gap: 22px; }
 .legal a:hover { color: #fff; }
 
@@ -370,7 +374,10 @@ svg { fill: none; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-copy { opacity: 1; transform: none; }
   .hero h1 { font-size: clamp(38px, 11vw, 64px); margin: 14px 0 16px; }
-  .hero-cars { margin: 26px -8px 0; transform: none; }
+  .hero-cars { margin: 26px 0 0; transform: none; }
+  .hc img { filter: none; }
+  .hs-head { white-space: normal; }
+  .seg { min-width: 0; } .seg button { min-width: 0; }
   .hero-light { background: radial-gradient(80% 40% at 50% 62%, rgba(255, 255, 255, .07), transparent 70%), linear-gradient(180deg, #0e0e0e, #141414); }
   .hero-dock { margin-top: 22px; }
   .hero-search { flex-direction: column; align-items: stretch; border-radius: 24px; padding: 16px; }
@@ -399,7 +406,9 @@ svg { fill: none; }
   .cta2-contact { flex-direction: column; align-items: center; }
   .foot-panel { grid-template-columns: 1fr; padding: 30px 24px; gap: 30px; }
   .foot-car { width: 220px; right: 10px; }
-  .legal { flex-direction: column; }
+  .legal { grid-template-columns: 1fr; justify-items: center; text-align: center; margin-top: 90px; }
+  .legal > div { justify-content: center; }
+  .foot-mark { bottom: 158px; font-size: clamp(22px, 7.4vw, 40px); }
 }
 @media (max-width: 420px) {
   .wrap { width: min(100% - 32px, var(--wrap)); }
@@ -412,7 +421,7 @@ svg { fill: none; }
   html { scroll-behavior: auto; }
   .hero { height: auto; }
   .hero-pin { position: relative; height: auto; min-height: 100svh; }
-  .hero-cars, .hero-copy, .mo-photo img, .scene-media img, .foot-mark { transform: none !important; }
+  .hero-cars, .hero-copy, .mo-photo img, .scene-media img { transform: none !important; }
   .hero-copy { opacity: 1; }
   .ln > span, .hero-copy .eyebrow, .hero-lead, .hero-dock, .loader, .loader img { animation: none !important; }
   .loader { display: none; }
@@ -632,7 +641,11 @@ h1, h2, h3, h4 { font-weight: 800; letter-spacing: -.03em; }
 .mo-count b { font-size: 60px; }
 .d-price { font-size: 36px; }
 .d-stat b { font-size: 18px; }
-.foot-mark { font-weight: 900; letter-spacing: -.04em; font-size: clamp(70px, 16vw, 250px); }
 @media (max-width: 900px) {
   .scene-body h2 { font-size: clamp(36px, 10vw, 60px); }
+}
+@media (max-width: 900px) {
+  .toolbar { flex-wrap: nowrap; }
+  .toolbar > *, .tool-right > * { min-width: 0; max-width: 100%; }
+  .pills { width: 100%; }
 }

@@ -24,19 +24,19 @@
   function fig(cls) { return figs.filter(function (f) { return f.dataset.cls === cls; })[0] || figs[0]; }
   function pararTudo() { animando.forEach(function (a) { try { a.cancel(); } catch (e) {} }); animando = []; }
 
+  // Só transform e opacity (sem filtros animados): fica nítido no celular e roda liso a 60 fps.
   function entrar(f, atraso) {
     var img = $('img', f);
     if (img.loading === 'lazy') img.loading = 'eager';
     f.classList.add('is-on');
     if (!podeAnimar) return null;
     var an = img.animate([
-      { offset: 0,    transform: 'translate3d(115%,0,0) rotate(0deg)',    filter: FILTRO + ' blur(9px)', opacity: 0, easing: 'cubic-bezier(.12,.62,.32,1)' },
-      { offset: .07,  opacity: 1 },
-      { offset: .56,  transform: 'translate3d(-2.8%,0,0) rotate(-1.15deg)', filter: FILTRO + ' blur(0px)', easing: 'cubic-bezier(.4,0,.3,1)' },
-      { offset: .76,  transform: 'translate3d(.7%,0,0) rotate(.35deg)', easing: 'cubic-bezier(.4,0,.4,1)' },
-      { offset: .9,   transform: 'translate3d(-.2%,0,0) rotate(-.1deg)' },
-      { offset: 1,    transform: 'translate3d(0,0,0) rotate(0deg)',       filter: FILTRO, opacity: 1 }
-    ], { duration: 1550, delay: atraso || 0, fill: 'backwards' });
+      { offset: 0,   transform: 'translate3d(110%,0,0) rotate(0deg)', opacity: 0, easing: 'cubic-bezier(.16,.7,.3,1)' },
+      { offset: .1,  opacity: 1 },
+      { offset: .58, transform: 'translate3d(-2.4%,0,0) rotate(-1deg)', easing: 'cubic-bezier(.4,0,.3,1)' },
+      { offset: .8,  transform: 'translate3d(.5%,0,0) rotate(.28deg)', easing: 'cubic-bezier(.4,0,.4,1)' },
+      { offset: 1,   transform: 'translate3d(0,0,0) rotate(0deg)', opacity: 1 }
+    ], { duration: 1150, delay: atraso || 0, fill: 'backwards' });
     animando.push(an);
     return an;
   }
@@ -44,10 +44,11 @@
     if (!podeAnimar) { f.classList.remove('is-on'); return null; }
     var img = $('img', f);
     var an = img.animate([
-      { transform: 'translate3d(0,0,0) rotate(0deg)', filter: FILTRO + ' blur(0px)', opacity: 1, easing: 'cubic-bezier(.5,0,.9,.35)' },
-      { offset: .3, transform: 'translate3d(1.2%,0,0) rotate(.7deg)' },
-      { transform: 'translate3d(-125%,0,0) rotate(.35deg)', filter: FILTRO + ' blur(10px)', opacity: 0 }
-    ], { duration: 780, fill: 'forwards' });
+      { transform: 'translate3d(0,0,0) rotate(0deg)', opacity: 1, easing: 'cubic-bezier(.55,0,.85,.3)' },
+      { offset: .25, transform: 'translate3d(.8%,0,0) rotate(.6deg)' },
+      { offset: .8, opacity: 1 },
+      { transform: 'translate3d(-130%,0,0) rotate(.3deg)', opacity: 0 }
+    ], { duration: 520, fill: 'forwards' });
     animando.push(an);
     an.onfinish = function () { f.classList.remove('is-on'); an.cancel(); };
     return an;
@@ -60,17 +61,18 @@
     figs.forEach(function (f) { if (f !== sai && f !== entra) f.classList.remove('is-on'); });
     if (palco) palco.classList.add('correndo');
     if (sai !== entra) sair(sai);
-    var an = entrar(entra, sai !== entra ? 260 : 0);
+    var an = entrar(entra, sai !== entra ? 400 : 0);
     var fim = function () { if (palco) palco.classList.remove('correndo'); };
     if (an) an.onfinish = function () { fim(); an.cancel(); }; else fim();
   }
-  // entrada inicial, logo depois da tela de carregamento
+  // Entrada inicial: o carro só aparece quando a tela de carregamento some (≈1,5 s após abrir a página)
   if (figs.length) {
     var primeiro = fig('todos');
-    figs.forEach(function (f) { f.classList.toggle('is-on', f === primeiro); });
-    var an0 = entrar(primeiro, 1050);
+    figs.forEach(function (f) { f.classList.remove('is-on'); });
+    var espera = Math.max(0, 1500 - performance.now());
+    var an0 = entrar(primeiro, espera);
     if (an0) an0.onfinish = function () { an0.cancel(); };
-    setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) im.loading = 'eager'; }); }, 2600);
+    setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) im.loading = 'eager'; }); }, espera + 1800);
   }
 
   /* ---------- Busca do hero → filtros reais do estoque ---------- */
@@ -167,7 +169,7 @@
     var mexe = false;
     ['hp', 'tp'].forEach(function (k) {
       var d = alvo[k] - suave[k];
-      if (Math.abs(d) > .0005) { suave[k] += d * (reduce ? 1 : .14); mexe = true; } else suave[k] = alvo[k];
+      if (Math.abs(d) > .0004) { suave[k] += d * (reduce ? 1 : .2); mexe = true; } else suave[k] = alvo[k];
     });
     aplicar();
     if (mexe) requestAnimationFrame(quadro); else rodando = false;

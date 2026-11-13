@@ -77,6 +77,7 @@ function aplicarSite(cfg, urls) {
   const tel = c.telefone && hrefTel(c.telefone);
   if (tel) $$('[data-href="telefone"]').forEach(function (a) { a.href = tel; });
   if (c.email && c.email.trim()) $$('[data-href="email"]').forEach(function (a) { a.href = "mailto:" + c.email.trim(); });
+  if (so(c.whatsapp)) $$('[data-href="whatsapp"]').forEach(function (a) { a.href = "https://wa.me/" + (so(c.whatsapp).length <= 11 ? "55" : "") + so(c.whatsapp); });
   const box = $("#redes");
   if (box) {
     const itens = [];
@@ -121,9 +122,39 @@ async function resolverImagens(ctx, cfg) {
   return urls;
 }
 
+/* ---------- Cache no aparelho (IndexedDB) ----------
+   A primeira visita lê o Firestore e guarda tudo no aparelho. As visitas seguintes abrem
+   na hora com o que está guardado, sem ler o banco. Passado o prazo (VALIDADE), o site
+   ainda abre com o guardado e atualiza em segundo plano para a próxima visita. */
+const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v1", VALIDADE = 30 * 60 * 1000;
+function abrirCache() {
+  return new Promise(function (ok, erro) {
+    if (!("indexedDB" in window)) return erro(new Error("sem-indexeddb"));
+    const r = indexedDB.open(CACHE_DB, 1);
+    r.onupgradeneeded = function () { r.result.createObjectStore("kv"); };
+    r.onsuccess = function () { ok(r.result); };
+    r.onerror = function () { erro(r.error); };
+  });
+}
+async function lerCache() {
+  try {
+    const db = await abrirCache();
+    return await new Promise(function (ok) {
+      const q = db.transaction("kv").objectStore("kv").get(CACHE_CHAVE);
+      q.onsuccess = function () { ok(q.result || null); };
+      q.onerror = function () { ok(null); };
+    });
+  } catch (e) { return null; }
+}
+async function gravarCache(dados) {
+  try {
+    const db = await abrirCache();
+    db.transaction("kv", "readwrite").objectStore("kv").put({ t: Date.now(), dados: dados }, CACHE_CHAVE);
+  } catch (e) { /* sem espaço ou modo privado: segue sem cache */ }
+}
+
 /* ---------- Modo real (Firestore) ---------- */
-async function carregarDoFirebase() {
-  const ctx = await iniciar();
+async function buscarDoFirebase(ctx) {
   const f = ctx.fs, db = ctx.db;
   const [cfgSnap, cs, cars, ads] = await Promise.all([
     f.getDoc(f.doc(db, "config", "site")),
@@ -133,26 +164,35 @@ async function carregarDoFirebase() {
   ]);
   if (!cfgSnap.exists() || !cfgSnap.data().inicializado) throw new Error("nao-iniciado");
   const lista = function (s) { return s.docs.map(function (d) { const o = d.data(); o.id = d.id; return o; }); };
-  const cfg = cfgSnap.data(), categorias = lista(cs), adicionais = lista(ads);
-  const carros = lista(cars).map(function (c) { return carroParaSite(c, adicionais); })
-    .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+  const plano = function (o) { return JSON.parse(JSON.stringify(o)); }; // tira Timestamps do Firestore
+  const cfg = plano(cfgSnap.data()), categorias = plano(lista(cs)), adicionais = lista(ads);
+  const carros = plano(lista(cars).map(function (c) { return carroParaSite(c, adicionais); })
+    .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); }));
   const urls = await resolverImagens(ctx, cfg);
+  return { cfg: cfg, categorias: categorias, carros: carros, urls: urls };
+}
 
+function montarSite(d) {
+  const carros = d.carros;
   window.ADICIONAIS = [];
   window.CARROS = carros;
-  pintarCategorias(categorias, carros);
-  aplicarSite(cfg, urls);
+  pintarCategorias(d.categorias, carros);
+  aplicarSite(d.cfg, d.urls);
   if (!carros.length) {
     const v = $("#vazio");
     if (v) { v.hidden = false; const p = $("p", v), b = $("button", v); if (p) p.textContent = "Estamos atualizando o estoque. Volte em breve!"; if (b) b.hidden = true; }
   }
 
+  // O Firebase só é carregado quando precisa (pedido, visita ou galeria de fotos)
+  let ctxP = null;
+  const ctx = function () { return ctxP || (ctxP = iniciar()); };
   const jaContou = {};
   window.LANDORA = {
     modo: "firebase",
-    salvarLead: function (d) {
-      return f.addDoc(f.collection(db, "leads"), {
-        nome: String(d.nome).slice(0, 100), whatsapp: String(d.whatsapp).slice(0, 20), carro: String(d.carro || "").slice(0, 120),
+    salvarLead: async function (dd) {
+      const c = await ctx(), f = c.fs;
+      return f.addDoc(f.collection(c.db, "leads"), {
+        nome: String(dd.nome).slice(0, 100), whatsapp: String(dd.whatsapp).slice(0, 20), carro: String(dd.carro || "").slice(0, 120),
         status: "novo", origem: "site", criadoEm: f.serverTimestamp()
       });
     },
@@ -160,19 +200,36 @@ async function carregarDoFirebase() {
       if (jaContou[slug]) return;
       jaContou[slug] = 1;
       try { if (sessionStorage.getItem("visto:" + slug)) return; sessionStorage.setItem("visto:" + slug, "1"); } catch (e) { /* sem sessionStorage */ }
-      f.updateDoc(f.doc(db, "carros", slug), { procura: f.increment(1) }).catch(function () {});
-      const c = carros.filter(function (x) { return x.slug === slug; })[0];
-      if (c) c.procura = (c.procura || 0) + 1;
+      ctx().then(function (c) { return c.fs.updateDoc(c.fs.doc(c.db, "carros", slug), { procura: c.fs.increment(1) }); }).catch(function () {});
+      const car = carros.filter(function (x) { return x.slug === slug; })[0];
+      if (car) car.procura = (car.procura || 0) + 1;
     },
     // Fotos da galeria vêm do Firestore só quando o carro é aberto.
     preparar: function (c) {
       if (c._pronto) return Promise.resolve();
-      return Promise.all(c.galeria.map(function (g) {
-        if (!g.midia || g._full) return null;
-        return carregar(ctx, g).then(function (u) { g.src = u || c.foto.src; }, function () { g.src = c.foto.src; }).then(function () { g._full = true; });
-      }).filter(Boolean)).then(function () { c._pronto = true; });
+      return ctx().then(function (cx) {
+        return Promise.all(c.galeria.map(function (g) {
+          if (!g.midia || g._full) return null;
+          return carregar(cx, g).then(function (u) { g.src = u || c.foto.src; }, function () { g.src = c.foto.src; }).then(function () { g._full = true; });
+        }).filter(Boolean));
+      }).then(function () { c._pronto = true; }, function () { c._pronto = true; });
     }
   };
+}
+
+async function carregarDoFirebase() {
+  const guardado = await lerCache();
+  if (guardado && guardado.dados) {
+    montarSite(guardado.dados);
+    if (Date.now() - guardado.t > VALIDADE) {
+      iniciar().then(buscarDoFirebase).then(gravarCache).catch(function () {});
+    }
+    return;
+  }
+  const ctx = await iniciar();
+  const dados = await buscarDoFirebase(ctx);
+  montarSite(dados);
+  gravarCache(dados);
 }
 
 /* ---------- Modo demonstração (arquivos locais) ---------- */

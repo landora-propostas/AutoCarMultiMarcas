@@ -1,6 +1,11 @@
 // Acesso ao Firestore para o painel (coleções pequenas: lê tudo e filtra no navegador).
 import { semUndefined } from "/js/modelo.js";
 
+// Cada alteração no painel apaga o cache do site neste aparelho, para ver o resultado na hora.
+// (Nos aparelhos dos visitantes o site se atualiza sozinho em até 30 minutos.)
+function limparCacheDoSite() { try { indexedDB.deleteDatabase("autocar-cache"); } catch (e) { /* sem IndexedDB */ } }
+limparCacheDoSite();
+
 export function criarRepo(ctx) {
   const f = ctx.fs, db = ctx.db;
   const ref = function (col, id) { return f.doc(db, col, id); };
@@ -19,15 +24,18 @@ export function criarRepo(ctx) {
       const d = semUndefined(dados);
       d.atualizadoEm = f.serverTimestamp();
       await f.setDoc(ref(col, id), d, substituir ? {} : { merge: true });
+      limparCacheDoSite();
     },
     async criar(col, dados) {
       const d = semUndefined(dados);
       d.criadoEm = f.serverTimestamp();
-      return (await f.addDoc(f.collection(db, col), d)).id;
+      const id = (await f.addDoc(f.collection(db, col), d)).id;
+      limparCacheDoSite();
+      return id;
     },
-    async atualizar(col, id, dados) { await f.updateDoc(ref(col, id), semUndefined(dados)); },
-    async remover(col, id) { await f.deleteDoc(ref(col, id)); },
-    lote() { return f.writeBatch(db); },
+    async atualizar(col, id, dados) { await f.updateDoc(ref(col, id), semUndefined(dados)); limparCacheDoSite(); },
+    async remover(col, id) { await f.deleteDoc(ref(col, id)); limparCacheDoSite(); },
+    lote() { const b = f.writeBatch(db), c = b.commit.bind(b); b.commit = function () { return c().then(function (r) { limparCacheDoSite(); return r; }); }; return b; },
     ref: ref
   };
 }

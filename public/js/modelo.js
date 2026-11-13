@@ -39,7 +39,7 @@ export const SITE_PADRAO = {
     ctaTexto: "Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.",
     rodape: "Carros premium para quem escolhe o melhor."
   },
-  contato: { telefone: "(11) 0000-0000", whatsapp: "", email: "landora.proposta@gmail.com", endereco: "Rua Exemplo, 123, Vinhedo, SP", horario: "Todos os dias, das 9h às 19h" },
+  contato: { telefone: "(14) 99654-7171", whatsapp: "(14) 99654-7171", email: "landora.proposta@gmail.com", endereco: "Av. São Sebastião, 727 - Vila Cantizani, Piraju - SP, 18803-140", horario: "Seg a sex: 08:30–18:00\nSábado: 08:30–14:30\nDomingo: fechado" },
   redes: { instagram: "", facebook: "", youtube: "", tiktok: "" },
   seo: { titulo: "AutoCar Multimarcas | Carros premium", descricao: "Carros premium para quem valoriza desempenho, tecnologia e estilo. Escolha online e fale com um consultor." }
 };
@@ -47,8 +47,8 @@ export const SITE_PADRAO = {
 // Imagens do site que já existem nos arquivos (usadas enquanto nada for enviado pelo painel).
 export const IMAGENS_PADRAO = {
   logo: "/img/logo-landora.png",
-  favicon: "/favicon.svg",
-  heroFundo: "/img/carros/bmw-m4-wide.webp",
+  favicon: "/favicon.png",
+  heroFundo: "/img/entrega.webp",
   heroCarro: "/img/carros/bmw-m4-hero.webp",
   sobre: "/img/carros/bmw-m4-wide.webp",
   cta: "/img/carros/hyundai-creta.webp"
