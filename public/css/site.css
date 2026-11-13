@@ -895,3 +895,5 @@ main::before { background:
     radial-gradient(520px 300px at 88% 55%, rgba(252, 211, 8, .07), transparent 70%); }
 /* o escurecimento da cena só cobre a foto (mesma máscara), deixando as luzes do fundo inteiras */
 .scene::before { -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); inset: -6% 0; }
+/* sem faixa lisa entre o hero e o estoque: o degradê sólido cobria a textura e marcava um corte */
+.hero-pin::after { content: none; }

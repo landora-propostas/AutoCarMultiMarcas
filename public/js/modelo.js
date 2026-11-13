@@ -51,7 +51,7 @@ export const IMAGENS_PADRAO = {
   favicon: "/favicon-48.png",
   heroFundo: "/img/entrega.webp",
   heroCarro: "/img/carros/bmw-m4-hero.webp",
-  sobre: "/img/fachada.webp",
+  sobre: "/img/fachada-noite.webp",
   cta: "/img/carros/hyundai-creta.webp"
 };
 
