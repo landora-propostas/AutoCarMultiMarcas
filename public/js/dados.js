@@ -98,7 +98,11 @@ function pintarCategorias(categorias, carros) {
   if (!box) return;
   const usadas = {};
   carros.forEach(function (c) { usadas[c.categoria] = 1; });
-  const lista = categorias.filter(function (c) { return c.ativa !== false && usadas[c.id]; })
+  const fixas = { hatch: "Hatches", cupe: "Cupês", sedan: "Sedãs", suv: "SUVs" };
+  Object.keys(fixas).forEach(function (id, k) {
+    if (!categorias.some(function (c) { return c.id === id; })) categorias.push({ id: id, nome: fixas[id], ordem: k + 1 });
+  });
+  const lista = categorias.filter(function (c) { return c.ativa !== false && (usadas[c.id] || fixas[c.id]); })
     .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
   box.innerHTML = '<button class="pill is-on" type="button" data-filter="todos" aria-pressed="true">Todos</button>' +
     lista.map(function (c) { return '<button class="pill" type="button" data-filter="' + esc(c.id) + '" aria-pressed="false">' + esc(c.nome) + "</button>"; }).join("");

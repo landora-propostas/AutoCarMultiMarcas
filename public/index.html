@@ -89,45 +89,28 @@
   <!-- HERO: título + categorias + carro que se aproxima com o scroll -->
   <section class="hero" id="topo" aria-labelledby="hero-titulo">
     <div class="hero-pin">
-      <div class="hero-stage" aria-hidden="true">
-        <div class="hero-light"></div>
-        <div class="hero-cars">
-          <figure class="hc is-on" data-cls="cupe"><img src="img/carros/hero-esportivo.webp" width="1800" height="586" alt="" fetchpriority="high"></figure>
-          <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp" width="1800" height="727" alt="" loading="lazy"></figure>
-          <figure class="hc" data-cls="sedan"><img src="img/carros/hero-sedan.webp" width="1800" height="597" alt="" loading="lazy"></figure>
-          <span class="hero-shadow"></span>
-        </div>
-      </div>
+      <div class="hero-light" aria-hidden="true"></div>
 
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <p class="eyebrow"><i class="dot"></i><span data-s="textos.heroEyebrow">Seu próximo carro, sem enrolação</span></p>
           <h1 id="hero-titulo" aria-label="Escolha mais rápido. Dirija com prazer.">
-            <span class="ln" aria-hidden="true"><span style="--i:0">Escolha</span></span>
+            <span class="ln" aria-hidden="true"><span style="--i:0">Escolha</span></span><br>
             <span class="ln" aria-hidden="true"><span style="--i:1"><em>mais rápido.</em></span></span><br>
-            <span class="ln" aria-hidden="true"><span style="--i:2">Dirija</span></span>
+            <span class="ln" aria-hidden="true"><span style="--i:2">Dirija</span></span><br>
             <span class="ln" aria-hidden="true"><span style="--i:3"><em>com prazer.</em></span></span>
           </h1>
-
-          <p class="hero-label" id="cls-rot">Escolha uma categoria</p>
-          <div class="hero-tabs" role="tablist" aria-labelledby="cls-rot">
-            <span class="tab-pill" aria-hidden="true"></span>
-            <button type="button" role="tab" aria-selected="true" data-cls="cupe">Esportivo</button>
-            <button type="button" role="tab" aria-selected="false" data-cls="suv">SUV</button>
-            <button type="button" role="tab" aria-selected="false" data-cls="sedan">Sedã</button>
-          </div>
-
-          <dl class="hero-stats" aria-live="polite">
-            <div><dt>Em estoque</dt><dd data-hs="qtd">–</dd></div>
-            <div><dt>A partir de</dt><dd data-hs="preco">–</dd></div>
-            <div><dt>Vistoriados</dt><dd>100%</dd></div>
-          </dl>
+          <p class="hero-lead" data-s="textos.heroLead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
         </div>
 
-        <aside class="hero-note">
-          <i class="dot"></i>
-          <p data-s="textos.heroLead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
-        </aside>
+        <div class="hero-cars" aria-hidden="true">
+          <span class="hero-shadow"></span>
+          <figure class="hc is-on" data-cls="todos"><img src="img/carros/hero-esportivo.webp" width="1800" height="586" alt="" fetchpriority="high"></figure>
+          <figure class="hc" data-cls="hatch"><img src="img/carros/hero-hatch.webp" width="1800" height="685" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="cupe"><img src="img/carros/hero-esportivo.webp" width="1800" height="586" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="sedan"><img src="img/carros/hero-sedan.webp" width="1800" height="597" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp" width="1800" height="727" alt="" loading="lazy"></figure>
+        </div>
       </div>
 
       <div class="wrap hero-dock">
@@ -136,6 +119,7 @@
             <span>Buscar no estoque</span>
             <div class="seg" role="group" aria-label="Categoria">
               <button type="button" class="is-on" data-hcat="todos" aria-pressed="true">Todos</button>
+              <button type="button" data-hcat="hatch" aria-pressed="false">Hatches</button>
               <button type="button" data-hcat="cupe" aria-pressed="false">Cupês</button>
               <button type="button" data-hcat="sedan" aria-pressed="false">Sedãs</button>
               <button type="button" data-hcat="suv" aria-pressed="false">SUVs</button>
@@ -165,6 +149,7 @@
       <div class="toolbar">
         <div class="pills" id="pills" role="group" aria-label="Filtrar por tipo">
           <button class="pill is-on" type="button" data-filter="todos" aria-pressed="true">Todos</button>
+          <button class="pill" type="button" data-filter="hatch" aria-pressed="false">Hatches</button>
           <button class="pill" type="button" data-filter="cupe" aria-pressed="false">Cupês</button>
           <button class="pill" type="button" data-filter="sedan" aria-pressed="false">Sedãs</button>
           <button class="pill" type="button" data-filter="suv" aria-pressed="false">SUVs</button>

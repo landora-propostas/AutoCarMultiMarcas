@@ -19,9 +19,10 @@ export const HISTORICO_SUGESTOES = ["Único dono", "Revisões em dia", "IPVA pag
 export const STATUS_LEAD = { novo: "Novo", contatado: "Em contato", negociando: "Negociando", fechado: "Fechado", perdido: "Perdido" };
 
 export const CATEGORIAS_PADRAO = [
-  { id: "cupe", nome: "Cupês", ordem: 1 },
-  { id: "sedan", nome: "Sedãs", ordem: 2 },
-  { id: "suv", nome: "SUVs", ordem: 3 }
+  { id: "hatch", nome: "Hatches", ordem: 1 },
+  { id: "cupe", nome: "Cupês", ordem: 2 },
+  { id: "sedan", nome: "Sedãs", ordem: 3 },
+  { id: "suv", nome: "SUVs", ordem: 4 }
 ];
 
 // Textos que já existem no site. Campo vazio no painel = usar este padrão.

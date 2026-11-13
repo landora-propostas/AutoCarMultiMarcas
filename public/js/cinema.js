@@ -9,77 +9,68 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var CARROS = window.CARROS || [];
-  var brl = function (n) { return 'R$ ' + Number(n).toLocaleString('pt-BR'); };
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
 
-  /* ---------- Hero: troca de carro por categoria ---------- */
+  /* ---------- Hero: carro troca conforme a categoria de "Buscar no estoque" ----------
+     Sai acelerando para a esquerda (frente sobe) e o novo entra pela direita em velocidade,
+     freia (frente mergulha), passa um pouco do ponto e assenta — como na referência. */
   var hero = $('.hero');
-  var tabs = $$('.hero-tabs [role="tab"]');
-  var pillTab = $('.tab-pill');
+  var palco = $('.hero-cars');
   var figs = $$('.hc');
-  var statQtd = $('[data-hs="qtd"]'), statPreco = $('[data-hs="preco"]');
-  var atual = 'cupe', timer = null, tocou = false;
+  var atual = 'todos', animando = [];
+  var FILTRO = 'brightness(.94) contrast(1.05) drop-shadow(0 26px 26px rgba(0,0,0,.55))';
+  var podeAnimar = !reduce && !!Element.prototype.animate;
 
-  function moverPill(btn) {
-    if (!pillTab || !btn) return;
-    pillTab.style.width = btn.offsetWidth + 'px';
-    pillTab.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
+  function fig(cls) { return figs.filter(function (f) { return f.dataset.cls === cls; })[0] || figs[0]; }
+  function pararTudo() { animando.forEach(function (a) { try { a.cancel(); } catch (e) {} }); animando = []; }
+
+  function entrar(f, atraso) {
+    var img = $('img', f);
+    if (img.loading === 'lazy') img.loading = 'eager';
+    f.classList.add('is-on');
+    if (!podeAnimar) return null;
+    var an = img.animate([
+      { offset: 0,    transform: 'translate3d(115%,0,0) rotate(0deg)',    filter: FILTRO + ' blur(9px)', opacity: 0, easing: 'cubic-bezier(.12,.62,.32,1)' },
+      { offset: .07,  opacity: 1 },
+      { offset: .56,  transform: 'translate3d(-2.8%,0,0) rotate(-1.15deg)', filter: FILTRO + ' blur(0px)', easing: 'cubic-bezier(.4,0,.3,1)' },
+      { offset: .76,  transform: 'translate3d(.7%,0,0) rotate(.35deg)', easing: 'cubic-bezier(.4,0,.4,1)' },
+      { offset: .9,   transform: 'translate3d(-.2%,0,0) rotate(-.1deg)' },
+      { offset: 1,    transform: 'translate3d(0,0,0) rotate(0deg)',       filter: FILTRO, opacity: 1 }
+    ], { duration: 1550, delay: atraso || 0, fill: 'backwards' });
+    animando.push(an);
+    return an;
   }
-  function stats(cls) {
-    var lista = CARROS.filter(function (c) { return c.categoria === cls; });
-    var qtd = lista.length;
-    var menor = lista.reduce(function (m, c) { return Math.min(m, c.preco || Infinity); }, Infinity);
-    [statQtd, statPreco].forEach(function (el) { if (el) el.classList.add('troca'); });
-    setTimeout(function () {
-      if (statQtd) statQtd.textContent = qtd ? String(qtd).padStart(2, '0') : '—';
-      if (statPreco) statPreco.textContent = isFinite(menor) ? brl(menor) : 'Sob consulta';
-      [statQtd, statPreco].forEach(function (el) { if (el) el.classList.remove('troca'); });
-    }, reduce ? 0 : 220);
+  function sair(f) {
+    if (!podeAnimar) { f.classList.remove('is-on'); return null; }
+    var img = $('img', f);
+    var an = img.animate([
+      { transform: 'translate3d(0,0,0) rotate(0deg)', filter: FILTRO + ' blur(0px)', opacity: 1, easing: 'cubic-bezier(.5,0,.9,.35)' },
+      { offset: .3, transform: 'translate3d(1.2%,0,0) rotate(.7deg)' },
+      { transform: 'translate3d(-125%,0,0) rotate(.35deg)', filter: FILTRO + ' blur(10px)', opacity: 0 }
+    ], { duration: 780, fill: 'forwards' });
+    animando.push(an);
+    an.onfinish = function () { f.classList.remove('is-on'); an.cancel(); };
+    return an;
   }
-  function escolher(cls, manual) {
-    if (manual) tocou = true;
-    if (cls === atual && !manual) return;
-    var sai = figs.filter(function (f) { return f.classList.contains('is-on'); })[0];
-    var entra = figs.filter(function (f) { return f.dataset.cls === cls; })[0];
-    if (!entra) return;
-    if (sai && sai !== entra) {
-      sai.style.animation = 'none';
-      sai.classList.remove('is-on'); sai.classList.add('is-out');
-      setTimeout(function () { sai.classList.remove('is-out'); }, 900);
-    }
-    entra.style.animation = 'none';
-    var img = $('img', entra); if (img && img.loading === 'lazy') img.loading = 'eager';
-    requestAnimationFrame(function () { entra.classList.add('is-on'); });
+  function trocarCarro(cls) {
+    if (cls === atual) return;
+    var sai = fig(atual), entra = fig(cls);
     atual = cls;
-    tabs.forEach(function (t) { var on = t.dataset.cls === cls; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; if (on) moverPill(t); });
-    stats(cls);
-    if (manual) sincronizarSeg(cls);
+    pararTudo();
+    figs.forEach(function (f) { if (f !== sai && f !== entra) f.classList.remove('is-on'); });
+    if (palco) palco.classList.add('correndo');
+    if (sai !== entra) sair(sai);
+    var an = entrar(entra, sai !== entra ? 260 : 0);
+    var fim = function () { if (palco) palco.classList.remove('correndo'); };
+    if (an) an.onfinish = function () { fim(); an.cancel(); }; else fim();
   }
-  tabs.forEach(function (t, i) {
-    t.addEventListener('click', function () { escolher(t.dataset.cls, true); });
-    t.addEventListener('keydown', function (e) {
-      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-      var j = (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-      tabs[j].focus(); escolher(tabs[j].dataset.cls, true);
-    });
-  });
-  // pré-carrega as outras fotos depois da entrada
-  setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) im.loading = 'eager'; }); }, 2500);
-  // troca automática suave enquanto ninguém interagiu e o hero está visível
-  function auto() {
-    clearInterval(timer);
-    if (reduce) return;
-    timer = setInterval(function () {
-      if (tocou || window.scrollY > innerHeight * .5 || document.hidden) return;
-      var ordem = tabs.map(function (t) { return t.dataset.cls; });
-      escolher(ordem[(ordem.indexOf(atual) + 1) % ordem.length]);
-    }, 6500);
-  }
-  if (tabs.length) {
-    requestAnimationFrame(function () { moverPill(tabs[0]); });
-    window.addEventListener('resize', function () { moverPill(tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0]); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { moverPill(tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0]); });
-    stats(atual); auto();
+  // entrada inicial, logo depois da tela de carregamento
+  if (figs.length) {
+    var primeiro = fig('todos');
+    figs.forEach(function (f) { f.classList.toggle('is-on', f === primeiro); });
+    var an0 = entrar(primeiro, 1050);
+    if (an0) an0.onfinish = function () { an0.cancel(); };
+    setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) im.loading = 'eager'; }); }, 2600);
   }
 
   /* ---------- Busca do hero → filtros reais do estoque ---------- */
@@ -89,6 +80,7 @@
   function sincronizarSeg(cls) {
     hcat = cls;
     segs.forEach(function (b) { var on = b.dataset.hcat === cls; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+    trocarCarro(cls);
   }
   segs.forEach(function (b) { b.addEventListener('click', function () { sincronizarSeg(b.dataset.hcat); }); });
   var ordemEstoque = $('#ordem'), ordemHero = $('#hero-ordem');
