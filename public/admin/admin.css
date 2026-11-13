@@ -345,3 +345,15 @@ button, input, select, textarea { font-family: "Manrope", system-ui, sans-serif;
   .tabela-rolagem tr.aberto td.acoes-col { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); text-align: left; }
   .tabela-rolagem tr.aberto td.acoes-col > * { margin: 0; flex: 1 1 calc(50% - 8px); justify-content: center; text-align: center; }
 }
+
+/* Estoque no celular: a tabela não pode forçar 640 px de largura (empurrava os cartões para fora da tela) */
+@media (max-width: 760px) {
+  .tabela-rolagem table { min-width: 0 !important; width: 100%; table-layout: auto; }
+  .tabela-rolagem tr { width: 100%; box-sizing: border-box; overflow: hidden; }
+  .tabela-rolagem .td-carro, .tabela-rolagem .car-cel > div { min-width: 0; }
+  .tabela-rolagem .car-cel b { overflow-wrap: anywhere; font-size: 15px; }
+  .tabela-rolagem .car-cel small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tabela-rolagem .td-st select[data-status] { max-width: 128px; padding: 6px 32px 6px 10px !important; }
+  .m-barra .btn { min-width: 0; }
+  .view .barra-filtros > *, .view .barra-filtros select, .view .barra-filtros input { flex: 1 1 100%; width: 100%; max-width: none; }
+}
