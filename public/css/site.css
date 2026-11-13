@@ -815,3 +815,32 @@ body::before { opacity: .58; }
 .section::after { background: radial-gradient(26% 32% at 4% 18%, rgba(252, 211, 8, .09), transparent 70%), radial-gradient(24% 28% at 97% 82%, rgba(252, 211, 8, .08), transparent 70%); }
 .scene { background: transparent; }
 .scene-media { inset: -6% 0; -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 66%, transparent 94%); mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 66%, transparent 94%); }
+/* Transição cena → rodapé sem degrau de cor */
+.site-footer { background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 260px) !important; }
+.scene-media { -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); }
+/* Luzes amarelas espalhadas pelo fundo do site inteiro (rolam junto com a página) */
+main { position: relative; isolation: isolate; }
+main::before { content: ""; position: absolute; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(520px 420px at 8% 12%, rgba(252, 211, 8, .08), transparent 70%),
+    radial-gradient(600px 460px at 94% 22%, rgba(252, 211, 8, .07), transparent 70%),
+    radial-gradient(560px 440px at 20% 36%, rgba(252, 211, 8, .065), transparent 70%),
+    radial-gradient(640px 480px at 86% 48%, rgba(252, 211, 8, .075), transparent 70%),
+    radial-gradient(520px 420px at 6% 62%, rgba(252, 211, 8, .07), transparent 70%),
+    radial-gradient(600px 460px at 70% 74%, rgba(252, 211, 8, .06), transparent 70%),
+    radial-gradient(560px 440px at 30% 90%, rgba(252, 211, 8, .07), transparent 70%); }
+.site-footer::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(520px 380px at 12% 40%, rgba(252, 211, 8, .06), transparent 70%), radial-gradient(520px 380px at 90% 70%, rgba(252, 211, 8, .06), transparent 70%); }
+
+/* Textura e grão agora ficam NO FUNDO da página (atrás do conteúdo), nunca por cima dos carros */
+body::before, body::after { content: none !important; display: none !important; }
+body { background: url("../img/textura.webp") 0 0 / 280px 280px repeat, var(--bg); background-blend-mode: soft-light, normal; }
+@media (max-width: 900px) { body { background-size: 200px 200px, auto; } }
+.hero, .scene { background: transparent !important; }
+.hero-light { background:
+    radial-gradient(30% 38% at 10% 16%, rgba(252, 211, 8, .12), transparent 70%),
+    radial-gradient(26% 32% at 94% 6%, rgba(252, 211, 8, .1), transparent 70%),
+    radial-gradient(40% 46% at 70% 60%, rgba(255, 255, 255, .06), transparent 70%),
+    radial-gradient(48% 26% at 68% 84%, rgba(252, 211, 8, .14), transparent 70%); opacity: 1; }
+.site-footer { background: transparent !important; }
+.section::after { content: none; }
