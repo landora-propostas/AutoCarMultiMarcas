@@ -244,7 +244,7 @@
   if (fixo && window.IntersectionObserver) {
     var marca = document.createElement('div'); marca.style.height = '1px'; fixo.parentNode.insertBefore(marca, fixo);
     new IntersectionObserver(function (en) {
-      var preso = !en[0].isIntersecting && en[0].boundingClientRect.top < 0;
+      var preso = !en[0].isIntersecting && en[0].boundingClientRect.top < 100;
       fixo.classList.toggle('preso', preso);
       if (fixo.classList.contains('auto-recolhe')) toggle.setAttribute('aria-expanded', String(!preso && painel.classList.contains('open')));
     }, { rootMargin: '-90px 0px 0px 0px' }).observe(marca);
