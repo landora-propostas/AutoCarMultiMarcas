@@ -45,7 +45,7 @@ export const SITE_PADRAO = {
 
 // Imagens do site que já existem nos arquivos (usadas enquanto nada for enviado pelo painel).
 export const IMAGENS_PADRAO = {
-  logo: "/img/logo-autocar.png",
+  logo: "/img/logo-landora.png",
   favicon: "/favicon.svg",
   heroFundo: "/img/hero-fundo.webp",
   heroCarro: "/img/carros/bmw-m4-hero.webp",
@@ -54,8 +54,8 @@ export const IMAGENS_PADRAO = {
 };
 
 export const SEM_FOTO = "data:image/svg+xml;utf8," + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#eef1f4"/>' +
-  '<text x="600" y="385" fill="#8a95a1" font-family="sans-serif" font-size="42" text-anchor="middle">Sem foto</text></svg>');
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#2b2b2b"/>' +
+  '<text x="600" y="385" fill="#979797" font-family="sans-serif" font-size="42" text-anchor="middle">Sem foto</text></svg>');
 
 export function slugify(t) {
   return String(t == null ? "" : t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
