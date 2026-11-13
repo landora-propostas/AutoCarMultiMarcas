@@ -185,6 +185,6 @@ async function carregarDemo() {
     try { await carregarDemo(); } catch (e2) { console.error(e2); window.CARROS = []; window.ADICIONAIS = []; window.LANDORA = { modo: "demo" }; }
   }
   try {
-    for (const s of ["js/busca.js", "js/main.js", "js/fx.js"]) await carregarScript(s);
+    for (const s of ["js/busca.js", "js/main.js", "js/cinema.js"]) await carregarScript(s);
   } catch (e) { console.error(e); }
 })();

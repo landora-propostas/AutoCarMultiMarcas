@@ -91,28 +91,29 @@
 
   /* ---------- Estoque: cartões gerados a partir de js/carros.js ---------- */
   var list = $('#lista-carros');
-  list.innerHTML = CARROS.map(function (c) {
+  list.innerHTML = CARROS.map(function (c, i) {
+    var ano = c.ano.split('/')[1] || c.ano;
     return '' +
-      '<article class="car-card spot" data-cat="' + c.categoria + '" data-name="' + esc(c.nome.toLowerCase()) + '" data-slug="' + c.slug + '">' +
-        '<div class="car-photo">' +
-          '<span class="year">' + esc(c.ano.split('/')[1] || c.ano) + '</span>' +
+      '<article class="car-card" data-cat="' + c.categoria + '" data-name="' + esc(c.nome.toLowerCase()) + '" data-slug="' + c.slug + '">' +
+        '<header class="cc-top">' +
+          '<span class="cc-mark" aria-hidden="true">' + esc((c.marca || c.nome).charAt(0)) + '</span>' +
+          '<div class="cc-title"><h3><a class="stretch" href="#carro/' + c.slug + '">' + esc(c.nome) + '</a></h3>' +
+          '<p>' + esc(c.condicao) + ' · ' + esc(ano) + '</p></div>' +
+          '<span class="cc-go" aria-hidden="true">' + icon('up-right') + '</span>' +
+        '</header>' +
+        '<div class="cc-photo">' +
           (c.condicao === 'Novo' ? '<span class="tag-new">Novo</span>' : '') +
           '<img class="car-img" src="' + c.foto.src + '" alt="' + esc(c.foto.alt) + '" loading="lazy" style="object-position:' + c.foto.pos + '">' +
-          '<div class="car-reveal">' +
-            '<dl>' + c.destaques.map(function (d) { return '<div><dt>' + esc(d[0]) + '</dt><dd>' + esc(d[1]) + '</dd></div>'; }).join('') + '</dl>' +
-            '<button class="btn btn-primary btn-sm" type="button" data-open-lead data-car="' + esc(c.nome) + '">Falar com consultor</button>' +
-          '</div>' +
         '</div>' +
-        '<div class="car-info">' +
-          '<h3><a class="stretch" href="#carro/' + c.slug + '">' + esc(c.nome) + '</a></h3>' +
-          '<ul class="specs">' +
-            '<li>' + icon('road') + (c.km === 0 ? '0 km' : kmTxt(c.km)) + '</li>' +
-            '<li>' + icon('engine') + esc(c.motor) + '</li>' +
-            '<li>' + icon('gear') + esc(c.cambio) + '</li>' +
-            '<li>' + icon('fuel') + esc(c.combustivel) + '</li>' +
-          '</ul>' +
-          '<div class="car-foot"><p class="price">' + brl(c.preco) + '</p><span class="round" aria-hidden="true">' + icon('arrow') + '</span></div>' +
-        '</div>' +
+        '<ul class="specs">' +
+          '<li>' + icon('road') + (c.km === 0 ? '0 km' : kmTxt(c.km)) + '</li>' +
+          '<li>' + icon('engine') + esc(c.motor) + '</li>' +
+          '<li>' + icon('gear') + esc(c.cambio) + '</li>' +
+        '</ul>' +
+        '<footer class="cc-foot">' +
+          '<div><small>Preço</small><p class="price">' + brl(c.preco) + '</p></div>' +
+          '<button class="btn btn-primary btn-sm cc-btn" type="button" data-open-lead data-car="' + esc(c.nome) + '">Falar com consultor</button>' +
+        '</footer>' +
       '</article>';
   }).join('');
 
@@ -121,7 +122,7 @@
   $$('[data-live="estoque"]').forEach(function (el) { el.setAttribute('data-count', cards.length); });
 
   /* ---------- Entrada ao rolar ---------- */
-  var revealTargets = $$('.section-head .eyebrow, .section-head h2, .steps li, .adv, .car-card, .faq-list details, .cta, .cta2, .toolbar');
+  var revealTargets = $$('.section-head .eyebrow, .section-head h2, .section-side, .steps li, .adv, .car-card, .cc-cta, .toolbar, .mo-card, .mo-values li, .mo-count, .scene-body > *');
   var groups = new Map();
   revealTargets.forEach(function (el) {
     var key = el.parentElement;

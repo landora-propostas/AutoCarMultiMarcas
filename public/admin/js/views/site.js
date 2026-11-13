@@ -55,7 +55,7 @@ export async function site(root, app, args) {
       slot("favicon", "Ícone da aba do navegador (favicon)", "Quadrado, de preferência 256 × 256 px ou SVG.");
   } else if (aba === "imagens") {
     corpo =
-      slot("heroFundo", "Foto de fundo do topo do site", "Foto de carro em paisagem (1920 × 1080 px é ideal). Fica escurecida e translúcida atrás do título.") +
+      slot("heroFundo", "Foto da cena de contato (tela cheia)", "Foto de carro em paisagem (1920 × 1080 px é ideal). Fica escurecida atrás do convite final.") +
       slot("sobre", "Foto da concessionária", "Aparece em “Sobre nós”. Use uma foto da fachada, do pátio ou da equipe (formato paisagem).") +
       slot("cta", "Fundo do bloco “Seu próximo carro”", "Foto de carro ou de entrega. Ela é escurecida automaticamente.");
   } else if (aba === "textos") {

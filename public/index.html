@@ -10,12 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Manrope:wght@400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
   <link rel="icon" id="favicon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preload" as="image" href="img/carros/hero-esportivo.webp">
+  <link rel="stylesheet" href="css/site.css">
   <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
   <div class="loader" aria-hidden="true"><img data-img="logo" src="img/logo-autocar.png" alt=""><span></span></div>
-<div class="progress" aria-hidden="true"></div>
 
 <!-- Símbolos SVG reutilizáveis -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -53,24 +53,25 @@
     <symbol id="chev-l" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="chev-r" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 10h16M8 3v4m8-4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
 
-<header class="site-header" id="topo">
-  <div class="wrap header-row">
+<header class="site-header">
+  <div class="header-row">
     <a class="brand" href="#topo" aria-label="AutoCar Multimarcas, início">
-        <img class="brand-logo" data-img="logo" src="img/logo-autocar.png" width="173" height="52" alt="AutoCar Multimarcas">
-        <span class="brand-sub" aria-hidden="true" hidden></span>
-      </a>
+      <img class="brand-logo" data-img="logo" src="img/logo-autocar.png" width="173" height="52" alt="AutoCar Multimarcas">
+    </a>
 
     <nav class="main-nav" id="menu" aria-label="Principal">
       <span class="nav-pill" aria-hidden="true"></span>
+      <a href="#carros">Estoque</a>
       <a href="#como-funciona">Como funciona</a>
       <a href="#vantagens">Vantagens</a>
-      <a href="#carros">Automóveis</a>
       <a href="#sobre">Sobre nós</a>
       <a href="#contato">Contato</a>
+      <button class="btn btn-primary nav-cta-mobile" type="button" data-open-lead>Quero uma proposta</button>
     </nav>
 
     <a class="header-phone" href="tel:+551100000000" data-href="telefone">
@@ -85,109 +86,67 @@
 </header>
 
 <main>
-  <!-- HERO -->
-  <section class="hero" id="topo">
-    <div class="hero-fundo" aria-hidden="true">
-      <picture>
-        <source media="(max-width: 860px)" srcset="img/carros/bmw-m4-full.webp">
-        <img data-img="heroFundo" src="img/carros/bmw-m4-wide.webp" width="1200" height="750" alt="" fetchpriority="high">
-      </picture>
-    </div>
-
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow"><i class="pulse"></i><span data-s="textos.heroEyebrow">Seu próximo carro, sem enrolação</span></p>
-        <h1 aria-label="Escolha mais rápido. Dirija com prazer.">
-          <span class="ln" aria-hidden="true"><span style="--i:0">Escolha</span></span>
-          <span class="ln" aria-hidden="true"><span style="--i:1"><em>mais rápido.</em></span></span>
-          <span class="ln" aria-hidden="true"><span style="--i:2">Dirija</span></span>
-          <span class="ln" aria-hidden="true"><span style="--i:3"><em>com prazer.</em></span></span>
-        </h1>
-        <p class="lead" data-s="textos.heroLead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary magnetic" href="#carros">Ver carros <svg aria-hidden="true"><use href="#arrow"/></svg></a>
-          <button class="btn btn-ghost magnetic" type="button" data-open-lead>Quero uma proposta</button>
+  <!-- HERO: título + categorias + carro que se aproxima com o scroll -->
+  <section class="hero" id="topo" aria-labelledby="hero-titulo">
+    <div class="hero-pin">
+      <div class="hero-stage" aria-hidden="true">
+        <div class="hero-light"></div>
+        <div class="hero-cars">
+          <figure class="hc is-on" data-cls="cupe"><img src="img/carros/hero-esportivo.webp" width="1800" height="586" alt="" fetchpriority="high"></figure>
+          <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp" width="1800" height="727" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="sedan"><img src="img/carros/hero-sedan.webp" width="1800" height="597" alt="" loading="lazy"></figure>
+          <span class="hero-shadow"></span>
         </div>
-        <ul class="hero-meta">
-          <li><b data-count="4" data-live="estoque">4</b><span>carros em estoque</span></li>
-          <li><b>100%</b><span>vistoriados</span></li>
-          <li><b>15<small>min</small></b><span>para escolher</span></li>
-        </ul>
       </div>
-    </div>
-  </section>
 
-  <!-- FAIXA EM MOVIMENTO -->
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-      <span>Financiamento</span><i></i><span>Troca com avaliação</span><i></i><span>Vistoria completa</span><i></i><span>Garantia</span><i></i><span>Entrega com segurança</span><i></i>
-      <span>Financiamento</span><i></i><span>Troca com avaliação</span><i></i><span>Vistoria completa</span><i></i><span>Garantia</span><i></i><span>Entrega com segurança</span><i></i>
-    </div>
-  </div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><i class="dot"></i><span data-s="textos.heroEyebrow">Seu próximo carro, sem enrolação</span></p>
+          <h1 id="hero-titulo" aria-label="Escolha mais rápido. Dirija com prazer.">
+            <span class="ln" aria-hidden="true"><span style="--i:0">Escolha</span></span>
+            <span class="ln" aria-hidden="true"><span style="--i:1"><em>mais rápido.</em></span></span><br>
+            <span class="ln" aria-hidden="true"><span style="--i:2">Dirija</span></span>
+            <span class="ln" aria-hidden="true"><span style="--i:3"><em>com prazer.</em></span></span>
+          </h1>
 
-  <!-- COMO FUNCIONA -->
-  <section class="section" id="como-funciona">
-    <div class="wrap">
-      <header class="section-head center">
-        <p class="eyebrow">Simples, rápido e seguro</p>
-        <h2>Como funciona</h2>
-      </header>
-      <ol class="steps">
-        <li>
-          <span class="step-n">01</span><span class="step-ico"><svg aria-hidden="true"><use href="#search"/></svg></span>
-          <h3>Escolha o carro</h3>
-          <p>Navegue pelo estoque e separe os modelos que combinam com você.</p>
-        </li>
-        <li>
-          <span class="step-n">02</span><span class="step-ico"><svg aria-hidden="true"><use href="#chat"/></svg></span>
-          <h3>Fale com a gente</h3>
-          <p>Um consultor tira suas dúvidas e ajuda a decidir.</p>
-        </li>
-        <li>
-          <span class="step-n">03</span><span class="step-ico"><svg aria-hidden="true"><use href="#doc"/></svg></span>
-          <h3>Combine as condições</h3>
-          <p>Definimos valor, financiamento, troca ou consórcio e registramos tudo.</p>
-        </li>
-        <li>
-          <span class="step-n">04</span><span class="step-ico"><svg aria-hidden="true"><use href="#key"/></svg></span>
-          <h3>Retire o seu carro</h3>
-          <p>Assine a documentação e saia dirigindo.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
+          <p class="hero-label" id="cls-rot">Escolha uma categoria</p>
+          <div class="hero-tabs" role="tablist" aria-labelledby="cls-rot">
+            <span class="tab-pill" aria-hidden="true"></span>
+            <button type="button" role="tab" aria-selected="true" data-cls="cupe">Esportivo</button>
+            <button type="button" role="tab" aria-selected="false" data-cls="suv">SUV</button>
+            <button type="button" role="tab" aria-selected="false" data-cls="sedan">Sedã</button>
+          </div>
 
-  <!-- VANTAGENS -->
-  <section class="section" id="vantagens">
-    <div class="wrap">
-      <header class="section-head">
-        <h2>Por que comprar na AutoCar Multimarcas</h2>
-      </header>
-      <div class="adv-grid">
-        <article class="adv spot">
-          <svg class="adv-ico" aria-hidden="true"><use href="#play"/></svg>
-          <h3>Vídeo de cada carro</h3>
-          <p>Veja por fora, por dentro e em movimento antes de ir à loja.</p>
-          <a class="more" href="#carros">Saiba mais <svg aria-hidden="true"><use href="#arrow"/></svg></a>
-        </article>
-        <article class="adv spot">
-          <svg class="adv-ico" aria-hidden="true"><use href="#person"/></svg>
-          <h3>Consultor exclusivo</h3>
-          <p>Uma pessoa acompanha você da primeira conversa até a entrega.</p>
-          <a class="more" href="#contato">Saiba mais <svg aria-hidden="true"><use href="#arrow"/></svg></a>
-        </article>
-        <article class="adv spot">
-          <svg class="adv-ico" aria-hidden="true"><use href="#shield"/></svg>
-          <h3>Vistoria antes da compra</h3>
-          <p>Todo carro passa por checagem mecânica e jurídica completa.</p>
-          <a class="more" href="#sobre">Saiba mais <svg aria-hidden="true"><use href="#arrow"/></svg></a>
-        </article>
-        <article class="adv spot">
-          <svg class="adv-ico" aria-hidden="true"><use href="#percent"/></svg>
-          <h3>Condições flexíveis</h3>
-          <p>Financiamento, consórcio e troca com as melhores taxas do mercado.</p>
-          <a class="more" href="#contato">Saiba mais <svg aria-hidden="true"><use href="#arrow"/></svg></a>
-        </article>
+          <dl class="hero-stats" aria-live="polite">
+            <div><dt>Em estoque</dt><dd data-hs="qtd">–</dd></div>
+            <div><dt>A partir de</dt><dd data-hs="preco">–</dd></div>
+            <div><dt>Vistoriados</dt><dd>100%</dd></div>
+          </dl>
+        </div>
+
+        <aside class="hero-note">
+          <i class="dot"></i>
+          <p data-s="textos.heroLead">Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.</p>
+        </aside>
+      </div>
+
+      <div class="wrap hero-dock">
+        <form class="hero-search" id="hero-busca" role="search" aria-label="Buscar no estoque">
+          <div class="hs-head">
+            <span>Buscar no estoque</span>
+            <div class="seg" role="group" aria-label="Categoria">
+              <button type="button" class="is-on" data-hcat="todos" aria-pressed="true">Todos</button>
+              <button type="button" data-hcat="cupe" aria-pressed="false">Cupês</button>
+              <button type="button" data-hcat="sedan" aria-pressed="false">Sedãs</button>
+              <button type="button" data-hcat="suv" aria-pressed="false">SUVs</button>
+            </div>
+          </div>
+          <div class="hs-fields">
+            <label><span>Marca ou modelo</span><input type="search" name="q" placeholder="Ex.: BMW, Civic, Creta" autocomplete="off"></label>
+            <label><span>Ordenar por</span><select name="ordem" id="hero-ordem"></select></label>
+            <button class="btn btn-primary" type="submit">Ver carros <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -195,9 +154,12 @@
   <!-- ESTOQUE -->
   <section class="section" id="carros">
     <div class="wrap">
-      <header class="section-head">
-        <p class="eyebrow">Em estoque</p>
-        <h2>Seleção de carros</h2>
+      <header class="section-head split">
+        <div>
+          <p class="eyebrow">Em estoque</p>
+          <h2>Seleção de carros</h2>
+        </div>
+        <p class="section-side">Cada carro passa por vistoria mecânica e jurídica completa antes de chegar até você.</p>
       </header>
 
       <div class="toolbar">
@@ -207,23 +169,33 @@
           <button class="pill" type="button" data-filter="sedan" aria-pressed="false">Sedãs</button>
           <button class="pill" type="button" data-filter="suv" aria-pressed="false">SUVs</button>
         </div>
-        <label class="search">
-          <svg aria-hidden="true"><use href="#search"/></svg>
-          <input id="busca" type="search" placeholder="Buscar por marca ou modelo" autocomplete="off">
-        </label>
-        <button class="btn btn-ghost adv-toggle" type="button" id="adv-toggle" aria-expanded="false" aria-controls="busca-avancada">
-          <svg aria-hidden="true"><use href="#filtro"/></svg>Busca avançada<span class="badge" id="adv-badge" hidden>0</span>
-        </button>
-        <label class="sort">
-          <span>Ordenar por</span>
-          <select id="ordem" aria-label="Ordenar carros"></select>
-        </label>
+        <div class="tool-right">
+          <label class="search">
+            <svg aria-hidden="true"><use href="#search"/></svg>
+            <input id="busca" type="search" placeholder="Buscar por marca ou modelo" autocomplete="off">
+          </label>
+          <button class="btn btn-ghost adv-toggle" type="button" id="adv-toggle" aria-expanded="false" aria-controls="busca-avancada">
+            <svg aria-hidden="true"><use href="#filtro"/></svg>Busca avançada<span class="badge" id="adv-badge" hidden>0</span>
+          </button>
+          <label class="sort">
+            <span>Ordenar por</span>
+            <select id="ordem" aria-label="Ordenar carros"></select>
+          </label>
+        </div>
       </div>
       <div class="adv-wrap" id="busca-avancada"><div class="adv-inner" id="adv-inner"></div></div>
       <div class="tags" id="adv-tags" hidden></div>
       <p class="result-count" aria-live="polite"><span id="contagem">4</span> carros em estoque</p>
 
-      <div class="cars" id="lista-carros"></div>
+      <div class="fleet">
+        <div class="cars" id="lista-carros"></div>
+        <article class="cc-cta">
+          <p class="eyebrow">Não achou?</p>
+          <h3>Seu próximo carro começa aqui.</h3>
+          <p data-s="textos.ctaTexto">Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.</p>
+          <button class="btn btn-primary btn-sm" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        </article>
+      </div>
 
       <div class="empty" id="vazio" hidden>
         <p>Nenhum carro encontrado com esse filtro.</p>
@@ -232,90 +204,138 @@
     </div>
   </section>
 
-  <!-- SOBRE NÓS -->
+  <!-- COMO FUNCIONA -->
+  <section class="section" id="como-funciona">
+    <div class="wrap">
+      <header class="section-head split">
+        <div>
+          <p class="eyebrow">Simples, rápido e seguro</p>
+          <h2>Como funciona</h2>
+        </div>
+        <p class="section-side">Do primeiro contato até a entrega das chaves, um consultor acompanha você.</p>
+      </header>
+      <div class="track" aria-hidden="true"><span class="track-fill"></span><span class="track-dot"></span></div>
+      <ol class="steps">
+        <li><span class="step-n">01</span><h3>Escolha o carro</h3><p>Navegue pelo estoque e separe os modelos que combinam com você.</p></li>
+        <li><span class="step-n">02</span><h3>Fale com a gente</h3><p>Um consultor tira suas dúvidas e ajuda a decidir.</p></li>
+        <li><span class="step-n">03</span><h3>Combine as condições</h3><p>Definimos valor, financiamento, troca ou consórcio e registramos tudo.</p></li>
+        <li><span class="step-n">04</span><h3>Retire o seu carro</h3><p>Assine a documentação e saia dirigindo.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- VANTAGENS -->
+  <section class="section" id="vantagens">
+    <div class="wrap adv-layout">
+      <header class="section-head adv-head">
+        <p class="eyebrow">Vantagens</p>
+        <h2>Por que comprar na AutoCar Multimarcas</h2>
+        <button class="btn btn-ghost" type="button" data-open-lead>Falar com um consultor <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+      </header>
+      <div class="adv-list">
+        <article class="adv"><span class="adv-n">01</span><svg class="adv-ico" aria-hidden="true"><use href="#play"/></svg><div><h3>Vídeo de cada carro</h3><p>Veja por fora, por dentro e em movimento antes de ir à loja.</p></div></article>
+        <article class="adv"><span class="adv-n">02</span><svg class="adv-ico" aria-hidden="true"><use href="#person"/></svg><div><h3>Consultor exclusivo</h3><p>Uma pessoa acompanha você da primeira conversa até a entrega.</p></div></article>
+        <article class="adv"><span class="adv-n">03</span><svg class="adv-ico" aria-hidden="true"><use href="#shield"/></svg><div><h3>Vistoria antes da compra</h3><p>Todo carro passa por checagem mecânica e jurídica completa.</p></div></article>
+        <article class="adv"><span class="adv-n">04</span><svg class="adv-ico" aria-hidden="true"><use href="#percent"/></svg><div><h3>Condições flexíveis</h3><p>Financiamento, consórcio e troca com as melhores taxas do mercado.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE NÓS: mosaico -->
   <section class="section" id="sobre">
-    <div class="wrap about-grid">
-      <div class="about-copy">
-        <p class="eyebrow">Sobre nós</p>
-        <h2 data-s="textos.sobreTitulo">Uma concessionária feita para você escolher com segurança</h2>
-        <p data-s="textos.sobreP1">A AutoCar Multimarcas nasceu para tornar a compra de um carro mais simples e transparente. Selecionamos cada veículo do nosso estoque, revisamos item por item e mostramos tudo com clareza, do quilômetro rodado ao histórico.</p>
-        <p data-s="textos.sobreP2">Do primeiro contato até a entrega das chaves, um consultor acompanha você, tira as dúvidas e apresenta as melhores condições de financiamento e de troca.</p>
-        <ul class="about-values">
+    <div class="wrap mosaic">
+      <figure class="mo-photo reveal-img">
+        <img data-img="sobre" src="img/fachada.webp" alt="Fachada da concessionária AutoCar Multimarcas" width="1254" height="1254" loading="lazy">
+        <figcaption>
+          <p class="eyebrow">Sobre nós</p>
+          <h2 data-s="textos.sobreTitulo">Uma concessionária feita para você escolher com segurança</h2>
+        </figcaption>
+      </figure>
+      <div class="mo-side">
+        <article class="mo-card">
+          <p data-s="textos.sobreP1">A AutoCar Multimarcas nasceu para tornar a compra de um carro mais simples e transparente. Selecionamos cada veículo do nosso estoque, revisamos item por item e mostramos tudo com clareza, do quilômetro rodado ao histórico.</p>
+          <p data-s="textos.sobreP2">Do primeiro contato até a entrega das chaves, um consultor acompanha você, tira as dúvidas e apresenta as melhores condições de financiamento e de troca.</p>
+          <button class="btn btn-primary btn-sm" type="button" data-open-lead>Falar com a AutoCar Multimarcas <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        </article>
+        <ul class="mo-values">
           <li><svg aria-hidden="true"><use href="#shield"/></svg><div><b>Transparência</b><span>Informações completas e sem surpresas.</span></div></li>
           <li><svg aria-hidden="true"><use href="#check"/></svg><div><b>Carros selecionados</b><span>Vistoria mecânica e jurídica antes da venda.</span></div></li>
           <li><svg aria-hidden="true"><use href="#person"/></svg><div><b>Atendimento próximo</b><span>Um consultor com você em todas as etapas.</span></div></li>
         </ul>
-        <button class="btn btn-primary" type="button" data-open-lead>Falar com a AutoCar Multimarcas <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        <a class="mo-count" href="#carros">
+          <img src="img/carros/hero-sedan.webp" alt="" loading="lazy" width="1800" height="597">
+          <small>Carros em estoque</small>
+          <b data-count="4" data-live="estoque">4</b>
+          <span class="mo-go" aria-hidden="true"><svg><use href="#up-right"/></svg></span>
+        </a>
       </div>
-      <figure class="about-photo">
-        <img data-img="sobre" src="img/fachada.webp" alt="Fachada da concessionária" width="1254" height="1254" loading="lazy">
-      </figure>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="section cta-section" id="contato">
-    <div class="wrap">
-      <div class="cta2">
-        <div class="cta2-bg" aria-hidden="true"><img data-img="cta" src="img/carros/hyundai-creta.webp" alt="" loading="lazy" width="736" height="414"><img data-img="cta" class="refl" src="img/carros/hyundai-creta.webp" alt="" loading="lazy" width="736" height="414"></div>
-        <div class="cta2-beam" aria-hidden="true"></div>
-                <div class="cta2-body">
-          <p class="eyebrow">Vamos conversar</p>
-          <h2>Seu próximo carro<br><em>começa aqui.</em></h2>
-          <p class="cta2-text" data-s="textos.ctaTexto">Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.</p>
-          <div class="cta2-actions">
-            <button class="btn btn-primary magnetic" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
-            <a class="btn btn-ghost magnetic" href="#carros">Ver estoque</a>
-          </div>
-          <ul class="cta2-contact">
-            <li><svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span></li>
-            <li><svg aria-hidden="true"><use href="#mail"/></svg><span data-s="contato.email">E-mail da loja</span></li>
-            <li><svg aria-hidden="true"><use href="#pin"/></svg><span data-s="contato.endereco">Endereço da loja</span></li>
-          </ul>
-        </div>
+  <!-- CENA + CONTATO -->
+  <section class="scene cta2" id="contato">
+    <div class="scene-media" aria-hidden="true">
+      <img data-img="heroFundo" src="img/carros/bmw-m4-wide.webp" alt="" loading="lazy" width="1200" height="750">
+    </div>
+    <span class="scene-line l1" aria-hidden="true"></span><span class="scene-line l2" aria-hidden="true"></span>
+    <div class="wrap scene-body">
+      <p class="eyebrow">Vamos conversar</p>
+      <h2>Seu próximo carro<br><em>começa aqui.</em></h2>
+      <p class="cta2-text" data-s="textos.ctaTexto">Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.</p>
+      <div class="cta2-actions">
+        <button class="btn btn-primary magnetic" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        <a class="btn btn-ghost btn-light magnetic" href="#carros">Ver estoque</a>
       </div>
+      <ul class="cta2-contact">
+        <li><a href="tel:+551100000000" data-href="telefone"><svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span></a></li>
+        <li><a href="mailto:landora.proposta@gmail.com" data-href="email"><svg aria-hidden="true"><use href="#mail"/></svg><span data-s="contato.email">landora.proposta@gmail.com</span></a></li>
+        <li><svg aria-hidden="true"><use href="#pin"/></svg><span data-s="contato.endereco">Rua Exemplo, 123, Vinhedo, SP</span></li>
+      </ul>
     </div>
   </section>
 </main>
 
 <footer class="site-footer">
-  <div class="wrap foot-grid">
-    <div class="foot-brand">
-      <a class="brand" href="#topo" aria-label="AutoCar Multimarcas, início">
-        <img class="brand-logo" data-img="logo" src="img/logo-autocar.png" width="173" height="52" alt="AutoCar Multimarcas">
-        <span class="brand-sub" aria-hidden="true" hidden></span>
-      </a>
-      <p data-s="textos.rodape">Carros premium para quem escolhe o melhor.</p>
+  <div class="wrap">
+    <div class="foot-panel">
+      <div class="foot-brand">
+        <a class="brand" href="#topo" aria-label="AutoCar Multimarcas, início">
+          <img class="brand-logo" data-img="logo" src="img/logo-autocar.png" width="173" height="52" alt="AutoCar Multimarcas">
+        </a>
+        <p data-s="textos.rodape">Carros premium para quem escolhe o melhor.</p>
+        <button class="btn btn-primary btn-sm" type="button" data-open-lead>Quero uma proposta <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+      </div>
+      <nav aria-label="Navegação">
+        <h4>Navegação</h4>
+        <a href="#carros">Estoque</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#vantagens">Vantagens</a>
+        <a href="#sobre">Sobre nós</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <nav aria-label="Serviços">
+        <h4>Serviços</h4>
+        <a href="#contato">Compra de seminovos</a>
+        <a href="#contato">Seguro</a>
+        <a href="#contato">Financiamento</a>
+        <a href="#contato">Consórcio</a>
+        <a href="#contato">Acessórios</a>
+      </nav>
+      <div class="foot-contact">
+        <h4>Contato</h4>
+        <a href="tel:+551100000000" data-href="telefone"><svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span></a>
+        <a href="mailto:landora.proposta@gmail.com" data-href="email"><svg aria-hidden="true"><use href="#mail"/></svg><span data-s="contato.email">landora.proposta@gmail.com</span></a>
+        <p><svg aria-hidden="true"><use href="#pin"/></svg><span data-s="contato.endereco">Rua Exemplo, 123, Vinhedo, SP</span></p>
+        <p class="hours" data-s="contato.horario">Todos os dias, das 9h às 19h</p>
+        <div class="foot-social" id="redes" hidden></div>
+      </div>
+      <img class="foot-car" src="img/carros/hero-esportivo.webp" alt="" loading="lazy" width="1800" height="586">
     </div>
-    <nav aria-label="Navegação">
-      <h4>Navegação</h4>
-      <a href="#carros">Automóveis</a>
-      <a href="#vantagens">Financiamento</a>
-      <a href="#como-funciona">Troca</a>
-      <a href="#sobre">Sobre nós</a>
-      <a href="#contato">Contato</a>
-    </nav>
-    <nav aria-label="Serviços">
-      <h4>Serviços</h4>
-      <a href="#contato">Compra de seminovos</a>
-      <a href="#contato">Seguro</a>
-      <a href="#contato">Financiamento</a>
-      <a href="#contato">Consórcio</a>
-      <a href="#contato">Acessórios</a>
-    </nav>
-    <div class="foot-contact">
-      <h4>Contato</h4>
-      <a href="tel:+551100000000" data-href="telefone"><svg aria-hidden="true"><use href="#phone"/></svg><span data-s="contato.telefone">(11) 0000-0000</span></a>
-      <a href="mailto:landora.proposta@gmail.com" data-href="email"><svg aria-hidden="true"><use href="#mail"/></svg><span data-s="contato.email">landora.proposta@gmail.com</span></a>
-      <p><svg aria-hidden="true"><use href="#pin"/></svg><span data-s="contato.endereco">Rua Exemplo, 123, Vinhedo, SP</span></p>
-      <p class="hours" data-s="contato.horario">Todos os dias, das 9h às 19h</p>
-      <div class="foot-social" id="redes" hidden></div>
+    <p class="foot-mark" aria-hidden="true">AUTOCAR</p>
+    <div class="legal">
+      <p>© 2026 <span data-s="marca.nome">AutoCar Multimarcas</span>. Todos os direitos reservados.</p>
+      <div><a href="#topo">Política de privacidade</a><a href="#topo">Termos de uso</a></div>
     </div>
-  </div>
-  <div class="wrap legal">
-    <p>© 2026 <span data-s="marca.nome">AutoCar Multimarcas</span>. Todos os direitos reservados.</p>
-    <a href="#topo">Política de privacidade</a>
-    <a href="#topo">Termos de uso</a>
   </div>
 </footer>
 
@@ -348,7 +368,7 @@
   <div class="sheet-body" id="detalhe-corpo"></div>
 </dialog>
 
-<!-- dados.js lê o Firestore (ou js/carros.js, no modo de demonstração) e só então inicia busca.js, main.js e fx.js -->
+<!-- dados.js lê o Firestore (ou js/carros.js, no modo de demonstração) e só então inicia busca.js, main.js e cinema.js -->
 <script type="module" src="js/dados.js"></script>
 </body>
 </html>

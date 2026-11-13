@@ -12,7 +12,7 @@ Site de concessionária de carros premium. Versão atual: **somente visual** (HT
 autocar-multimarcas/
 ├── public/              # tudo que vai para o ar (Firebase Hosting)
 │   ├── index.html
-│   ├── css/styles.css
+│   ├── css/site.css
 │   └── js/main.js
 ├── .devcontainer/       # configuração do Codespaces (já instala o firebase-tools)
 ├── firebase.json        # configuração do Hosting
