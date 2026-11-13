@@ -26,21 +26,21 @@ export const CATEGORIAS_PADRAO = [
 
 // Textos que já existem no site. Campo vazio no painel = usar este padrão.
 export const SITE_PADRAO = {
-  marca: { nome: "Landora Motors", sub: "MOTORS" },
+  marca: { nome: "AutoCar Multimarcas", sub: "" },
   textos: {
     heroEyebrow: "Seu próximo carro, sem enrolação",
     heroL1: "Escolha", heroL2: "mais rápido.", heroL3: "Dirija", heroL4: "com prazer.",
     heroLead: "Carros premium para quem valoriza desempenho, tecnologia e estilo. Veja o estoque, fale com um consultor e feche o negócio com segurança.",
     sobreTitulo: "Uma concessionária feita para você escolher com segurança",
-    sobreP1: "A Landora Motors nasceu para tornar a compra de um carro mais simples e transparente. Selecionamos cada veículo do nosso estoque, revisamos item por item e mostramos tudo com clareza, do quilômetro rodado ao histórico.",
+    sobreP1: "A AutoCar Multimarcas nasceu para tornar a compra de um carro mais simples e transparente. Selecionamos cada veículo do nosso estoque, revisamos item por item e mostramos tudo com clareza, do quilômetro rodado ao histórico.",
     sobreP2: "Do primeiro contato até a entrega das chaves, um consultor acompanha você, tira as dúvidas e apresenta as melhores condições de financiamento e de troca.",
     ctaL1: "Seu próximo carro", ctaL2: "começa aqui.",
     ctaTexto: "Conte o que você procura e um consultor seleciona as melhores opções, com simulação de financiamento e avaliação da sua troca.",
     rodape: "Carros premium para quem escolhe o melhor."
   },
-  contato: { telefone: "(11) 0000-0000", whatsapp: "", email: "contato@landora.com.br", endereco: "Rua Exemplo, 123, Vinhedo, SP", horario: "Todos os dias, das 9h às 19h" },
+  contato: { telefone: "(11) 0000-0000", whatsapp: "", email: "contato@autocarmultimarcas.com.br", endereco: "Rua Exemplo, 123, Vinhedo, SP", horario: "Todos os dias, das 9h às 19h" },
   redes: { instagram: "", facebook: "", youtube: "", tiktok: "" },
-  seo: { titulo: "Landora Motors | Carros premium", descricao: "Carros premium para quem valoriza desempenho, tecnologia e estilo. Escolha online e fale com um consultor." }
+  seo: { titulo: "AutoCar Multimarcas | Carros premium", descricao: "Carros premium para quem valoriza desempenho, tecnologia e estilo. Escolha online e fale com um consultor." }
 };
 
 // Imagens do site que já existem nos arquivos (usadas enquanto nada for enviado pelo painel).

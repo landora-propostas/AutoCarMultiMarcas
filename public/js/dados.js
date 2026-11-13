@@ -181,7 +181,7 @@ async function carregarDemo() {
   try {
     await carregarDoFirebase();
   } catch (e) {
-    if (e && e.message !== "nao-iniciado") console.warn("Landora: usando os carros de exemplo.", e);
+    if (e && e.message !== "nao-iniciado") console.warn("AutoCar: usando os carros de exemplo.", e);
     try { await carregarDemo(); } catch (e2) { console.error(e2); window.CARROS = []; window.ADICIONAIS = []; window.LANDORA = { modo: "demo" }; }
   }
   try {

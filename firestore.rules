@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Regras do Firestore da Landora Motors.
+// Regras do Firestore da AutoCar Multimarcas.
 //  - O público (site) só lê o que precisa e só consegue: enviar um pedido (leads) e somar +1 visita num carro publicado.
 //  - Tudo o mais (criar/editar/excluir) exige login com e-mail CONFIRMADO e autorizado na coleção "admins".
 //  - O ID de cada documento em "admins" é o e-mail da pessoa, em minúsculas.

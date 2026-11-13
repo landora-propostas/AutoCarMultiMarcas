@@ -1,4 +1,4 @@
-# Landora Motors — concessionaria-landora
+# AutoCar Multimarcas
 
 Site de concessionária de carros premium. Versão atual: **somente visual** (HTML, CSS e JS puros, sem build).
 

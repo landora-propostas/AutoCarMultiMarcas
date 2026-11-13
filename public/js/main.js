@@ -1,4 +1,4 @@
-// Interações do site da Landora Motors.
+// Interações do site da AutoCar Multimarcas.
 // Os carros vêm de js/carros.js. A integração com o Firebase (login, estoque, pedidos)
 // entra em uma próxima etapa.
 

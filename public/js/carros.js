@@ -1,4 +1,4 @@
-// Estoque da Landora Motors.
+// Estoque da AutoCar Multimarcas.
 //
 // ATENÇÃO: os valores abaixo (quilometragem, preço, ano, cor e histórico) são
 // EXEMPLOS para montar o visual. Troque pelos dados reais de cada carro antes de divulgar.

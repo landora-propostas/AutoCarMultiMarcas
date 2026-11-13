@@ -1,4 +1,4 @@
-// Painel da Landora Motors: login (Firebase Authentication), autorização e navegação.
+// Painel da AutoCar Multimarcas: login (Firebase Authentication), autorização e navegação.
 import { iniciar } from "/js/firebase-boot.js";
 import { OPCOES } from "/js/firebase-config.js";
 import { $, $$, esc, toast } from "./ui.js";

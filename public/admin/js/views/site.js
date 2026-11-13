@@ -77,7 +77,7 @@ export async function site(root, app, args) {
       input("contato", "horario", "Horário de funcionamento", contato, 'maxlength="60"') +
       '<div class="span-2">' + input("contato", "endereco", "Endereço", contato, 'maxlength="140"') + "</div></div></section>" +
       '<section class="cartao"><div class="cartao-topo"><div><h2>Redes sociais</h2><p>Opcional. Pode ser o link completo ou só o nome de usuário. Só aparecem no rodapé as que estiverem preenchidas.</p></div></div><div class="grade g2">' +
-      input("redes", "instagram", "Instagram", redes, 'maxlength="120" placeholder="landoramotors"') +
+      input("redes", "instagram", "Instagram", redes, 'maxlength="120" placeholder="autocarmultimarcas"') +
       input("redes", "facebook", "Facebook", redes, 'maxlength="120"') +
       input("redes", "youtube", "YouTube", redes, 'maxlength="120"') +
       input("redes", "tiktok", "TikTok", redes, 'maxlength="120"') + "</div></section>";

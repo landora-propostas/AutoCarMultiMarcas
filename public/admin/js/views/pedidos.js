@@ -25,7 +25,7 @@ export async function pedidos(root, app) {
             "<td>" + esc(l.carro || "Ainda não sei") + "</td>" +
             '<td><select data-status aria-label="Situação do pedido" style="width:auto;padding:6px 10px">' +
               Object.keys(STATUS_LEAD).map(function (k) { return '<option value="' + k + '"' + (k === st ? " selected" : "") + ">" + STATUS_LEAD[k] + "</option>"; }).join("") + "</select></td>" +
-            '<td class="acoes-col"><a class="btn peq primary" target="_blank" rel="noopener" href="' + esc(linkWhats(l.whatsapp, "Olá, " + l.nome + "! Aqui é da Landora Motors" + (l.carro && l.carro !== "Ainda não sei" ? " sobre o " + l.carro : "") + ".")) + '">WhatsApp ↗</a>' +
+            '<td class="acoes-col"><a class="btn peq primary" target="_blank" rel="noopener" href="' + esc(linkWhats(l.whatsapp, "Olá, " + l.nome + "! Aqui é da AutoCar Multimarcas" + (l.carro && l.carro !== "Ainda não sei" ? " sobre o " + l.carro : "") + ".")) + '">WhatsApp ↗</a>' +
             '<button class="btn peq perigo" type="button" data-del>Excluir</button></td></tr>';
         }).join("") + "</tbody></table></div>" : '<div class="vazio">' + (leads.length ? "Nenhum pedido com essa situação." : "Nenhum pedido recebido ainda. Eles aparecem aqui quando alguém usa “Quero uma proposta” no site.") + "</div>");
   }
