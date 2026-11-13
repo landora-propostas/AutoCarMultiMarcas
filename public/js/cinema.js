@@ -201,6 +201,28 @@
     if (mexe) requestAnimationFrame(quadro); else rodando = false;
   }
   function pedir() { if (!rodando) { rodando = true; requestAnimationFrame(quadro); } }
+  // Calibra o zoom: no fim do scroll do hero, o carro ocupa a largura da barra de busca.
+  var dock = $('.hero-search');
+  function calibrar() {
+    if (!palco || !dock || !desktop.matches || reduce) return;
+    var ant = palco.style.transform; palco.style.transform = 'none';
+    var s0 = parseFloat(getComputedStyle(palco).getPropertyValue('--s0')) || 1;
+    var c = palco.getBoundingClientRect(), d = dock.getBoundingClientRect();
+    var im = $('.hc.is-on img', palco) || $('.hc img', palco);
+    var sobra = im ? Math.max(0, im.getBoundingClientRect().bottom - c.bottom) : 0;
+    palco.style.transform = ant;
+    var w0 = c.width * s0, h0 = c.height * s0;
+    var k = Math.max(1, d.width / w0) - 1;
+    var hf = h0 * (1 + k);
+    var cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+    palco.style.setProperty('--zk', k.toFixed(4));
+    palco.style.setProperty('--zx', (d.left + d.width / 2 - cx).toFixed(1) + 'px');
+    palco.style.setProperty('--zy', (d.top - 14 - hf / 2 - sobra * s0 * (1 + k) - cy).toFixed(1) + 'px');
+  }
+  calibrar();
+  window.addEventListener('resize', calibrar);
+  window.addEventListener('load', calibrar);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(calibrar);
   window.addEventListener('scroll', pedir, { passive: true });
   window.addEventListener('resize', pedir);
   if (desktop.addEventListener) desktop.addEventListener('change', pedir);

@@ -782,3 +782,20 @@ img, video, iframe { max-width: 100%; }
 }
 @media (min-width: 901px) and (max-width: 1500px) { .hero h1 { font-size: clamp(38px, min(5.2vw, 9.4vh), 86px); } }
 @media (min-width: 901px) and (max-width: 1500px) { .hero-cars { scale: 1; } }
+/* Zoom do scroll calibrado por JS: no fim, o carro tem a largura da barra de busca e fica centralizado sobre ela */
+@media (min-width: 901px) {
+  .hero-cars { scale: none; --s0: 1.1; transform-origin: 50% 50%;
+    transform: translate(calc(var(--hp) * var(--zx, 0px)), calc(var(--hp) * var(--zy, 0px))) scale(calc(var(--s0) * (1 + var(--hp) * var(--zk, .3)))); }
+}
+@media (min-width: 901px) and (max-width: 1500px) { .hero-cars { --s0: 1; } }
+
+/* Fundo um pouco mais aparente + luzes amarelas bem transparentes */
+body::before { opacity: .58; }
+.hero-light { background:
+    radial-gradient(34% 40% at 12% 18%, rgba(252, 211, 8, .055), transparent 70%),
+    radial-gradient(30% 36% at 92% 8%, rgba(252, 211, 8, .045), transparent 70%),
+    radial-gradient(40% 46% at 70% 60%, rgba(255, 255, 255, .075), transparent 70%),
+    radial-gradient(50% 26% at 70% 80%, rgba(252, 211, 8, .07), transparent 70%),
+    linear-gradient(180deg, #111 0%, #161616 62%, #121212 100%); }
+.section::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(28% 34% at 6% 20%, rgba(252, 211, 8, .04), transparent 70%), radial-gradient(26% 30% at 96% 80%, rgba(252, 211, 8, .035), transparent 70%); }
