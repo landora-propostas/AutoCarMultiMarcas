@@ -126,7 +126,7 @@ async function resolverImagens(ctx, cfg) {
    A primeira visita lê o Firestore e guarda tudo no aparelho. As visitas seguintes abrem
    na hora com o que está guardado, sem ler o banco. Passado o prazo (VALIDADE), o site
    ainda abre com o guardado e atualiza em segundo plano para a próxima visita. */
-const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v1", VALIDADE = 30 * 60 * 1000;
+const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v2", VALIDADE = 30 * 60 * 1000;
 function abrirCache() {
   return new Promise(function (ok, erro) {
     if (!("indexedDB" in window)) return erro(new Error("sem-indexeddb"));

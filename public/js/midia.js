@@ -79,15 +79,16 @@ export async function processar(arquivo, opts) {
   }
   if (dataUrl.length > limite) throw new Error("A imagem continua pesada demais depois de reduzida. Tente uma menor.");
   let thumbDataUrl = null;
-  if (opts.miniatura) thumbDataUrl = await lerDataUrl(await codificar(desenhar(bmp, opts.miniatura), false, 0.76));
+  if (opts.miniatura) thumbDataUrl = await lerDataUrl(await codificar(desenhar(bmp, opts.miniatura), false, 0.72));
   return { blob: blob, dataUrl: dataUrl, tipo: blob.type, w: canvas.width, h: canvas.height, thumbDataUrl: thumbDataUrl };
 }
 
 // Gera uma miniatura a partir de um data URL (usado quando uma foto antiga vira capa).
-export async function miniaturaDe(dataUrl, maiorLado) {
+export const CAPA_LADO = 560;
+export async function miniaturaDe(dataUrl, maiorLado, q) {
   const blob = await (await fetch(dataUrl)).blob();
   const bmp = await abrirImagem(blob);
-  return lerDataUrl(await codificar(desenhar(bmp, maiorLado || 800), false, 0.76));
+  return lerDataUrl(await codificar(desenhar(bmp, maiorLado || CAPA_LADO), false, q || 0.72));
 }
 
 function extensao(tipo) {

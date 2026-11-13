@@ -2,7 +2,7 @@
 import { esc, toast, confirmar, debounce, ordenarPor } from "../ui.js";
 import { carroForm } from "./carro-form.js";
 import { apagarSemUso, persistir } from "../fotos.js";
-import { processar } from "/js/midia.js";
+import { processar, miniaturaDe, CAPA_LADO } from "/js/midia.js";
 import { STATUS, reais, milhar, hoje, SEM_FOTO } from "/js/modelo.js";
 
 export async function carros(root, app, args) {
@@ -61,6 +61,7 @@ async function lista(root, app) {
       }).join("") + "</tbody></table></div>";
   }
   desenhar();
+  otimizarCapas(app, todos);
 
   // Importa a pasta "autocar-importacao": importar.json + fotos/<endereço>/01.jpg...
   // Carros com endereço já existente são pulados. Tudo entra como rascunho.
@@ -96,7 +97,7 @@ async function lista(root, app) {
           const arq = porCaminho[c.slug + "/" + c.fotos[i]];
           if (!arq) continue;
           try {
-            const proc = await processar(arq, { max: 1600, limite: storage ? Infinity : undefined, miniatura: i === 0 ? 800 : 0 });
+            const proc = await processar(arq, { max: 1600, limite: storage ? Infinity : undefined, miniatura: i === 0 ? CAPA_LADO : 0 });
             const g = await persistir(app, { _novo: proc, alt: c.nome }, "carros/" + c.slug);
             if (i === 0 || !capa) capa = Object.assign({}, g);
             const sem = Object.assign({}, g); delete sem.thumb; galeria.push(sem);
@@ -211,4 +212,27 @@ function barraProgresso(nCarros, total) {
     },
     fechar: function () { window.onbeforeunload = antes || null; el.remove(); }
   };
+}
+
+// Capas antigas foram gravadas grandes (800 px) e deixavam o site lento para abrir.
+// Ao abrir o estoque, reduz em segundo plano as capas pesadas. Roda uma vez por carro.
+let otimizando = false;
+async function otimizarCapas(app, carros) {
+  if (otimizando || app.ctx.opcoes.armazenamento === "storage") return;
+  const pesadas = carros.filter(function (c) { return c.foto && c.foto.thumb && c.foto.thumb.length > 60000; });
+  if (!pesadas.length) return;
+  otimizando = true;
+  let n = 0;
+  for (const c of pesadas) {
+    try {
+      const nova = await miniaturaDe(c.foto.thumb, CAPA_LADO);
+      if (nova.length < c.foto.thumb.length) {
+        const foto = Object.assign({}, c.foto, { thumb: nova });
+        await app.repo.atualizar("carros", c.id, { foto: foto });
+        c.foto = foto; n++;
+      }
+    } catch (e) { console.warn("Capa não otimizada:", c.id, e); }
+  }
+  otimizando = false;
+  if (n) toast(n + (n === 1 ? " capa otimizada" : " capas otimizadas") + " para o site abrir mais rápido.");
 }

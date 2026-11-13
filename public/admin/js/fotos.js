@@ -1,5 +1,5 @@
 // Componentes de foto do painel: galeria do carro e campo de imagem única (logo, hero, etc.).
-import { processar, gravar, carregar, miniaturaDe, apagar, chaveDe } from "/js/midia.js";
+import { processar, gravar, carregar, miniaturaDe, apagar, chaveDe, CAPA_LADO } from "/js/midia.js";
 import { semUndefined } from "/js/modelo.js";
 import { esc, ico, toast, abrirModal } from "./ui.js";
 
@@ -34,7 +34,7 @@ export async function miniaturaDaCapa(app, it) {
   if (it._novo && it._novo.thumbDataUrl) return it._novo.thumbDataUrl;
   if (it.thumb) return it.thumb;
   if (!it._url) it._url = await carregar(app.ctx, it);
-  return it._url ? miniaturaDe(it._url, 800) : null;
+  return it._url ? miniaturaDe(it._url, CAPA_LADO) : null;
 }
 
 // Apaga fotos que não estão mais em uso por nenhum carro nem pelas configurações do site.
@@ -93,7 +93,7 @@ function editarFoto(it, aoSalvar) {
 // itens é alterado no lugar. A primeira foto é a capa.
 export function galeria(box, app, cfg) {
   const itens = cfg.itens, max = cfg.max || 15;
-  const miniatura = app.ctx.opcoes.armazenamento === "storage" ? 0 : 800;
+  const miniatura = app.ctx.opcoes.armazenamento === "storage" ? 0 : CAPA_LADO;
 
   function tile(it, i) {
     if (it._carregando) return '<div class="foto processando"><div class="spin"></div>Reduzindo…</div>';
