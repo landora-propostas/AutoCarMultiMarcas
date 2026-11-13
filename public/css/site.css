@@ -754,3 +754,7 @@ img, video, iframe { max-width: 100%; }
   .hero-cars { align-self: center; }
   .hero-dock { margin-top: 3vh; }
 }
+@media (min-width: 901px) {
+  .hero-grid { grid-template-columns: minmax(0, 4.3fr) minmax(0, 7.7fr); }
+  .hero-cars { align-self: end; margin-bottom: -1vh; }
+}
