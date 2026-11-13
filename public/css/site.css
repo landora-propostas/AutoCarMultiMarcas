@@ -921,3 +921,23 @@ main::before { background:
    ganha camada própria para o hover não redesenhar a página inteira ao rolar. */
 .car-card { content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .cc-photo img { backface-visibility: hidden; }
+
+/* ---------- Fluidez (rolagem e busca avançada) ---------- */
+/* Filtros (brilho, contraste, saturação) em imagens grandes que se movem obrigam o navegador
+   a redesenhar a foto a cada quadro. Sem eles o movimento fica liso. */
+.hc img, .cc-photo img, .car-card:hover .cc-photo img, .mo-count img { filter: none !important; }
+.cc-photo img { transition: transform .9s var(--ease); }
+.hero-cars { will-change: transform; }
+/* Busca avançada: abre sem animar a altura (que recalculava a página inteira a cada quadro);
+   só um deslize curto com opacidade, feito pela placa de vídeo. */
+.adv-wrap { display: block; transition: none; margin-top: 0; }
+.adv-wrap:not(.open) { display: none; }
+.adv-wrap.open { margin-top: 12px; }
+.adv-inner, .adv-wrap.open .adv-inner { overflow: visible; transition: none; opacity: 1; padding: 22px 24px; border-color: var(--line);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px 24px; }
+.adv-wrap.open .adv-inner { animation: adv-in .28s var(--ease) both; }
+@keyframes adv-in { from { opacity: 0; transform: translate3d(0, -8px, 0); } to { opacity: 1; transform: none; } }
+.fgroup h4 { margin-bottom: 10px; }
+.fchips { gap: 6px; }
+.fchip { padding: 8px 13px; }
+@media (prefers-reduced-motion: reduce) { .adv-wrap.open .adv-inner { animation: none; } }

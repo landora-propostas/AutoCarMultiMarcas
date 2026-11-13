@@ -27,7 +27,7 @@
   });
   function porSlug(s) { return CARROS.filter(function (c) { return c.slug === s; })[0]; }
 
-  function unicos(f) { return CARROS.map(f).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(); }
+  function unicos(f) { return CARROS.map(f).filter(function (v, i, a) { return v !== '' && v != null && a.indexOf(v) === i; }).sort(); }
   var marcas = unicos(function (c) { return c._marca; });
   var cambios = unicos(function (c) { return c.cambio; });
   var combs = unicos(function (c) { return c.combustivel; });
@@ -230,6 +230,8 @@
     if (rolar && !vai) { var t = $('.result-count'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
   toggle.addEventListener('click', function () { abrir(); });
+  // No computador a busca avançada já vem aberta; no celular começa fechada.
+  if (matchMedia('(min-width: 901px)').matches) abrir(true);
 
   window.BUSCA = { passa: passa, ordenar: ordenar, porSlug: porSlug, limpar: limpar };
   sincronizar();
