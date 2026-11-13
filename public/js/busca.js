@@ -237,9 +237,8 @@
     abrir();
   });
   // No computador a busca avançada já vem aberta; no celular começa fechada.
-  // Ao rolar pelos anúncios, a barra fica presa no topo só com a linha de busca (o painel
-  // grande recolhe sozinho para não pesar a rolagem); um clique em "Busca avançada" o abre ali.
-  if (matchMedia('(min-width: 901px)').matches) { abrir(true); if (fixo) fixo.classList.add('auto-recolhe'); }
+  // Ao rolar pelos anúncios, a barra fica presa no topo com o painel aberto.
+  if (matchMedia('(min-width: 901px)').matches) abrir(true);
   // Fundo na barra só enquanto ela está presa no topo
   if (fixo && window.IntersectionObserver) {
     var marca = document.createElement('div'); marca.style.height = '1px'; fixo.parentNode.insertBefore(marca, fixo);
