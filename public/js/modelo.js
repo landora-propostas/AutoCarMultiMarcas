@@ -47,7 +47,7 @@ export const SITE_PADRAO = {
 export const IMAGENS_PADRAO = {
   logo: "/img/logo-landora.png",
   favicon: "/favicon.svg",
-  heroFundo: "/img/hero-fundo.webp",
+  heroFundo: "/img/carros/bmw-m4-wide.webp",
   heroCarro: "/img/carros/bmw-m4-hero.webp",
   sobre: "/img/carros/bmw-m4-wide.webp",
   cta: "/img/carros/hyundai-creta.webp"

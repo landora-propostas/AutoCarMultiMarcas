@@ -52,7 +52,7 @@ function aplicarSite(cfg, urls) {
   }
 
   // Imagens: <img data-img="heroFundo">
-  $$("[data-img]").forEach(function (img) { const u = urls[img.dataset.img]; if (u) img.src = u; });
+  $$("[data-img]").forEach(function (img) { const u = urls[img.dataset.img]; if (!u) return; img.src = u; if (img.parentNode && img.parentNode.tagName === "PICTURE") img.parentNode.querySelectorAll("source").forEach(function (s) { s.remove(); }); });
   if (urls.favicon) { const f = $("#favicon"); if (f) { f.removeAttribute("type"); f.href = urls.favicon; } }
 
   // Título do topo e bloco final têm estrutura própria
