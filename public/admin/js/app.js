@@ -102,6 +102,7 @@ async function aoMudarUsuario(user) {
   if (!user.emailVerified) { $("#ver-email").textContent = user.email; mostrar("verificar"); return; }
   const email = String(user.email || "").toLowerCase();
   let autorizado = false;
+  app.repo.esquecer("admins");
   try { autorizado = !!(await app.repo.obter("admins", user.uid)); } catch (e) { autorizado = false; }
   if (!autorizado) { $("#neg-email").textContent = email; $("#neg-uid").textContent = user.uid; mostrar("negado"); return; }
   app.email = email;
@@ -114,6 +115,8 @@ let rotaAtual = "", ignorar = false, jaLigou = false, seq = 0;
 
 function entrarNoApp() {
   $("#usuario").textContent = app.email;
+  $("#usuario-ini").textContent = (app.email || "A").charAt(0).toUpperCase();
+  $("#usuario-nome").textContent = (app.email || "").split("@")[0] || "Administrador";
   mostrar("app");
   if (!jaLigou) {
     jaLigou = true;
@@ -145,9 +148,16 @@ function rotear() {
   // Elemento novo a cada tela: os eventos da tela anterior ficam para trás.
   const velho = $("#view"), view = velho.cloneNode(false), meu = ++seq;
   velho.replaceWith(view);
-  view.innerHTML = '<div class="vazio">Carregando…</div>';
+  // Esqueleto discreto: só aparece se a tela demorar (com o cache, a troca costuma ser instantânea).
+  view.innerHTML = '<div class="esqueleto" aria-label="Carregando"><i></i><i></i><i></i><i></i></div>';
   window.scrollTo(0, 0);
-  Promise.resolve().then(function () { return ROTAS[nome](view, app, partes.slice(1)); }).catch(function (e) {
+  const link = $('#nav a[data-r="' + nome + '"]');
+  const rotulo = link ? Array.prototype.filter.call(link.childNodes, function (n) { return n.nodeType === 3; }).map(function (n) { return n.textContent; }).join("").trim() : "";
+  Promise.resolve().then(function () { return ROTAS[nome](view, app, partes.slice(1)); }).then(function () {
+    if (meu !== seq) return;
+    const cab = view.querySelector(".cab > div:first-child");
+    if (cab && !cab.querySelector(".cab-rotulo")) cab.insertAdjacentHTML("afterbegin", '<p class="cab-rotulo">' + esc(rotulo) + "</p>");
+  }).catch(function (e) {
     if (meu !== seq) return;
     console.error(e);
     const negado = e && (e.code === "permission-denied" || /permission/i.test(e.message || ""));

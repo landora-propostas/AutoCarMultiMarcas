@@ -69,20 +69,26 @@
     </header>
     <div class="veu" id="veu"></div>
     <aside class="side" id="side">
-      <a class="side-brand" href="#/painel"><img src="/img/logo-autocar.png" alt="AutoCar Multimarcas" height="34"><span>Painel</span></a>
+      <a class="side-brand" href="#/painel"><img src="/img/logo-autocar.png" alt="AutoCar Multimarcas" height="40"><span>Painel administrativo</span></a>
       <nav class="side-nav" id="nav" aria-label="Seções">
+        <p class="side-grupo">Loja</p>
         <a href="#/painel" data-r="painel"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zm10 7h6V4h-6zM4 20h6v-4H4z"/></svg>Visão geral</a>
         <a href="#/carros" data-r="carros"><svg viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M3 16h18M7.5 19.5v-3m9 3v-3M6 12h12"/></svg>Carros</a>
+        <a href="#/pedidos" data-r="pedidos"><svg viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4zM9 9h6M9 12h4"/></svg>Pedidos<span class="contador" id="nav-pedidos" hidden></span></a>
+        <p class="side-grupo">Catálogo</p>
         <a href="#/categorias" data-r="categorias"><svg viewBox="0 0 24 24"><path d="M4 5h7v7H4zm9 0h7v7h-7zM4 14h7v6H4zm9 0h7v6h-7z"/></svg>Categorias</a>
         <a href="#/adicionais" data-r="adicionais"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M7 7l10 10M17 7 7 17"/></svg>Adicionais de entrega</a>
-        <a href="#/pedidos" data-r="pedidos"><svg viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4zM9 9h6M9 12h4"/></svg>Pedidos<span class="contador" id="nav-pedidos" hidden></span></a>
+        <p class="side-grupo">Configurações</p>
         <a href="#/site" data-r="site"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>Site e marca</a>
         <a href="#/equipe" data-r="equipe"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5M16 5.5a3 3 0 0 1 0 5.6M18 14.8c2 .6 3 2.2 3 5.2"/></svg>Equipe</a>
       </nav>
       <div class="side-foot">
-        <a class="btn peq" href="/" target="_blank" rel="noopener">Ver o site ↗</a>
-        <p class="side-user" id="usuario"></p>
-        <button class="link" type="button" data-sair>Sair</button>
+        <a class="side-site" href="/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>Ver o site</a>
+        <div class="side-user">
+          <span class="side-avatar" id="usuario-ini">A</span>
+          <div><b id="usuario-nome">Administrador</b><small id="usuario"></small></div>
+          <button class="icon-btn mini" type="button" data-sair aria-label="Sair" title="Sair"><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/></svg></button>
+        </div>
       </div>
     </aside>
     <main class="main"><div id="view" class="view"></div></main>

@@ -12,7 +12,7 @@ export async function painel(root, app) {
   const ultimos = leads.slice().sort(function (a, b) { return milis(b.criadoEm) - milis(a.criadoEm); }).slice(0, 5);
 
   root.innerHTML =
-    '<div class="cab"><div><h1>Visão geral</h1><p>Resumo do que está acontecendo na loja.</p></div>' +
+    '<div class="cab"><div><h1>Como está a loja</h1><p>Resumo do estoque e dos pedidos que chegaram pelo site.</p></div>' +
     '<div class="acoes"><a class="btn primary" href="#/carros/novo">+ Novo carro</a></div></div>' +
     (cfg ? "" :
       '<div class="aviso"><div><b>Seu site ainda mostra os carros de exemplo do repositório.</b>' +
