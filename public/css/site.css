@@ -681,7 +681,9 @@ body::after {
   background-size: 220px 220px; opacity: .04; mix-blend-mode: overlay;
 }
 /* textura de reboco escuro (imagem neutralizada em cinza médio: só relevo, sem mudar a cor) */
+body { position: relative; }
 body::before {
-  content: ""; position: fixed; inset: 0; z-index: 89; pointer-events: none;
-  background: url("../img/textura.webp") center / cover; opacity: .26; mix-blend-mode: soft-light;
+  content: ""; position: absolute; inset: 0; z-index: 89; pointer-events: none;
+  background: url("../img/textura.webp") 0 0 / 280px 280px repeat; opacity: .42; mix-blend-mode: soft-light;
 }
+@media (max-width: 900px) { body::before { background-size: 200px 200px; } }
