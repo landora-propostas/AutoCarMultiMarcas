@@ -1575,3 +1575,28 @@ body::before { display: none !important; }
   .site-header.scrolled::before { content: ""; position: fixed; left: 0; right: 0; top: 0; height: 24px; background: #0f0f0f; pointer-events: none; z-index: -1; }
 }
 @media (min-width: 861px) { .site-header.scrolled .header-row { background: rgba(22, 22, 22,.97) !important; } }
+
+/* ============================================================
+   HERO v5 — só textos + carro escuro e translúcido ao fundo
+   ============================================================ */
+.hero { height: auto !important; max-height: none !important; min-height: min(86svh, 780px) !important; padding: 0 !important;
+  display: flex; align-items: center; background: var(--bg); isolation: isolate; overflow: hidden; }
+.hero::before { display: none !important; }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, var(--bg) 0%, rgba(18, 18, 18, .85) 34%, rgba(18, 18, 18, .2) 70%, rgba(18, 18, 18, .55) 100%),
+              linear-gradient(180deg, rgba(18, 18, 18, .6) 0%, transparent 30%, transparent 62%, var(--bg) 100%); }
+.hero-fundo { position: absolute; inset: 0; z-index: -2; pointer-events: none; }
+.hero-fundo img { position: absolute; right: -4%; bottom: 8%; width: min(74vw, 1220px); height: auto;
+  opacity: .3; filter: grayscale(1) brightness(.55) contrast(1.15); animation: hero-carro-in 1.6s var(--ease) both; }
+@keyframes hero-carro-in { from { opacity: 0; transform: translateX(4%); } }
+.hero-grid { padding: 120px 0 110px !important; min-height: 0 !important; }
+.hero-copy { max-width: 640px; }
+.hero-meta { border-top-color: rgba(255, 255, 255, .1); }
+.hero.fora .hero-fundo img { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .hero-fundo img { animation: none; } }
+@media (max-width: 860px) {
+  .hero { min-height: 0 !important; align-items: flex-start; }
+  .hero-grid { padding: 56px 0 150px !important; }
+  .hero-fundo img { width: 125vw; right: -32%; bottom: 3%; opacity: .34; }
+  .hero::after { background: linear-gradient(180deg, rgba(18, 18, 18, .45) 0%, rgba(18, 18, 18, .55) 50%, rgba(18, 18, 18, .2) 80%, var(--bg) 100%); }
+}
