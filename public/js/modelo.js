@@ -54,7 +54,7 @@ export const IMAGENS_PADRAO = {
 };
 
 export const SEM_FOTO = "data:image/svg+xml;utf8," + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#2b2b2b"/>' +
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#212121"/>' +
   '<text x="600" y="385" fill="#979797" font-family="sans-serif" font-size="42" text-anchor="middle">Sem foto</text></svg>');
 
 export function slugify(t) {
