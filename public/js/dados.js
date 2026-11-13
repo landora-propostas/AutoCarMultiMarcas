@@ -126,7 +126,7 @@ async function resolverImagens(ctx, cfg) {
    A primeira visita lê o Firestore e guarda tudo no aparelho. As visitas seguintes abrem
    na hora com o que está guardado, sem ler o banco. Passado o prazo (VALIDADE), o site
    ainda abre com o guardado e atualiza em segundo plano para a próxima visita. */
-const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v3", VALIDADE = 30 * 60 * 1000;
+const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v4", VALIDADE = 30 * 60 * 1000;
 function abrirCache() {
   return new Promise(function (ok, erro) {
     if (!("indexedDB" in window)) return erro(new Error("sem-indexeddb"));
@@ -149,6 +149,8 @@ async function lerCache() {
 async function gravarCache(dados) {
   try {
     const db = await abrirCache();
+    // Guarda no máximo as 120 fotos de galeria mais recentes, para não encher o aparelho.
+    if (dados.midia) { const ks = Object.keys(dados.midia); if (ks.length > 120) ks.slice(0, ks.length - 120).forEach(function (k) { delete dados.midia[k]; }); }
     db.transaction("kv", "readwrite").objectStore("kv").put({ t: Date.now(), dados: dados }, CACHE_CHAVE);
   } catch (e) { /* sem espaço ou modo privado: segue sem cache */ }
 }
@@ -174,49 +176,75 @@ function docRest(d) {
   if (d && d.name) o.id = d.name.split("/").pop();
   return o;
 }
-async function buscarRest() {
+// anterior: o que já está guardado no aparelho ({ raw, midia }). Só baixa carros novos ou alterados.
+let REST = null; // { base, chave } — também usado para baixar fotos da galeria sem o SDK
+async function restCfg() {
+  if (REST) return REST;
   const r0 = await fetch("/__/firebase/init.json");
   if (!r0.ok) throw new Error("config-indisponivel");
-  const cfg0 = await r0.json();
-  const base = "https://firestore.googleapis.com/v1/projects/" + cfg0.projectId + "/databases/(default)/documents";
-  const chave = "?key=" + encodeURIComponent(cfg0.apiKey);
-  const pega = async function (url, opt) {
-    const r = await fetch(url, opt);
-    if (!r.ok) throw new Error("rest-" + r.status);
-    return r.json();
-  };
+  const c = await r0.json();
+  REST = { base: "https://firestore.googleapis.com/v1/projects/" + c.projectId + "/databases/(default)/documents", chave: "?key=" + encodeURIComponent(c.apiKey), nome: "projects/" + c.projectId + "/databases/(default)/documents" };
+  return REST;
+}
+async function pegaJson(url, opt) {
+  const r = await fetch(url, opt);
+  if (!r.ok) throw new Error("rest-" + r.status);
+  return r.json();
+}
+async function midiaRest(id, guardadas) {
+  if (guardadas && guardadas[id]) return guardadas[id];
+  const R = await restCfg();
+  const o = docRest(await pegaJson(R.base + "/midia/" + encodeURIComponent(id) + R.chave));
+  if (o.data && guardadas) guardadas[id] = o.data;
+  return o.data || "";
+}
+async function buscarRest(anterior) {
+  const R = await restCfg();
+  const rawAnt = (anterior && anterior.raw) || {}, midia = Object.assign({}, (anterior && anterior.midia) || {});
   const lista = function (caminho) {
-    return pega(base + "/" + caminho + chave + "&pageSize=300").then(function (j) { return (j.documents || []).map(docRest); });
+    return pegaJson(R.base + "/" + caminho + R.chave + "&pageSize=300").then(function (j) { return (j.documents || []).map(docRest); });
   };
-  const [cfgDoc, categorias, adicionais, carrosQ] = await Promise.all([
-    pega(base + "/config/site" + chave).then(docRest),
-    lista("categorias"),
-    lista("adicionais"),
-    pega(base + ":runQuery" + chave, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "carros" }], where: { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "publicado" } } } } })
-    })
+  const consulta = function (campos) {
+    const q = { from: [{ collectionId: "carros" }], where: { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "publicado" } } } };
+    if (campos) q.select = { fields: campos.map(function (f) { return { fieldPath: f }; }) };
+    return pegaJson(R.base + ":runQuery" + R.chave, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ structuredQuery: q }) });
+  };
+  // 1) Leve: só o endereço e a data de alteração de cada carro publicado
+  const [cfgDoc, categorias, adicionais, indice] = await Promise.all([
+    pegaJson(R.base + "/config/site" + R.chave).then(docRest), lista("categorias"), lista("adicionais"), consulta(["__name__"])
   ]);
   if (!cfgDoc.inicializado) throw new Error("nao-iniciado");
-  const carros = carrosQ.filter(function (x) { return x.document; }).map(function (x) { return carroParaSite(docRest(x.document), adicionais); })
+  const raw = {}, faltam = [];
+  indice.forEach(function (x) {
+    if (!x.document) return;
+    const id = x.document.name.split("/").pop(), u = x.document.updateTime;
+    if (rawAnt[id] && rawAnt[id].u === u) raw[id] = rawAnt[id]; else faltam.push({ id: id, u: u, name: x.document.name });
+  });
+  // 2) Pesado só para o que é novo ou mudou
+  for (let i = 0; i < faltam.length; i += 100) {
+    const parte = faltam.slice(i, i + 100);
+    const res = await pegaJson(R.base + ":batchGet" + R.chave, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documents: parte.map(function (f) { return f.name; }) }) });
+    res.forEach(function (r) { if (r.found) { const d = docRest(r.found); raw[d.id] = { u: r.found.updateTime, d: d }; } });
+  }
+  const carros = Object.keys(raw).map(function (id) { return carroParaSite(raw[id].d, adicionais); })
     .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
-  // Imagens do site (logo, fundo do topo...) guardadas como mídia no Firestore
+  // Imagens do site (logo, fundo do topo...) — reaproveita as já guardadas
   const urls = {}, jobs = [];
   const img = function (k, im) {
     if (!im) return;
     if (im.src) { urls[k] = im.src; return; }
     if (!im.midia) return;
-    jobs.push(pega(base + "/midia/" + encodeURIComponent(im.midia) + chave).then(function (d) { const o = docRest(d); if (o.data) urls[k] = o.data; }).catch(function () {}));
+    jobs.push(midiaRest(im.midia, midia).then(function (u) { if (u) urls[k] = u; }).catch(function () {}));
   };
   img("logo", cfgDoc.marca && cfgDoc.marca.logo);
   img("favicon", cfgDoc.marca && cfgDoc.marca.favicon);
   Object.keys(cfgDoc.imagens || {}).forEach(function (k) { img(k, cfgDoc.imagens[k]); });
   await Promise.all(jobs);
   delete cfgDoc.id;
-  return { cfg: cfgDoc, categorias: categorias, carros: carros, urls: urls };
+  return { cfg: cfgDoc, categorias: categorias, carros: carros, urls: urls, raw: raw, midia: midia, novos: faltam.length };
 }
-async function buscarDados() {
-  try { return await buscarRest(); }
+async function buscarDados(anterior) {
+  try { return await buscarRest(anterior); }
   catch (e) { if (e && e.message === "nao-iniciado") throw e; return buscarDoFirebase(await iniciar()); }
 }
 
@@ -276,25 +304,34 @@ function montarSite(d) {
       if (car) car.procura = (car.procura || 0) + 1;
     },
     // Fotos da galeria vêm do Firestore só quando o carro é aberto.
+    // Fotos guardadas no aparelho: abrem na hora nas próximas visitas.
+    _midia: Object.assign({}, d.midia || {}),
     preparar: function (c) {
       if (c._pronto) return Promise.resolve();
-      return ctx().then(function (cx) {
-        return Promise.all(c.galeria.map(function (g) {
-          if (!g.midia || g._full) return null;
-          return carregar(cx, g).then(function (u) { g.src = u || c.foto.src; }, function () { g.src = c.foto.src; }).then(function () { g._full = true; });
-        }).filter(Boolean));
-      }).then(function () { c._pronto = true; }, function () { c._pronto = true; });
+      const guard = window.LANDORA._midia;
+      return Promise.all(c.galeria.map(function (g) {
+        if (!g.midia || g._full) return null;
+        const viaSdk = function () { return ctx().then(function (cx) { return carregar(cx, g); }); };
+        return midiaRest(g.midia, guard).catch(viaSdk)
+          .then(function (u) { g.src = u || c.foto.src; }, function () { g.src = c.foto.src; })
+          .then(function () { g._full = true; });
+      }).filter(Boolean)).then(function () {
+        c._pronto = true;
+        lerCache().then(function (cc) { if (cc && cc.dados) { cc.dados.midia = Object.assign({}, cc.dados.midia || {}, guard); gravarCache(cc.dados); } });
+      }, function () { c._pronto = true; });
     }
   };
 }
 
 async function carregarDoFirebase() {
   const guardado = await lerCache();
-  if (guardado && guardado.dados) {
+  if (guardado && guardado.dados && guardado.dados.carros) {
+    // Abre na hora com o que está no aparelho e, em segundo plano, baixa só o que mudou.
     montarSite(guardado.dados);
-    if (Date.now() - guardado.t > VALIDADE) {
-      buscarDados().then(gravarCache).catch(function () {});
-    }
+    buscarDados(guardado.dados).then(function (novo) {
+      novo.midia = Object.assign({}, guardado.dados.midia || {}, novo.midia || {}, (window.LANDORA && window.LANDORA._midia) || {});
+      gravarCache(novo);
+    }).catch(function () {});
     return;
   }
   const dados = await buscarDados();
