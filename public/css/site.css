@@ -687,3 +687,18 @@ body::before {
   background: url("../img/textura.webp") 0 0 / 280px 280px repeat; opacity: .42; mix-blend-mode: soft-light;
 }
 @media (max-width: 900px) { body::before { background-size: 200px 200px; } }
+
+/* Selo do hero em amarelo com luz pulsando */
+.hero-copy .eyebrow { color: var(--brand); font-weight: 700; }
+.hero-copy .eyebrow .dot { position: relative; box-shadow: 0 0 10px rgba(252, 211, 8, .8); animation: pisca 1.6s ease-in-out infinite; }
+.hero-copy .eyebrow .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--brand); animation: onda 1.6s ease-out infinite; }
+@keyframes pisca { 0%, 100% { opacity: 1; box-shadow: 0 0 12px rgba(252, 211, 8, .9); } 50% { opacity: .35; box-shadow: 0 0 2px rgba(252, 211, 8, .2); } }
+@keyframes onda { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(3.2); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-copy .eyebrow .dot, .hero-copy .eyebrow .dot::after { animation: none; } }
+
+/* Título do hero: no computador "Escolha mais rápido." numa linha só */
+@media (min-width: 901px) {
+  .hero h1 .so-cel { display: none; }
+  .hero h1 .h-l1 { white-space: nowrap; position: relative; z-index: 3; }
+  .hero-copy { z-index: 3; }
+}
