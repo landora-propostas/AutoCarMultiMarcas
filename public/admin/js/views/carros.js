@@ -62,6 +62,7 @@ async function lista(root, app) {
   }
   desenhar();
   otimizarCapas(app, todos);
+  corrigirImportados(app, todos);
 
   // Importa a pasta "autocar-importacao": importar.json + fotos/<endereço>/01.jpg...
   // Carros com endereço já existente são pulados. Tudo entra como rascunho.
@@ -235,4 +236,15 @@ async function otimizarCapas(app, carros) {
   }
   otimizando = false;
   if (n) toast(n + (n === 1 ? " capa otimizada" : " capas otimizadas") + " para o site abrir mais rápido.");
+}
+
+// Correção única da importação do WhatsApp: estes carros vieram sem km no anúncio e foram
+// marcados como "Novo" por engano. Passam para "Seminovo" (o km continua 0 = "a consultar").
+async function corrigirImportados(app, carros) {
+  const ids = ["fiat-uno-way-1-0-2012", "ford-fiesta-sedan-1-6-2013", "fiat-palio-essence-1-6-2015", "chevrolet-agile-ltz-1-4-2011",
+    "chevrolet-astra-hatch-2-portas-2006", "volkswagen-fox-1-0-2012", "chevrolet-corsa-classic-ls-1-0-2012"];
+  const alvo = carros.filter(function (c) { return ids.indexOf(c.id) >= 0 && c.condicao === "Novo" && !c.km; });
+  for (const c of alvo) {
+    try { await app.repo.atualizar("carros", c.id, { condicao: "Seminovo" }); c.condicao = "Seminovo"; } catch (e) { console.warn(e); }
+  }
 }

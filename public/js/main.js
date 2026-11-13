@@ -10,6 +10,8 @@
 
   function brl(n) { return 'R$ ' + n.toLocaleString('pt-BR'); }
   function kmTxt(n) { return n.toLocaleString('pt-BR') + ' km'; }
+  // km 0 só é "0 km" em carro novo; em usado significa que o km não foi informado
+  function kmZero(c) { return c.condicao === 'Novo' ? '0 km' : 'Km a consultar'; }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function icon(id) { return '<svg aria-hidden="true"><use href="#' + id + '"/></svg>'; }
   function norm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
@@ -104,7 +106,7 @@
           '<img class="car-img" src="' + c.foto.src + '" alt="' + esc(c.foto.alt) + '" loading="lazy" decoding="async" style="object-position:' + c.foto.pos + '">' +
         '</div>' +
         '<ul class="specs">' +
-          '<li>' + icon('road') + (c.km === 0 ? '0 km' : kmTxt(c.km)) + '</li>' +
+          '<li>' + icon('road') + (c.km === 0 ? kmZero(c) : kmTxt(c.km)) + '</li>' +
           '<li>' + icon('engine') + esc(c.motor) + '</li>' +
           '<li>' + icon('gear') + esc(c.cambio) + '</li>' +
         '</ul>' +
@@ -424,7 +426,7 @@
     var kmEl = $('[data-km]', corpo);
     var kmVal = parseInt(kmEl.getAttribute('data-km'), 10);
     if (kmVal > 0) setTimeout(function () { countUp(kmEl, kmVal, 1200, kmTxt); }, 450);
-    else kmEl.textContent = '0 km';
+    else kmEl.textContent = kmZero(c);
     $('.d-info', corpo).scrollTop = 0;
     sheet.scrollTop = 0;
   }

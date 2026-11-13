@@ -141,9 +141,9 @@
   /* ---------- Contador do estoque quando aparece ---------- */
   var cont = $('.mo-count b');
   if (cont && 'IntersectionObserver' in window) {
-    var fim = CARROS.length;
     var ioC = new IntersectionObserver(function (en) {
       if (!en[0].isIntersecting) return;
+      var fim = (window.CARROS || []).length;
       ioC.disconnect();
       if (reduce) { cont.textContent = String(fim).padStart(2, '0'); return; }
       var t0 = performance.now();
