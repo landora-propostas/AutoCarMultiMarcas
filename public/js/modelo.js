@@ -47,7 +47,7 @@ export const SITE_PADRAO = {
 // Imagens do site que já existem nos arquivos (usadas enquanto nada for enviado pelo painel).
 export const IMAGENS_PADRAO = {
   logo: "/img/logo-landora.png",
-  favicon: "/favicon.png",
+  favicon: "/favicon-48.png",
   heroFundo: "/img/entrega.webp",
   heroCarro: "/img/carros/bmw-m4-hero.webp",
   sobre: "/img/carros/bmw-m4-wide.webp",

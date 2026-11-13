@@ -146,12 +146,16 @@
       var r = hero.getBoundingClientRect();
       alvo.hp = clamp(-r.top / Math.max(r.height - innerHeight, 1), 0, 1);
     } else alvo.hp = 0;
-    if (secPassos) alvo.tp = progresso(secPassos, .85, .35);
+    if (secPassos) {
+      // começa quando a seção entra pela base e termina quando o centro dela chega ao meio da tela
+      var rp = secPassos.getBoundingClientRect(), vh = innerHeight;
+      alvo.tp = clamp((vh - rp.top) / (vh / 2 + rp.height / 2), 0, 1);
+    }
   }
   function aplicar() {
     if (hero) hero.style.setProperty('--hp', suave.hp.toFixed(4));
     if (track) track.style.setProperty('--tp', suave.tp.toFixed(4));
-    stepItems.forEach(function (li, i) { li.classList.toggle('on', suave.tp >= (i + .35) / stepItems.length || (i === 0 && suave.tp > .02)); });
+    stepItems.forEach(function (li, i) { li.classList.toggle('on', suave.tp >= (i + .5) / stepItems.length * .96 || (i === 0 && suave.tp > .05)); });
     if (reduce) return;
     if (mo) { var pm = mo.getBoundingClientRect(); if (pm.bottom > 0 && pm.top < innerHeight) mo.style.setProperty('--py', ((pm.top + pm.height / 2 - innerHeight / 2) * -.08).toFixed(1) + 'px'); }
     if (scene) {
