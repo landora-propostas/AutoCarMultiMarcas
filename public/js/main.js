@@ -120,7 +120,7 @@
   $$('[data-live="estoque"]').forEach(function (el) { el.setAttribute('data-count', cards.length); });
 
   /* ---------- Entrada ao rolar ---------- */
-  var revealTargets = $$('.section-head .eyebrow, .section-head h2, .section-side, .steps li, .adv, .car-card, .cc-cta, .toolbar, .mo-card, .mo-values li, .mo-count, .scene-body > *');
+  var revealTargets = $$('.section-head .eyebrow, .section-head h2, .section-side, .steps li, .adv, .cc-cta, .toolbar, .mo-card, .mo-values li, .mo-count, .scene-body > *');
   var groups = new Map();
   revealTargets.forEach(function (el) {
     var key = el.parentElement;

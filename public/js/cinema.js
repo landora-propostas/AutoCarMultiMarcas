@@ -179,8 +179,13 @@
     if (!reduce && mo) { var pm = mo.getBoundingClientRect(); if (pm.bottom > -200 && pm.top < innerHeight + 200) alvo.py = (pm.top + pm.height / 2 - innerHeight / 2) * -.06; }
     if (!reduce && scene) { var rs = scene.getBoundingClientRect(); alvo.sk = clamp(1 - (rs.top + rs.height * .5) / (innerHeight + rs.height * .5), 0, 1); }
   }
+  // --hp vai direto nos 4 elementos que usam; definir no .hero inteiro recalculava o estilo de
+  // tudo dentro dele (busca, botões...) a cada quadro, e era isso que travava o zoom do carro.
+  var usaHp = hero ? [$('.hero-pin', hero), $('.hero-light', hero), $('.hero-copy', hero), palco].filter(Boolean) : [];
+  var hpAnt = -1;
   function aplicar() {
-    if (hero) hero.style.setProperty('--hp', suave.hp.toFixed(4));
+    var hp = suave.hp.toFixed(3);
+    if (hp !== hpAnt) { hpAnt = hp; usaHp.forEach(function (el) { el.style.setProperty('--hp', hp); }); }
     if (track) track.style.setProperty('--tp', suave.tp.toFixed(4));
     stepItems.forEach(function (li, i) { li.classList.toggle('on', suave.tp >= (i + .5) / stepItems.length * .96 || (i === 0 && suave.tp > .05)); });
     if (reduce) return;

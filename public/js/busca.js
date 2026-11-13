@@ -229,9 +229,26 @@
     toggle.setAttribute('aria-expanded', vai);
     if (rolar && !vai) { var t = $('.result-count'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
-  toggle.addEventListener('click', function () { abrir(); });
+  var fixo = document.getElementById('filtro-fixo');
+  toggle.addEventListener('click', function () {
+    // Barra presa com o painel recolhido automaticamente: o clique só mostra o painel de novo
+    if (fixo && fixo.classList.contains('preso') && fixo.classList.contains('auto-recolhe')) { fixo.classList.remove('auto-recolhe'); toggle.setAttribute('aria-expanded', 'true'); return; }
+    if (fixo) fixo.classList.remove('auto-recolhe');
+    abrir();
+  });
   // No computador a busca avançada já vem aberta; no celular começa fechada.
-  if (matchMedia('(min-width: 901px)').matches) abrir(true);
+  // Ao rolar pelos anúncios, a barra fica presa no topo só com a linha de busca (o painel
+  // grande recolhe sozinho para não pesar a rolagem); um clique em "Busca avançada" o abre ali.
+  if (matchMedia('(min-width: 901px)').matches) { abrir(true); if (fixo) fixo.classList.add('auto-recolhe'); }
+  // Fundo na barra só enquanto ela está presa no topo
+  if (fixo && window.IntersectionObserver) {
+    var marca = document.createElement('div'); marca.style.height = '1px'; fixo.parentNode.insertBefore(marca, fixo);
+    new IntersectionObserver(function (en) {
+      var preso = !en[0].isIntersecting && en[0].boundingClientRect.top < 0;
+      fixo.classList.toggle('preso', preso);
+      if (fixo.classList.contains('auto-recolhe')) toggle.setAttribute('aria-expanded', String(!preso && painel.classList.contains('open')));
+    }, { rootMargin: '-90px 0px 0px 0px' }).observe(marca);
+  }
 
   window.BUSCA = { passa: passa, ordenar: ordenar, porSlug: porSlug, limpar: limpar };
   sincronizar();

@@ -919,7 +919,7 @@ main::before { background:
 
 /* Estoque grande: o navegador só desenha os cartões perto da tela, e a imagem da capa
    ganha camada própria para o hover não redesenhar a página inteira ao rolar. */
-.car-card { content-visibility: auto; contain-intrinsic-size: auto 420px; }
+.car-card { contain: layout paint; }
 .cc-photo img { backface-visibility: hidden; }
 
 /* ---------- Fluidez (rolagem e busca avançada) ---------- */
@@ -941,3 +941,33 @@ main::before { background:
 .fchips { gap: 6px; }
 .fchip { padding: 8px 13px; }
 @media (prefers-reduced-motion: reduce) { .adv-wrap.open .adv-inner { animation: none; } }
+/* Zoom do hero: camadas próprias na placa de vídeo para o carro, o texto e as luzes */
+.hero-light, .hero-pin::after { will-change: opacity; }
+.hero-pin, .hero-light, .hero-copy, .hero-cars { --hp: 0; }
+
+/* ---------- Barra de busca fixa abaixo do menu ----------
+   Fica presa no topo enquanto a pessoa rola pelo estoque (e solta no fim da seção).
+   PC: busca avançada aberta. Celular: só a barra compacta, com o botão para abrir os filtros. */
+.filtro-fixo { position: sticky; top: 84px; z-index: 60; margin: 0 -12px; padding: 10px 12px; border-radius: 22px;
+  transition: background-color .25s, box-shadow .25s; }
+.filtro-fixo.preso { background: rgba(16, 16, 16, .96); box-shadow: 0 18px 40px -22px rgba(0, 0, 0, .9); }
+.filtro-fixo .adv-wrap.open .adv-inner { max-height: calc(100vh - 230px); overflow-y: auto; overscroll-behavior: contain; }
+.filtro-fixo .tags:not([hidden]) { margin-top: 10px; }
+@media (max-width: 900px) {
+  .filtro-fixo { top: 78px; margin: 0 -10px; padding: 8px 10px; border-radius: 18px; }
+  .filtro-fixo .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .filtro-fixo .pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .filtro-fixo .pills::-webkit-scrollbar { display: none; }
+  .filtro-fixo .pill { flex: none; }
+  .filtro-fixo .tool-right { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; }
+  .filtro-fixo .search { min-width: 0; }
+  .filtro-fixo .adv-toggle { height: 44px; padding: 0 12px; font-size: 13px; }
+  .filtro-fixo .sort > span { display: none; }
+  .filtro-fixo .sort select { max-width: 120px; padding: 11px 10px; }
+  .filtro-fixo .adv-wrap.open .adv-inner { max-height: calc(100svh - 260px); }
+}
+@media (max-width: 420px) { .filtro-fixo .adv-toggle { font-size: 0; gap: 0; width: 44px; justify-content: center; } .filtro-fixo .adv-toggle .badge { font-size: 11px; } }
+/* Barra presa no PC: painel grande recolhido (abre com um clique) e sem animar sombra/fundo */
+.filtro-fixo { transition: none; }
+.filtro-fixo.preso.auto-recolhe .adv-wrap { display: none; }
+.filtro-fixo.preso { box-shadow: 0 14px 30px -20px rgba(0, 0, 0, .9); }
