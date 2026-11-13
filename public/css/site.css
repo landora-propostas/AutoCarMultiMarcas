@@ -844,3 +844,54 @@ body { background: url("../img/textura.webp") 0 0 / 280px 280px repeat, var(--bg
     radial-gradient(48% 26% at 68% 84%, rgba(252, 211, 8, .14), transparent 70%); opacity: 1; }
 .site-footer { background: transparent !important; }
 .section::after { content: none; }
+
+/* Telas muito altas (ou zoom reduzido): o bloco do hero para de esticar e fica centralizado na vertical,
+   mantendo a mesma estrutura — texto no alto, carro no meio, busca embaixo */
+@media (min-width: 901px) {
+  .hero-pin {
+    --hsobra: max(0px, (100svh - 104px - 160px - 860px) / 2);
+    padding: calc(104px + min(7vh, 70px) + var(--hsobra)) 0 calc(min(9vh, 90px) + var(--hsobra));
+  }
+  .hero-dock { margin-top: min(3vh, 30px); }
+}
+
+/* ===== Desempenho: menos repintura durante o scroll ===== */
+/* textura já "assada" sobre a cor do fundo (sem blend-mode, que forçava repintar a página) */
+body { background: url("../img/textura-fundo.webp") 0 0 / 280px 280px repeat, var(--bg); background-blend-mode: normal; }
+@media (max-width: 900px) { body { background-size: 200px 200px, auto; } }
+/* luzes amarelas numa camada própria, pintada uma vez só */
+main::before, .site-footer::before { will-change: transform; transform: translateZ(0); }
+/* sombra do carro fica no elemento .hero-shadow — sem drop-shadow pesado a cada quadro do zoom */
+.hc img { filter: brightness(.94) contrast(1.05); }
+/* barra de busca já é quase opaca: blur por trás do carro em movimento é custo sem ganho visual */
+.hero-search { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(22, 22, 22, .94); }
+.site-header .header-row, .header-row { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+/* cena do contato: máscara e foto em camadas compostas */
+.scene-media { will-change: transform; transform: translateZ(0); }
+.scene-line { filter: none; box-shadow: 0 0 8px rgba(252, 211, 8, .35); }
+.foot-car { filter: brightness(.92); }
+
+/* Luzes amarelas: mais pontos, todos inteiros (nenhum encosta na borda do elemento e fica cortado) */
+.hero-light { background:
+    radial-gradient(30% 34% at 12% 30%, rgba(252, 211, 8, .12), transparent 70%),
+    radial-gradient(24% 28% at 90% 24%, rgba(252, 211, 8, .1), transparent 70%),
+    radial-gradient(40% 44% at 70% 56%, rgba(255, 255, 255, .06), transparent 70%),
+    radial-gradient(44% 22% at 66% 78%, rgba(252, 211, 8, .14), transparent 70%); }
+main::before { background:
+    radial-gradient(560px 440px at 10% 9%, rgba(252, 211, 8, .085), transparent 70%),
+    radial-gradient(620px 460px at 92% 15%, rgba(252, 211, 8, .075), transparent 70%),
+    radial-gradient(520px 420px at 48% 22%, rgba(252, 211, 8, .05), transparent 70%),
+    radial-gradient(580px 440px at 14% 30%, rgba(252, 211, 8, .075), transparent 70%),
+    radial-gradient(640px 480px at 86% 38%, rgba(252, 211, 8, .08), transparent 70%),
+    radial-gradient(520px 400px at 44% 46%, rgba(252, 211, 8, .05), transparent 70%),
+    radial-gradient(560px 440px at 8% 55%, rgba(252, 211, 8, .08), transparent 70%),
+    radial-gradient(600px 460px at 90% 62%, rgba(252, 211, 8, .075), transparent 70%),
+    radial-gradient(520px 420px at 52% 70%, rgba(252, 211, 8, .055), transparent 70%),
+    radial-gradient(580px 440px at 16% 79%, rgba(252, 211, 8, .075), transparent 70%),
+    radial-gradient(620px 460px at 84% 87%, rgba(252, 211, 8, .07), transparent 70%),
+    radial-gradient(520px 400px at 36% 94%, rgba(252, 211, 8, .06), transparent 70%); }
+.site-footer::before { background:
+    radial-gradient(520px 300px at 14% 50%, rgba(252, 211, 8, .07), transparent 70%),
+    radial-gradient(520px 300px at 88% 55%, rgba(252, 211, 8, .07), transparent 70%); }
+/* o escurecimento da cena só cobre a foto (mesma máscara), deixando as luzes do fundo inteiras */
+.scene::before { -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 60%, transparent 88%); inset: -6% 0; }

@@ -36,8 +36,6 @@
   var header = $('.site-header');
   var ticking = false;
   function onScroll() {
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    document.documentElement.style.setProperty('--p', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
     header.classList.toggle('scrolled', window.scrollY > 40);
     ticking = false;
   }
