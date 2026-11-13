@@ -129,11 +129,11 @@ svg { fill: none; }
 
 /* Palco do carro: a "câmera" se aproxima com o scroll */
 .hero-cars { position: relative; z-index: 1; aspect-ratio: 1800 / 700; margin: 0 2% -6px 4%;
-  transform-origin: 45% 85%; transform: translate3d(calc(var(--hp) * -12vw), calc(var(--hp) * 4vh), 0) scale(calc(1 + var(--hp) * .42)); will-change: transform; }
+  transform-origin: 45% 85%; transform: translate(calc(var(--hp) * -12vw), calc(var(--hp) * 4vh)) scale(calc(1 + var(--hp) * .42)); }
 .hc { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; }
 .hc.is-on { opacity: 1; }
 .hc img { width: 100%; height: auto; max-height: 100%; object-fit: contain; object-position: bottom; transform-origin: 50% 100%;
-  filter: brightness(.94) contrast(1.05) drop-shadow(0 26px 26px rgba(0, 0, 0, .55)); backface-visibility: hidden; }
+  filter: brightness(.94) contrast(1.05) drop-shadow(0 26px 26px rgba(0, 0, 0, .55)); image-rendering: auto; }
 .hero-shadow { position: absolute; left: 8%; right: 6%; bottom: -4%; height: 13%; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(0, 0, 0, .85), transparent); filter: blur(10px); transition: opacity .4s; }
 .hero-cars.correndo .hero-shadow { opacity: .35; }
