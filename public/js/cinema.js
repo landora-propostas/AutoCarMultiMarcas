@@ -133,7 +133,7 @@
 
   /* ---------- Motor de scroll: câmera do hero, passos, parallax ---------- */
   var steps = $('.steps'), stepItems = $$('.steps li'), track = $('.track'), secPassos = $('#como-funciona');
-  var mo = $('.mo-photo'), scene = $('.scene'), mark = $('.foot-mark');
+  var mo = $('.mo-photo'), scene = $('.scene');
   if (steps && stepItems.length) steps.classList.add('ligado');
 
   var alvo = { hp: 0, tp: 0 }, suave = { hp: 0, tp: 0 }, rodando = false;
@@ -162,7 +162,6 @@
         scene.style.setProperty('--sy', ((k - .5) * -60).toFixed(1) + 'px');
       }
     }
-    if (mark) { var rm = mark.getBoundingClientRect(); if (rm.top < innerHeight) mark.style.setProperty('--fy', ((rm.top - innerHeight) * .12).toFixed(1) + 'px'); }
   }
   function quadro() {
     medir();
