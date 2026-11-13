@@ -799,3 +799,19 @@ body::before { opacity: .58; }
     linear-gradient(180deg, #111 0%, #161616 62%, #121212 100%); }
 .section::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: radial-gradient(28% 34% at 6% 20%, rgba(252, 211, 8, .04), transparent 70%), radial-gradient(26% 30% at 96% 80%, rgba(252, 211, 8, .035), transparent 70%); }
+
+/* Cena de contato: foto com bordas que se dissolvem (sem corte) e movimento leve */
+.scene-media { inset: -12% 0; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 28%, #000 72%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 28%, #000 72%, transparent 100%); }
+.scene-media img { filter: none; opacity: .5; backface-visibility: hidden; }
+.scene::before { background: radial-gradient(70% 60% at 50% 50%, rgba(18, 18, 18, .25), rgba(18, 18, 18, .85)); }
+
+/* Luzes amarelas mais perceptíveis (ainda suaves) */
+.hero-light { background:
+    radial-gradient(30% 38% at 10% 16%, rgba(252, 211, 8, .12), transparent 70%),
+    radial-gradient(26% 32% at 94% 6%, rgba(252, 211, 8, .1), transparent 70%),
+    radial-gradient(40% 46% at 70% 60%, rgba(255, 255, 255, .075), transparent 70%),
+    radial-gradient(48% 26% at 68% 84%, rgba(252, 211, 8, .14), transparent 70%),
+    linear-gradient(180deg, #111 0%, #161616 62%, #121212 100%); }
+.section::after { background: radial-gradient(26% 32% at 4% 18%, rgba(252, 211, 8, .09), transparent 70%), radial-gradient(24% 28% at 97% 82%, rgba(252, 211, 8, .08), transparent 70%); }
+.scene { background: transparent; }
+.scene-media { inset: -6% 0; -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 66%, transparent 94%); mask-image: linear-gradient(180deg, transparent 0%, transparent 9%, #000 38%, #000 66%, transparent 94%); }

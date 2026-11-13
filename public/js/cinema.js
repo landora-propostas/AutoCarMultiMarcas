@@ -159,7 +159,7 @@
   var mo = $('.mo-photo'), scene = $('.scene');
   if (steps && stepItems.length) steps.classList.add('ligado');
 
-  var alvo = { hp: 0, tp: 0 }, suave = { hp: 0, tp: 0 }, rodando = false;
+  var alvo = { hp: 0, tp: 0, sk: 0, py: 0 }, suave = { hp: 0, tp: 0, sk: 0, py: 0 }, rodando = false;
   function progresso(el, ini, fim) {
     var r = el.getBoundingClientRect(), vh = innerHeight;
     return clamp((vh * ini - r.top) / (r.height + vh * (ini - fim)), 0, 1);
@@ -174,28 +174,27 @@
       var rp = secPassos.getBoundingClientRect(), vh = innerHeight;
       alvo.tp = clamp((vh - rp.top) / (vh / 2 + rp.height / 2), 0, 1);
     }
+    if (!reduce && mo) { var pm = mo.getBoundingClientRect(); if (pm.bottom > -200 && pm.top < innerHeight + 200) alvo.py = (pm.top + pm.height / 2 - innerHeight / 2) * -.06; }
+    if (!reduce && scene) { var rs = scene.getBoundingClientRect(); alvo.sk = clamp(1 - (rs.top + rs.height * .5) / (innerHeight + rs.height * .5), 0, 1); }
   }
   function aplicar() {
     if (hero) hero.style.setProperty('--hp', suave.hp.toFixed(4));
     if (track) track.style.setProperty('--tp', suave.tp.toFixed(4));
     stepItems.forEach(function (li, i) { li.classList.toggle('on', suave.tp >= (i + .5) / stepItems.length * .96 || (i === 0 && suave.tp > .05)); });
     if (reduce) return;
-    if (mo) { var pm = mo.getBoundingClientRect(); if (pm.bottom > 0 && pm.top < innerHeight) mo.style.setProperty('--py', ((pm.top + pm.height / 2 - innerHeight / 2) * -.08).toFixed(1) + 'px'); }
+    if (mo) mo.style.setProperty('--py', suave.py.toFixed(1) + 'px');
     if (scene) {
-      var rs = scene.getBoundingClientRect();
-      if (rs.bottom > 0 && rs.top < innerHeight) {
-        var k = clamp(1 - (rs.top + rs.height * .5) / (innerHeight + rs.height * .5), 0, 1);
-        scene.style.setProperty('--ss', (1.18 - k * .18).toFixed(4));
-        scene.style.setProperty('--sy', ((k - .5) * -60).toFixed(1) + 'px');
-      }
+      scene.style.setProperty('--ss', (1.1 - suave.sk * .1).toFixed(4));
+      scene.style.setProperty('--sy', ((suave.sk - .5) * -40).toFixed(1) + 'px');
     }
   }
   function quadro() {
     medir();
     var mexe = false;
-    ['hp', 'tp'].forEach(function (k) {
+    ['hp', 'tp', 'sk', 'py'].forEach(function (k) {
       var d = alvo[k] - suave[k];
-      if (Math.abs(d) > .0004) { suave[k] += d * (reduce ? 1 : .2); mexe = true; } else suave[k] = alvo[k];
+      var lim = k === 'py' ? .05 : .0004;
+      if (Math.abs(d) > lim) { suave[k] += d * (reduce ? 1 : (k === 'hp' || k === 'tp' ? .2 : .12)); mexe = true; } else suave[k] = alvo[k];
     });
     aplicar();
     if (mexe) requestAnimationFrame(quadro); else rodando = false;
