@@ -3,6 +3,15 @@
 // Tudo em JavaScript puro, com requestAnimationFrame e suavização (lerp).
 (function () {
   'use strict';
+  // Sem zoom: o iPhone ignora user-scalable=no, então bloqueamos o gesto de pinça e o toque duplo aqui.
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
+  document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  var ultimoToque = 0;
+  document.addEventListener('touchend', function (e) {
+    var agora = Date.now();
+    if (agora - ultimoToque < 320 && !e.target.closest('input, textarea, select')) e.preventDefault();
+    ultimoToque = agora;
+  }, { passive: false });
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fino = matchMedia('(hover: hover) and (pointer: fine)').matches;
   var desktop = matchMedia('(min-width: 901px)');
@@ -53,6 +62,10 @@
     an.onfinish = function () { f.classList.remove('is-on'); an.cancel(); };
     return an;
   }
+  function pronta(img) {
+    var ok = img.complete && img.naturalWidth ? Promise.resolve() : new Promise(function (r) { img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true }); });
+    return ok.then(function () { return img.decode ? img.decode().catch(function () {}) : null; });
+  }
   function trocarCarro(cls) {
     if (cls === atual) return;
     var sai = fig(atual), entra = fig(cls);
@@ -61,18 +74,28 @@
     figs.forEach(function (f) { if (f !== sai && f !== entra) f.classList.remove('is-on'); });
     if (palco) palco.classList.add('correndo');
     if (sai !== entra) sair(sai);
-    var an = entrar(entra, sai !== entra ? 400 : 0);
-    var fim = function () { if (palco) palco.classList.remove('correndo'); };
-    if (an) an.onfinish = function () { fim(); an.cancel(); }; else fim();
+    var imgNova = $('img', entra); if (imgNova.loading === 'lazy') imgNova.loading = 'eager';
+    var t0 = performance.now(), an = null, minha = cls;
+    Promise.race([pronta(imgNova), new Promise(function (r) { setTimeout(r, 2500); })]).then(function () {
+      if (atual !== minha) return;
+      an = entrar(entra, Math.max(0, (sai !== entra ? 400 : 0) - (performance.now() - t0)));
+      var fim2 = function () { if (palco) palco.classList.remove('correndo'); };
+      if (an) an.onfinish = function () { fim2(); an.cancel(); }; else fim2();
+    });
   }
-  // Entrada inicial: o carro só aparece quando a tela de carregamento some (≈1,5 s após abrir a página)
+  // Entrada inicial: espera a imagem estar pronta (decodificada) e a tela de carregamento sair;
+  // assim o carro nunca "pula" na tela atrasado em aparelhos/conexões mais lentos.
   if (figs.length) {
     var primeiro = fig('todos');
     figs.forEach(function (f) { f.classList.remove('is-on'); });
-    var espera = Math.max(0, 1500 - performance.now());
-    var an0 = entrar(primeiro, espera);
-    if (an0) an0.onfinish = function () { an0.cancel(); };
-    setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) im.loading = 'eager'; }); }, espera + 1800);
+    var limite = new Promise(function (r) { setTimeout(r, 4000); });
+    Promise.race([pronta($('img', primeiro)), limite]).then(function () {
+      if (atual !== 'todos') return;
+      var an0 = entrar(primeiro, Math.max(0, 1300 - performance.now()));
+      if (an0) an0.onfinish = function () { an0.cancel(); };
+      // depois, as outras categorias são baixadas e decodificadas em segundo plano
+      setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) { im.loading = 'eager'; pronta(im); } }); }, 1400);
+    });
   }
 
   /* ---------- Busca do hero → filtros reais do estoque ---------- */

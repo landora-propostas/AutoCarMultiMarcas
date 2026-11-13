@@ -3,7 +3,7 @@ import { esc, toast } from "../ui.js";
 import { campoImagem, persistir, apagarSemUso } from "../fotos.js";
 import { SITE_PADRAO, IMAGENS_PADRAO } from "/js/modelo.js";
 
-const ABAS = [["marca", "Marca e logos"], ["imagens", "Imagens do site"], ["textos", "Textos"], ["contato", "Contato e redes"]];
+const ABAS = [["marca", "Logos"], ["imagens", "Imagens do site"], ["textos", "Textos"], ["contato", "Contato e redes"]];
 const ROTULOS_TEXTO = {
   heroEyebrow: ["Chamada acima do título", "input"], heroL1: ["Título, linha 1", "input"], heroL2: ["Título, linha 2 (em azul)", "input"],
   heroL3: ["Título, linha 3", "input"], heroL4: ["Título, linha 4 (em azul)", "input"], heroLead: ["Texto de apresentação", "textarea"],
@@ -47,17 +47,13 @@ export async function site(root, app, args) {
   let corpo = "";
   if (aba === "marca") {
     corpo =
-      '<section class="cartao"><div class="cartao-topo"><h2>Nome da loja</h2></div><div class="grade g2">' +
-      input("marca", "nome", "Nome da concessionária", marca, 'maxlength="60"') +
-      input("marca", "sub", "Palavra abaixo da logo", marca, 'maxlength="14" placeholder="MOTORS"') +
-      "</div><p class=\"dica\">O nome aparece na aba do navegador e no rodapé. A palavra abaixo da logo aparece em letras espaçadas (deixe vazio para ocultar).</p></section>" +
-      slot("logo", "Logo", "Aparece no topo, no rodapé e na tela de carregamento. Prefira PNG ou SVG com fundo transparente e letras claras (o site é escuro).") +
-      slot("favicon", "Ícone da aba do navegador (favicon)", "Quadrado, de preferência 256 × 256 px ou SVG.");
+      slot("logo", "Logo para fundo escuro", "Usada no site (topo, rodapé e tela de carregamento) e no painel. Prefira PNG ou SVG com fundo transparente e letras claras.") +
+      slot("logoClaro", "Logo para fundo claro", "Versão com letras escuras, para quando a logo aparecer sobre fundo branco ou claro. PNG ou SVG com fundo transparente.") +
+      '<p class="dica">O nome da loja, a palavra abaixo da logo e o ícone da aba do navegador são definidos pelos desenvolvedores.</p>';
   } else if (aba === "imagens") {
     corpo =
       slot("heroFundo", "Foto da cena de contato (tela cheia)", "Foto de carro em paisagem (1920 × 1080 px é ideal). Fica escurecida atrás do convite final.") +
-      slot("sobre", "Foto da concessionária", "Aparece em “Sobre nós”. Use uma foto da fachada, do pátio ou da equipe (formato paisagem).") +
-      slot("cta", "Fundo do bloco “Seu próximo carro”", "Foto de carro ou de entrega. Ela é escurecida automaticamente.");
+      slot("sobre", "Foto da concessionária", "Aparece em “Sobre nós”. Use uma foto da fachada, do pátio ou da equipe.");
   } else if (aba === "textos") {
     corpo = GRUPOS_TEXTO.map(function (g) {
       return '<section class="cartao"><div class="cartao-topo"><h2>' + g[0] + '</h2></div><div class="grade g2">' +
@@ -91,7 +87,7 @@ export async function site(root, app, args) {
   /* Campos de imagem desta aba */
   const CAMPOS_IMG = {
     logo: { onde: "marca", padrao: IMAGENS_PADRAO.logo, escura: true, proc: { max: 700, transparente: true }, aceita: "image/png,image/webp,image/svg+xml,image/jpeg", texto: "PNG, WebP, SVG ou JPG." },
-    favicon: { onde: "marca", padrao: IMAGENS_PADRAO.favicon, escura: true, proc: { max: 256, transparente: true }, aceita: "image/png,image/webp,image/svg+xml,image/x-icon,image/jpeg", texto: "PNG, SVG ou WebP." },
+    logoClaro: { onde: "marca", padrao: IMAGENS_PADRAO.logoClaro, clara: true, proc: { max: 700, transparente: true }, aceita: "image/png,image/webp,image/svg+xml,image/jpeg", texto: "PNG, WebP, SVG ou JPG." },
     heroFundo: { onde: "imagens", padrao: IMAGENS_PADRAO.heroFundo, cobre: true, proc: { max: 1920, qualidade: 0.78 }, texto: "JPG, PNG ou WebP." },
     heroCarro: { onde: "imagens", padrao: IMAGENS_PADRAO.heroCarro, escura: true, proc: { max: 1600, transparente: true }, texto: "PNG ou WebP com fundo transparente." },
     sobre: { onde: "imagens", padrao: IMAGENS_PADRAO.sobre, cobre: true, proc: { max: 1400 }, texto: "JPG, PNG ou WebP." },

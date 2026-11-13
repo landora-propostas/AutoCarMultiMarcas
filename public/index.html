@@ -12,7 +12,7 @@
   <link rel="icon" id="favicon" type="image/png" sizes="48x48" href="favicon-48.png">
   <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="preload" as="image" href="img/carros/hero-todos.webp">
+  <link rel="preload" as="image" href="img/carros/hero-todos.webp" imagesrcset="img/carros/hero-todos-900.webp 900w, img/carros/hero-todos-1200.webp 1200w, img/carros/hero-todos.webp 1800w" imagesizes="(max-width: 900px) 100vw, 80vw" fetchpriority="high">
   <link rel="stylesheet" href="css/site.css">
   <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -107,11 +107,11 @@
 
         <div class="hero-cars" aria-hidden="true">
           <span class="hero-shadow"></span>
-          <figure class="hc" data-cls="todos"><img src="img/carros/hero-todos.webp" width="1800" height="682" alt="" fetchpriority="high"></figure>
-          <figure class="hc" data-cls="hatch"><img src="img/carros/hero-hatch.webp" width="1800" height="685" alt="" loading="lazy"></figure>
-          <figure class="hc" data-cls="cupe"><img src="img/carros/hero-esportivo.webp" width="1800" height="586" alt="" loading="lazy"></figure>
-          <figure class="hc" data-cls="sedan"><img src="img/carros/hero-sedan.webp" width="1800" height="597" alt="" loading="lazy"></figure>
-          <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp" width="1800" height="727" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="todos"><img src="img/carros/hero-todos.webp" srcset="img/carros/hero-todos-900.webp 900w, img/carros/hero-todos-1200.webp 1200w, img/carros/hero-todos.webp 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="682" alt="" fetchpriority="high"></figure>
+          <figure class="hc" data-cls="hatch"><img src="img/carros/hero-hatch.webp" srcset="img/carros/hero-hatch-900.webp 900w, img/carros/hero-hatch-1200.webp 1200w, img/carros/hero-hatch.webp 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="685" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="cupe"><img src="img/carros/hero-esportivo.webp" srcset="img/carros/hero-esportivo-900.webp 900w, img/carros/hero-esportivo-1200.webp 1200w, img/carros/hero-esportivo.webp 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="586" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="sedan"><img src="img/carros/hero-sedan.webp" srcset="img/carros/hero-sedan-900.webp 900w, img/carros/hero-sedan-1200.webp 1200w, img/carros/hero-sedan.webp 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="597" alt="" loading="lazy"></figure>
+          <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp" srcset="img/carros/hero-suv-900.webp 900w, img/carros/hero-suv-1200.webp 1200w, img/carros/hero-suv.webp 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="727" alt="" loading="lazy"></figure>
         </div>
       </div>
 
@@ -250,7 +250,7 @@
           <li><svg aria-hidden="true"><use href="#person"/></svg><div><b>Atendimento próximo</b><span>Um consultor com você em todas as etapas.</span></div></li>
         </ul>
         <a class="mo-count" href="#carros">
-          <img src="img/carros/hero-sedan.webp" alt="" loading="lazy" width="1800" height="597">
+          <img src="img/carros/hero-sedan-900.webp" alt="" loading="lazy" width="900" height="299">
           <small>Carros em estoque</small>
           <b data-count="4" data-live="estoque">4</b>
           <span class="mo-go" aria-hidden="true"><svg><use href="#up-right"/></svg></span>
@@ -320,7 +320,7 @@ Sábado: 08:30–14:30
 Domingo: fechado</p>
         <div class="foot-social" id="redes" hidden></div>
       </div>
-      <img class="foot-car" src="img/carros/hero-esportivo.webp" alt="" loading="lazy" width="1800" height="586">
+      <img class="foot-car" src="img/carros/hero-esportivo-900.webp" alt="" loading="lazy" width="1800" height="586">
     </div>
     <div class="legal">
       <p>© 2026 <span data-s="marca.nome">AutoCar Multimarcas</span>. Todos os direitos reservados.</p>

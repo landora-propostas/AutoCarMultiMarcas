@@ -58,7 +58,7 @@ export async function carroForm(root, app, slugEditar) {
     '<div class="cab"><div><h1>' + (novo ? "Novo carro" : "Editar anúncio") + "</h1><p>" + (novo ? "Preencha os dados. Você pode salvar como rascunho e publicar depois." : esc(S.nome)) + "</p></div>" +
     '<div class="acoes"><a class="btn" href="#/carros">Voltar</a>' + (!novo && S.status === "publicado" ? '<a class="btn" target="_blank" rel="noopener" href="/#carro/' + encodeURIComponent(S.slug) + '">Ver no site ↗</a>' : "") + "</div></div>" +
 
-    '<section class="cartao"><div class="cartao-topo"><h2>Identificação</h2></div><div class="grade g2">' +
+    '<section class="cartao"><div class="cartao-topo"><h2>Identificação</h2></div><div class="grade g3 f-ident">' +
       campo("nome", "Nome do anúncio", 'maxlength="80" placeholder="Ex.: BMW M4 Competition"') +
       campo("marca", "Marca", 'maxlength="40" placeholder="Ex.: BMW"') +
       '<label data-campo="categoria">Categoria<select data-k="categoria">' +

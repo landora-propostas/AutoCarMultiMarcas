@@ -708,3 +708,22 @@ body::before {
   .hero h1 .so-cel, .hero h1 .so-pc { display: none; }
   .hero h1 { font-size: clamp(26px, 8.4vw, 46px); line-height: 1.04; white-space: nowrap; }
 }
+
+/* ============================================================
+   Nada passa da largura da tela + sem zoom por pinça/toque duplo
+   ============================================================ */
+html, body { touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.sheet, .dlg { overflow-x: hidden; max-width: 100vw; }
+.sheet-body > *, .d-media > *, .d-info > * { min-width: 0; max-width: 100%; }
+.d-thumbs { overflow-x: auto; scrollbar-width: none; padding: 3px; margin: -3px; }
+.d-thumbs::-webkit-scrollbar { display: none; }
+.d-thumb { flex: none; }
+@media (max-width: 860px) {
+  .sheet-body { grid-template-columns: minmax(0, 1fr); }
+  .sheet { width: 100%; }
+  .d-bar { box-sizing: border-box; width: 100%; }
+  .d-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .d-specs div { min-width: 0; }
+  .d-specs dd { overflow-wrap: anywhere; }
+}
+img, video, iframe { max-width: 100%; }

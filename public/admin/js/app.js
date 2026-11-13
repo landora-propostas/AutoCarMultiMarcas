@@ -3,6 +3,10 @@ import { iniciar } from "/js/firebase-boot.js";
 import { OPCOES } from "/js/firebase-config.js";
 import { $, $$, esc, toast } from "./ui.js";
 import { criarRepo } from "./repo.js";
+
+// Sem zoom por pinça (o iPhone ignora user-scalable=no).
+["gesturestart", "gesturechange", "gestureend"].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
+document.addEventListener("touchmove", function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
 import { painel } from "./views/painel.js";
 import { carros } from "./views/carros.js";
 import { categorias } from "./views/categorias.js";

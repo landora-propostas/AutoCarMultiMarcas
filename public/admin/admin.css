@@ -243,3 +243,53 @@ td.acoes-col > * { margin-left: 6px; }
 /* UID na tela "Sem acesso" */
 .uid-caixa { display: flex; align-items: center; gap: 10px; margin: 4px 0 16px; padding: 10px 10px 10px 14px; border-radius: 12px; border: 1px dashed var(--line-2, #3a3a3a); background: rgba(252, 211, 8, .05); }
 .uid-caixa code { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 13px; color: #fcd308; background: none; }
+
+/* Sem rolagem lateral nem zoom no celular */
+html, body { overflow-x: clip; max-width: 100%; touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; }
+.main, .view, .view > * { min-width: 0; }
+.tabela-rolagem { max-width: 100%; overflow-x: auto; }
+
+/* ============================================================
+   Formulários ordenados: rótulo em cima, campo com altura fixa, dica embaixo
+   ============================================================ */
+label { align-content: start; }
+.grade { align-items: start; }
+input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]), select { height: 46px; padding-top: 0; padding-bottom: 0; }
+select { padding-right: 34px; appearance: none; -webkit-appearance: none;
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23979797' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") right 14px center / 12px no-repeat; }
+label > small, label > .dica { margin-top: -1px; line-height: 1.45; }
+.grade.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grade.g2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+@media (max-width: 1100px) { .grade.g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .grade.g3, .grade.g2, .grade.g4 { grid-template-columns: minmax(0, 1fr); } }
+
+/* Barra de salvar: acompanha a tela e, no fim, fica abaixo do último bloco (nunca cobre o conteúdo) */
+.barra-salvar { position: sticky; left: auto; right: auto; bottom: 16px; margin-top: 4px; border: 1px solid var(--line-2); border-radius: 18px;
+  background: rgba(23, 23, 23, .92); box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9); padding: 12px 14px 12px 18px; }
+@media (max-width: 900px) { .barra-salvar { left: auto; bottom: 10px; flex-wrap: wrap; } .barra-salvar .btn { flex: 1; } .barra-salvar .esq { flex-basis: 100%; } }
+.main { padding-bottom: 60px; }
+/* Identificação: [Nome (2 col) | Marca] / [Categoria | Condição | Situação] / [Endereço (linha inteira)] */
+.f-ident [data-campo="nome"] { grid-column: span 2; }
+.f-ident [data-campo="slug"] { grid-column: 1 / -1; }
+@media (max-width: 1100px) { .f-ident [data-campo="nome"] { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .f-ident [data-campo="nome"] { grid-column: auto; } }
+
+/* Categorias (somente leitura) */
+.cat-grade { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.cat-cartao { display: grid; gap: 14px; justify-items: start; padding: 20px; border-radius: 18px; background: #171717; border: 1px solid #2a2a2a; }
+.cat-cartao > div { display: grid; gap: 4px; }
+.cat-cartao b { font: 800 20px "Archivo", sans-serif; letter-spacing: -.02em; }
+.cat-cartao code { justify-self: start; font-size: 11.5px; color: var(--muted); }
+.cat-cartao dl { display: flex; gap: 22px; margin: 0; }
+.cat-cartao dt { font-size: 12px; color: var(--muted); }
+.cat-cartao dd { margin: 0; font: 800 22px "Archivo", sans-serif; }
+
+/* Prévias de imagem: sempre a imagem inteira, centralizada, com respiro */
+.campo-img { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 18px; align-items: center; }
+.campo-img .previa { aspect-ratio: 16 / 9; padding: 16px; overflow: hidden; }
+.campo-img .previa img, .campo-img .previa.cobre img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
+.campo-img .previa.cobre { padding: 0; }
+.campo-img .previa.cobre img { object-fit: contain; background: #0f0f0f; }
+.campo-img .previa.clara { background: repeating-conic-gradient(#f4f4f4 0 25%, #e9e9e9 0 50%) 0 0 / 18px 18px; border-color: #d0d0d0; }
+@media (max-width: 640px) { .campo-img { grid-template-columns: minmax(0, 1fr); } }
+button, input, select, textarea { font-family: "Manrope", system-ui, sans-serif; }

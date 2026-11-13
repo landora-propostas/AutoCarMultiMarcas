@@ -170,7 +170,7 @@ export function campoImagem(box, app, cfg) {
   function render() {
     const url = estado.item ? (estado.item._url || "") : cfg.padrao;
     box.innerHTML =
-      '<div class="campo-img"><div class="previa' + (cfg.cobre ? " cobre" : "") + (cfg.escura ? " escura" : "") + '">' +
+      '<div class="campo-img"><div class="previa' + (cfg.cobre ? " cobre" : "") + (cfg.escura ? " escura" : "") + (cfg.clara ? " clara" : "") + '">' +
       (estado.carregando ? '<div class="spin"></div>' : (url ? '<img src="' + esc(url) + '" alt="">' : "")) + "</div>" +
       '<div class="corpo"><div class="botoes"><label class="btn peq" for="' + id + '" style="cursor:pointer">' + ico("enviar") + (estado.item ? "Trocar imagem" : "Enviar imagem") + "</label>" +
       (estado.item ? '<button class="btn peq" type="button" data-padrao>Voltar à imagem padrão</button>' : "") + "</div>" +
