@@ -758,3 +758,19 @@ img, video, iframe { max-width: 100%; }
   .hero-grid { grid-template-columns: minmax(0, 4.3fr) minmax(0, 7.7fr); }
   .hero-cars { align-self: end; margin-bottom: -1vh; }
 }
+/* Ocupar as áreas marcadas: título maior, carro maior avançando para a esquerda */
+@media (min-width: 901px) {
+  .hero h1 { font-size: clamp(44px, min(6.4vw, 11vh), 120px); }
+  .hero-lead { font-size: clamp(15px, 1.05vw, 18px); max-width: 46ch; }
+  .hero-grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
+  .hero-cars { margin-left: -6%; }
+}
+@media (min-width: 901px) {
+  .hero h1 { white-space: nowrap; }
+  .hero-cars { margin-left: 0; }
+}
+@media (min-width: 1700px) { .hero-cars { margin-left: -6%; } }
+@media (min-width: 901px) and (max-width: 1500px) { .hero-grid { grid-template-columns: minmax(0, 4.6fr) minmax(0, 7.4fr); } .hero h1 { font-size: clamp(40px, min(5.6vw, 10vh), 92px); } }
+@media (min-width: 1700px) { .hero-cars { margin-left: 0; } }
+@media (min-width: 2200px) { .hero-cars { margin-left: -6%; } }
+@media (min-width: 901px) { .hero-lead { max-width: 40ch; } }
