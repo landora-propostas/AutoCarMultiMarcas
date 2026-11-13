@@ -127,7 +127,9 @@
     var n = groups.get(key) || 0;
     groups.set(key, n + 1);
     el.setAttribute('data-reveal', el.tagName === 'H2' ? 'wipe' : 'rise');
-    el.style.setProperty('--d', n);
+    // Nos cartões do estoque o atraso vai só até 3 passos (por linha), senão o 40º carro
+    // esperaria segundos para aparecer.
+    el.style.setProperty('--d', el.classList.contains('car-card') ? n % 3 : Math.min(n, 6));
   });
   // Os títulos começam totalmente recortados (clip-path), então o navegador os trata como
   // invisíveis. Por isso observamos o bloco que os contém e revelamos o título junto.
