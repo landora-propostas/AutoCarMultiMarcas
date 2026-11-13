@@ -93,7 +93,7 @@
     var limite = new Promise(function (r) { setTimeout(r, 4000); });
     Promise.race([pronta($('img', primeiro)), limite]).then(function () {
       if (atual !== 'todos') return;
-      var an0 = entrar(primeiro, Math.max(0, 1300 - performance.now()));
+      var an0 = entrar(primeiro, Math.max(0, 1700 - performance.now()));
       if (an0) an0.onfinish = function () { an0.cancel(); };
       // depois, as outras categorias são baixadas e decodificadas em segundo plano
       setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) { im.loading = 'eager'; pronta(im); } }); }, 1400);

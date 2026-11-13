@@ -124,7 +124,7 @@
           <figure class="hc" data-cls="suv"><img src="img/carros/hero-suv.webp?v=2" srcset="img/carros/hero-suv-900.webp?v=2 900w, img/carros/hero-suv-1200.webp?v=2 1200w, img/carros/hero-suv.webp?v=2 1800w" sizes="(max-width: 900px) 100vw, 80vw" width="1800" height="727" alt="" loading="lazy"></figure>
         </div>
         <script>
-        /* Entrada do carro junto com os textos (≈1,05 s), sem esperar o estoque carregar do Firebase. */
+        /* Entrada do carro só depois que a tela de carregamento some (≈1,7 s), sem esperar o estoque. */
         (function () {
           var f = document.querySelector('.hc[data-cls="todos"]'); if (!f) return;
           var img = f.querySelector('img');
@@ -139,7 +139,7 @@
               { offset: .58, transform: 'translate3d(-2.4%,0,0) rotate(-1deg)', easing: 'cubic-bezier(.4,0,.3,1)' },
               { offset: .8, transform: 'translate3d(.5%,0,0) rotate(.28deg)', easing: 'cubic-bezier(.4,0,.4,1)' },
               { offset: 1, transform: 'translate3d(0,0,0) rotate(0deg)', opacity: 1 }
-            ], { duration: 1150, delay: Math.max(0, 1000 - performance.now()), fill: 'backwards' });
+            ], { duration: 1150, delay: Math.max(0, 1700 - performance.now()), fill: 'backwards' });
             an.onfinish = function () { an.cancel(); };
           }
           var pronta = img.complete && img.naturalWidth ? Promise.resolve() : new Promise(function (r) { img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true }); });
