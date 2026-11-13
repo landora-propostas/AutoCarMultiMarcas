@@ -746,3 +746,11 @@ img, video, iframe { max-width: 100%; }
   .hero-cars { align-self: center; margin-top: 0; }
   .hero-dock { margin-top: clamp(24px, 6vh, 90px); }
 }
+/* Distribuição final: texto no alto, carro no meio, busca embaixo — com respiro proporcional à altura da tela */
+@media (min-width: 901px) {
+  .hero-pin { justify-content: flex-start; padding: calc(104px + 7vh) 0 9vh; }
+  .hero-grid { flex: 1 1 auto; align-items: stretch; }
+  .hero-copy { align-self: start; }
+  .hero-cars { align-self: center; }
+  .hero-dock { margin-top: 3vh; }
+}
