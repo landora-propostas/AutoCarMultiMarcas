@@ -320,3 +320,28 @@ button, input, select, textarea { font-family: "Manrope", system-ui, sans-serif;
 .tabela-rolagem select[data-st="publicado"] { color: #4ade80; border-color: rgba(74, 222, 128, .45); background-color: rgba(74, 222, 128, .08); }
 .tabela-rolagem select[data-st="vendido"] { color: #ff6a5a; border-color: rgba(255, 106, 90, .45); background-color: rgba(255, 106, 90, .08); }
 .tabela-rolagem select[data-status] option { color: var(--text); background: var(--bg); }
+
+/* Estoque no celular: cada carro vira um cartão (foto, nome, situação) com "Detalhes" e "Editar" */
+.m-barra { display: none; }
+@media (max-width: 760px) {
+  .tabela-rolagem { overflow: visible; border: 0; background: none; }
+  .tabela-rolagem table, .tabela-rolagem tbody { display: block; width: 100%; }
+  .tabela-rolagem thead { display: none; }
+  .tabela-rolagem tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 12px; }
+  .tabela-rolagem td { display: block; padding: 0; border: 0; }
+  .tabela-rolagem .td-carro { grid-column: 1; grid-row: 1; }
+  .tabela-rolagem .td-st { grid-column: 2; grid-row: 1; }
+  .tabela-rolagem .td-st select[data-status] { min-width: 0; font-size: 13px; }
+  .tabela-rolagem .car-cel { min-width: 0; }
+  .tabela-rolagem .car-cel b { min-width: 0; }
+  .tabela-rolagem .car-cel img { width: 84px; height: 62px; }
+  .m-barra { display: flex; gap: 8px; margin-top: 10px; }
+  .m-barra .btn { flex: 1; justify-content: center; }
+  .m-barra [data-det] span { display: inline-block; transition: transform .2s; }
+  .tabela-rolagem tr.aberto .m-barra [data-det] span { transform: rotate(180deg); }
+  .tabela-rolagem .td-info, .tabela-rolagem td.acoes-col { display: none; grid-column: 1 / -1; }
+  .tabela-rolagem tr.aberto .td-info { display: flex; justify-content: space-between; gap: 12px; padding: 9px 2px; border-top: 1px solid var(--line); font-size: 14px; }
+  .tabela-rolagem tr.aberto .td-info::before { content: attr(data-l); color: var(--muted); }
+  .tabela-rolagem tr.aberto td.acoes-col { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); text-align: left; }
+  .tabela-rolagem tr.aberto td.acoes-col > * { margin: 0; flex: 1 1 calc(50% - 8px); justify-content: center; text-align: center; }
+}

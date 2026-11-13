@@ -45,14 +45,16 @@ async function lista(root, app) {
       vis.map(function (c) {
         const foto = c.foto && (c.foto.src || c.foto.thumb) || SEM_FOTO;
         const st = c.status || "rascunho";
-        return '<tr data-id="' + esc(c.id) + '"><td><div class="car-cel"><img src="' + esc(foto) + '" alt="" loading="lazy"><div><b>' + esc(c.nome) + "</b><small>" + esc(c.marca) + " · " + esc(c.ano) + "</small></div></div></td>" +
-          "<td>" + esc(nomeCat[c.categoria] || c.categoria || "—") + "</td>" +
-          "<td>" + (c.preco ? esc(reais(c.preco)) : "—") + "</td>" +
-          "<td>" + (c.km === 0 ? "0 km" : esc(milhar(c.km)) + " km") + "</td>" +
-          '<td><select data-status data-st="' + st + '" aria-label="Situação de ' + esc(c.nome) + '" style="width:auto;padding:6px 34px 6px 12px">' +
+        const editar = "#/carros/editar/" + encodeURIComponent(c.id);
+        return '<tr data-id="' + esc(c.id) + '"><td class="td-carro"><div class="car-cel"><img src="' + esc(foto) + '" alt="" loading="lazy"><div><b>' + esc(c.nome) + "</b><small>" + esc(c.marca) + " · " + esc(c.ano) + "</small></div></div>" +
+            '<div class="m-barra"><button class="btn peq" type="button" data-det aria-expanded="false">Detalhes <span aria-hidden="true">▾</span></button><a class="btn peq" href="' + editar + '">Editar</a></div></td>' +
+          '<td class="td-info" data-l="Categoria">' + esc(nomeCat[c.categoria] || c.categoria || "—") + "</td>" +
+          '<td class="td-info" data-l="Preço">' + (c.preco ? esc(reais(c.preco)) : "—") + "</td>" +
+          '<td class="td-info" data-l="Km">' + (c.km === 0 ? "0 km" : esc(milhar(c.km)) + " km") + "</td>" +
+          '<td class="td-st"><select data-status data-st="' + st + '" aria-label="Situação de ' + esc(c.nome) + '" style="width:auto;padding:6px 34px 6px 12px">' +
             Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (k === st ? " selected" : "") + ">" + STATUS[k] + "</option>"; }).join("") + "</select></td>" +
-          "<td>" + (c.procura || 0) + "</td>" +
-          '<td class="acoes-col"><a class="btn peq" href="#/carros/editar/' + encodeURIComponent(c.id) + '">Editar</a>' +
+          '<td class="td-info" data-l="Visitas">' + (c.procura || 0) + "</td>" +
+          '<td class="acoes-col"><a class="btn peq" href="' + editar + '">Editar</a>' +
             '<button class="btn peq" type="button" data-dup>Duplicar</button>' +
             (st === "publicado" ? '<a class="btn peq" href="/#carro/' + encodeURIComponent(c.id) + '" target="_blank" rel="noopener">Ver ↗</a>' : "") +
             '<button class="btn peq perigo" type="button" data-del>Excluir</button></td></tr>';
@@ -142,6 +144,12 @@ async function lista(root, app) {
     const tr = e.target.closest("tr[data-id]");
     if (!tr) return;
     const c = todos.filter(function (x) { return x.id === tr.dataset.id; })[0];
+    const det = e.target.closest("[data-det]");
+    if (det) {
+      const aberto = tr.classList.toggle("aberto");
+      det.setAttribute("aria-expanded", String(aberto));
+      return;
+    }
     if (e.target.closest("[data-dup]")) {
       let slug = c.id + "-copia", n = 2;
       while (todos.some(function (x) { return x.id === slug; })) slug = c.id + "-copia-" + n++;
