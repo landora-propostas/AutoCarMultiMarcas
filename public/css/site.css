@@ -916,3 +916,8 @@ main::before { background:
 .hu-menu svg { width: 17px; height: 17px; color: var(--brand); flex: none; }
 #hu-adm { color: var(--brand); }
 @media (max-width: 900px) { .header-user { margin-left: auto; } .header-user + .menu-toggle, .header-user ~ .menu-toggle { margin-left: 8px; } }
+
+/* Estoque grande: o navegador só desenha os cartões perto da tela, e a imagem da capa
+   ganha camada própria para o hover não redesenhar a página inteira ao rolar. */
+.car-card { content-visibility: auto; contain-intrinsic-size: auto 420px; }
+.cc-photo img { backface-visibility: hidden; }

@@ -101,7 +101,7 @@
         '</header>' +
         '<div class="cc-photo">' +
           (c.condicao === 'Novo' ? '<span class="tag-new">Novo</span>' : '') +
-          '<img class="car-img" src="' + c.foto.src + '" alt="' + esc(c.foto.alt) + '" loading="lazy" style="object-position:' + c.foto.pos + '">' +
+          '<img class="car-img" src="' + c.foto.src + '" alt="' + esc(c.foto.alt) + '" loading="lazy" decoding="async" style="object-position:' + c.foto.pos + '">' +
         '</div>' +
         '<ul class="specs">' +
           '<li>' + icon('road') + (c.km === 0 ? '0 km' : kmTxt(c.km)) + '</li>' +
