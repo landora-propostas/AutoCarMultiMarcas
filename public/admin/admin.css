@@ -357,3 +357,12 @@ button, input, select, textarea { font-family: "Manrope", system-ui, sans-serif;
   .m-barra .btn { min-width: 0; }
   .view .barra-filtros > *, .view .barra-filtros select, .view .barra-filtros input { flex: 1 1 100%; width: 100%; max-width: none; }
 }
+/* Cartão no celular: Detalhes e Editar dividem a largura toda do cartão; situação no canto */
+@media (max-width: 760px) {
+  .tabela-rolagem tr { position: relative; }
+  .tabela-rolagem .td-carro { grid-column: 1 / -1; }
+  .tabela-rolagem .td-carro .car-cel { padding-right: 136px; }
+  .tabela-rolagem .td-st { position: absolute; top: 12px; right: 12px; width: 124px; }
+  .tabela-rolagem .td-st select[data-status] { width: 100%; max-width: none; }
+  .m-barra { display: grid; grid-template-columns: 1fr 1fr; }
+}

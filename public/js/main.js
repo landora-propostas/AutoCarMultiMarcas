@@ -12,7 +12,10 @@
   function kmTxt(n) { return n.toLocaleString('pt-BR') + ' km'; }
   // km 0 só é "0 km" em carro novo; em usado significa que o km não foi informado
   function kmZero(c) { return c.condicao === 'Novo' ? '0 km' : 'Km a consultar'; }
-  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  // Endereço de imagem só pode ser foto (data:image), https ou caminho do próprio site
+  function urlSegura(u) { u = String(u || ''); return /^(data:image\/(png|jpe?g|webp|gif|avif|svg\+xml)[;,]|https:\/\/|\/|img\/)/i.test(u) ? esc(u) : ''; }
+  function posSegura(p) { p = String(p || ''); return /^[\d.]+% [\d.]+%$/.test(p) ? p : '50% 50%'; }
   function icon(id) { return '<svg aria-hidden="true"><use href="#' + id + '"/></svg>'; }
   function norm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
 
@@ -94,16 +97,16 @@
   list.innerHTML = CARROS.map(function (c, i) {
     var ano = c.ano.split('/')[1] || c.ano;
     return '' +
-      '<article class="car-card" data-cat="' + c.categoria + '" data-name="' + esc(c.nome.toLowerCase()) + '" data-slug="' + c.slug + '">' +
+      '<article class="car-card" data-cat="' + esc(c.categoria) + '" data-name="' + esc(c.nome.toLowerCase()) + '" data-slug="' + esc(c.slug) + '">' +
         '<header class="cc-top">' +
           '<span class="cc-mark" aria-hidden="true">' + esc((c.marca || c.nome).charAt(0)) + '</span>' +
-          '<div class="cc-title"><h3><a class="stretch" href="#carro/' + c.slug + '">' + esc(c.nome) + '</a></h3>' +
+          '<div class="cc-title"><h3><a class="stretch" href="#carro/' + encodeURIComponent(c.slug) + '">' + esc(c.nome) + '</a></h3>' +
           '<p>' + esc(c.condicao) + ' · ' + esc(ano) + '</p></div>' +
           '<span class="cc-go" aria-hidden="true">' + icon('up-right') + '</span>' +
         '</header>' +
         '<div class="cc-photo">' +
           (c.condicao === 'Novo' ? '<span class="tag-new">Novo</span>' : '') +
-          '<img class="car-img" src="' + c.foto.src + '" alt="' + esc(c.foto.alt) + '" loading="lazy" decoding="async" style="object-position:' + c.foto.pos + '">' +
+          '<img class="car-img" src="' + urlSegura(c.foto.src) + '" alt="' + esc(c.foto.alt) + '" loading="lazy" decoding="async" style="object-position:' + posSegura(c.foto.pos) + '">' +
         '</div>' +
         '<ul class="specs">' +
           '<li>' + icon('road') + (c.km === 0 ? kmZero(c) : kmTxt(c.km)) + '</li>' +
@@ -388,9 +391,9 @@
     corpo.className = 'sheet-body' + (troca ? ' swap' : '');
     corpo.innerHTML = '' +
       '<div class="d-media">' +
-        '<figure class="d-photo"><img id="d-img" src="' + g[0].src + '" alt="' + esc(g[0].alt) + '" style="object-position:' + (g[0].pos || c.foto.pos) + '"></figure>' +
+        '<figure class="d-photo"><img id="d-img" src="' + urlSegura(g[0].src) + '" alt="' + esc(g[0].alt) + '" style="object-position:' + posSegura(g[0].pos || c.foto.pos) + '"></figure>' +
         (g.length > 1 ? '<div class="d-thumbs" role="group" aria-label="Fotos do carro">' + g.map(function (f, k) {
-          return '<button type="button" class="d-thumb' + (k === 0 ? ' is-on' : '') + '" data-foto="' + k + '" aria-label="Ver foto ' + (k + 1) + '"><img src="' + f.src + '" alt=""></button>';
+          return '<button type="button" class="d-thumb' + (k === 0 ? ' is-on' : '') + '" data-foto="' + k + '" aria-label="Ver foto ' + (k + 1) + '"><img src="' + urlSegura(f.src) + '" alt=""></button>';
         }).join('') + '</div>' : '') +
         '<span class="d-tag">' + esc(c.condicao) + '</span>' +
       '</div>' +

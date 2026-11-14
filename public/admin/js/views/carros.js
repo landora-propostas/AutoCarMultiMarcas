@@ -220,22 +220,22 @@ function barraProgresso(nCarros, total) {
 let otimizando = false;
 async function otimizarCapas(app, carros) {
   if (otimizando || app.ctx.opcoes.armazenamento === "storage") return;
-  const pesadas = carros.filter(function (c) { return c.foto && c.foto.thumb && c.foto.thumb.length > 40000; });
+  // Só capas nunca otimizadas (marca "otimizada" evita repetir a cada vez que abre a página)
+  const pesadas = carros.filter(function (c) { return c.foto && c.foto.thumb && !c.foto.otimizada && c.foto.thumb.length > 40000; });
   if (!pesadas.length) return;
   otimizando = true;
   let n = 0;
   for (const c of pesadas) {
     try {
       const nova = await miniaturaDe(c.foto.thumb, CAPA_LADO);
-      if (nova.length < c.foto.thumb.length) {
-        const foto = Object.assign({}, c.foto, { thumb: nova });
+      {
+        const foto = Object.assign({}, c.foto, { thumb: nova.length < c.foto.thumb.length ? nova : c.foto.thumb, otimizada: true });
         await app.repo.atualizar("carros", c.id, { foto: foto });
         c.foto = foto; n++;
       }
     } catch (e) { console.warn("Capa não otimizada:", c.id, e); }
   }
   otimizando = false;
-  if (n) toast(n + (n === 1 ? " capa otimizada" : " capas otimizadas") + " para o site abrir mais rápido.");
 }
 
 // Correção única da importação do WhatsApp: estes carros vieram sem km no anúncio e foram
