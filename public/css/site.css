@@ -1059,3 +1059,11 @@ main::before { background:
 .check:hover input[type="checkbox"]:not(:checked) { border-color: rgba(252,211,8,.6); }
 .check input[type="checkbox"]:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .check:has(input:checked) { color: var(--text); }
+/* Na animação de filtro (View Transition) os cartões vão para uma camada acima da página.
+   A barra de busca presa e o menu entram nessa camada também, sempre por cima. */
+.filtro-fixo { view-transition-name: barra-busca; }
+.site-header { view-transition-name: menu-topo; }
+::view-transition-group(barra-busca) { z-index: 100; }
+::view-transition-group(menu-topo) { z-index: 101; }
+::view-transition-old(barra-busca), ::view-transition-new(barra-busca),
+::view-transition-old(menu-topo), ::view-transition-new(menu-topo) { animation: none; }
