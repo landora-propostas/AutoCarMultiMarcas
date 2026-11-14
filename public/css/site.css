@@ -1003,3 +1003,16 @@ main::before { background:
   .adv-inner, .adv-wrap.open .adv-inner { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-flow: row dense; }
   .adv-inner > .fgroup:first-child { grid-row: span 2; }
 }
+
+/* Preço sempre numa linha; com 4 cartões por linha o rodapé fica um pouco mais compacto */
+.cc-foot .price { white-space: nowrap; }
+.cc-foot > div { min-width: 0; }
+@media (min-width: 1400px) {
+  .fleet .cc-foot { gap: 10px; padding: 12px 14px; }
+  .fleet .cc-foot .price { font-size: clamp(18px, 1.35vw, 22px); }
+  .fleet .cc-btn { padding: 0 14px; font-size: 13px; white-space: nowrap; flex: none; }
+}
+/* Nome do carro numa linha só (com reticências), para todas as fotos ficarem alinhadas */
+.cc-title { min-width: 0; flex: 1; }
+.cc-title h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-title p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

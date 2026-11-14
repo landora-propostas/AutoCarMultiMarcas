@@ -100,7 +100,7 @@
       '<article class="car-card" data-cat="' + esc(c.categoria) + '" data-name="' + esc(c.nome.toLowerCase()) + '" data-slug="' + esc(c.slug) + '">' +
         '<header class="cc-top">' +
           '<span class="cc-mark" aria-hidden="true">' + esc((c.marca || c.nome).charAt(0)) + '</span>' +
-          '<div class="cc-title"><h3><a class="stretch" href="#carro/' + encodeURIComponent(c.slug) + '">' + esc(c.nome) + '</a></h3>' +
+          '<div class="cc-title"><h3 title="' + esc(c.nome) + '"><a class="stretch" href="#carro/' + encodeURIComponent(c.slug) + '">' + esc(c.nome) + '</a></h3>' +
           '<p>' + esc(c.condicao) + ' · ' + esc(ano) + '</p></div>' +
           '<span class="cc-go" aria-hidden="true">' + icon('up-right') + '</span>' +
         '</header>' +
