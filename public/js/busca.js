@@ -126,7 +126,7 @@
   inner.innerHTML =
     chips('marcas', marcas, 'Marca') +
     '<div class="fgroup"><h4>Ano do modelo</h4><div class="anos">' + selAno('anoDe', 'De') + selAno('anoAte', 'Até') + '</div>' +
-      '<label class="check"><input type="checkbox" id="ano-exato"><span>Somente este ano (específico)</span></label></div>' +
+      '<label class="check"><input type="checkbox" id="ano-exato"><span>Só este ano</span></label></div>' +
     faixa('km', 'Quilometragem', B.km[0], B.km[1], 1000, num, 'km') +
     faixa('p', 'Preço', B.preco[0], B.preco[1], 5000, brl, 'R$') +
     chips('cambio', cambios, 'Câmbio') +

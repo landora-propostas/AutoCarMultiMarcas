@@ -1038,3 +1038,24 @@ main::before { background:
 .adv .check:hover input[type="checkbox"]:not(:checked) { border-color: rgba(252,211,8,.6); }
 .adv .check input[type="checkbox"]:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .adv .check:has(input:checked) { color: var(--text); }
+/* Barra de busca presa sempre na frente dos anúncios */
+.filtro-fixo { z-index: 70; isolation: isolate; }
+.result-count, .fleet { position: relative; z-index: 1; }
+.car-card { contain: none; }
+/* Checkbox "Só este ano" no estilo do site */
+.check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12.5px; color: var(--muted); line-height: 1.2; user-select: none; }
+.check input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; flex: none; margin: 0;
+  width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.04); display: grid; place-items: center; cursor: pointer;
+  transition: background-color .15s, border-color .15s, box-shadow .15s;
+}
+.check input[type="checkbox"]::after {
+  content: ""; width: 5px; height: 9px; border: solid #161616; border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0); margin-top: -2px; transition: transform .15s;
+}
+.check input[type="checkbox"]:checked { background: var(--brand); border-color: var(--brand); box-shadow: 0 0 12px rgba(252,211,8,.35); }
+.check input[type="checkbox"]:checked::after { transform: rotate(45deg) scale(1); }
+.check:hover input[type="checkbox"]:not(:checked) { border-color: rgba(252,211,8,.6); }
+.check input[type="checkbox"]:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.check:has(input:checked) { color: var(--text); }
