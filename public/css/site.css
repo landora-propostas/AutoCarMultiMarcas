@@ -1016,3 +1016,8 @@ main::before { background:
 .cc-title { min-width: 0; flex: 1; }
 .cc-title h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cc-title p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Valor um pouco menor, para não encostar no botão */
+@media (min-width: 1400px) {
+  .car-card .cc-foot .price { font-size: 19px; letter-spacing: -.01em; }
+  .car-card .cc-foot { gap: 12px; }
+}
