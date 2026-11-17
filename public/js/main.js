@@ -272,27 +272,35 @@
   dlg.addEventListener('click', function (e) { if (e.target === dlg) closeLead(); });
   dlg.addEventListener('cancel', function (e) { e.preventDefault(); closeLead(); });
 
+  function zapLoja() {
+    var a = $('[data-href="whatsapp"]');
+    var h = (a && a.href && a.href.indexOf('wa.me/') > 0) ? a.href : 'https://wa.me/5514996547171';
+    return h.split('?')[0];
+  }
+  function abrirZap(txt) {
+    var url = zapLoja() + '?text=' + encodeURIComponent(txt);
+    var bt = $('#lead-zap'); if (bt) bt.href = url;
+    var w = window.open(url, '_blank', 'noopener');
+    if (!w) location.href = url;
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var nome = form.elements.nome.value.trim();
-    var zap = form.elements.whatsapp.value.replace(/\D/g, '');
+    var fone = form.elements.whatsapp.value.trim();
+    var zap = fone.replace(/\D/g, '');
     if (!nome || zap.length < 10) { erro.textContent = 'Preencha seu nome e WhatsApp para continuar.'; erro.hidden = false; return; }
     erro.hidden = true;
-    var concluir = function () { form.hidden = true; ok.hidden = false; form.reset(); };
+    var carro = select.value;
+    var achado = CARROS.filter(function (c) { return c.nome === carro; })[0];
+    var txt = 'Olá! Meu nome é ' + nome + '.\n' +
+      (achado ? 'Tenho interesse no ' + achado.nome + (achado.preco ? ' (' + brl(achado.preco) + ')' : '') + '.\n' + linkCarro(achado.slug) + '\n'
+              : 'Quero ajuda para escolher um carro.\n') +
+      'Meu WhatsApp: ' + fone;
+    abrirZap(txt);
     var L = window.LANDORA;
-    if (L && L.salvarLead) {
-      var btn = form.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      L.salvarLead({ nome: nome, whatsapp: form.elements.whatsapp.value.trim(), carro: select.value }).then(concluir, function () {
-        erro.textContent = 'Não foi possível enviar agora. Tente de novo em instantes.';
-        erro.hidden = false;
-      }).then(function () { btn.disabled = false; });
-    } else {
-      var zapLoja = ($('[data-href="whatsapp"]') || {}).href || 'https://wa.me/5514996547171';
-      var txt = 'Olá! Sou ' + nome + '. Tenho interesse em: ' + select.value + '. Meu WhatsApp: ' + form.elements.whatsapp.value.trim();
-      window.open(zapLoja.split('?')[0] + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
-      concluir();
-    }
+    if (L && L.salvarLead) L.salvarLead({ nome: nome, whatsapp: fone, carro: carro }).catch(function () { });
+    form.hidden = true; ok.hidden = false; form.reset();
   });
 
   var sheet = $('#detalhe');
@@ -301,7 +309,7 @@
   var atual = null;
   var viaApp = false;
 
-  function linkCarro(slug) { return location.origin + '/carro/' + encodeURIComponent(slug); }
+  function linkCarro(slug) { return (/^(localhost|127\.)/.test(location.hostname) ? location.origin : 'https://autocarpiraju.com.br') + '/carro/' + encodeURIComponent(slug); }
   function find(slug) { for (var i = 0; i < CARROS.length; i++) if (CARROS[i].slug === slug) return i; return -1; }
 
   function renderDetalhe(i, troca) {
@@ -346,7 +354,7 @@
         (c.descricao ? '<section class="d-sec d-i" style="--i:9"><h3>Sobre o carro</h3><p class="d-desc">' + esc(c.descricao) + '</p></section>' : '') +
         '<div class="d-actions">' +
           '<button class="btn btn-primary" type="button" data-open-lead data-car="' + esc(c.nome) + '">Falar com consultor ' + icon('arrow') + '</button>' +
-          '<a class="btn btn-ghost" href="https://wa.me/?text=' + encodeURIComponent(c.nome + ' · ' + brl(c.preco) + '\n' + linkCarro(c.slug)) + '" target="_blank" rel="noopener">' + icon('whatsapp') + '<span>Enviar</span></a>' +
+          '<a class="btn btn-ghost" href="' + esc(zapLoja() + '?text=' + encodeURIComponent('Olá! Tenho interesse no ' + c.nome + ' · ' + brl(c.preco) + '\n' + linkCarro(c.slug))) + '" target="_blank" rel="noopener">' + icon('whatsapp') + '<span>WhatsApp</span></a>' +
           '<button class="btn btn-ghost" type="button" data-copiar>' + icon('link') + '<span>Copiar link</span></button>' +
         '</div>' +
       '</div>';

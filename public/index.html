@@ -378,7 +378,7 @@ Domingo: fechado</p>
   <button class="lead-close" type="button" data-close-lead aria-label="Fechar"><svg aria-hidden="true"><use href="#plus"/></svg></button>
   <form id="lead-form" novalidate>
     <h2 id="lead-titulo">Receba uma proposta</h2>
-    <p class="lead-sub">Conte o que você procura e um consultor chama você no WhatsApp.</p>
+    <p class="lead-sub">Deixe seu nome e WhatsApp. A conversa com o consultor abre pronta, é só tocar em enviar.</p>
     <label>Nome
       <input name="nome" type="text" autocomplete="name" required placeholder="Como podemos chamar você?">
     </label>
@@ -389,14 +389,14 @@ Domingo: fechado</p>
       <select name="carro" id="lead-carro"></select>
     </label>
     <p class="form-error" id="lead-erro" role="alert" hidden>Preencha seu nome e WhatsApp para continuar.</p>
-    <button class="btn btn-primary" type="submit">Enviar pedido <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+    <button class="btn btn-primary" type="submit">Falar no WhatsApp <svg aria-hidden="true"><use href="#arrow"/></svg></button>
     <p class="lead-lgpd">Ao enviar, você concorda com a <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.</p>
   </form>
   <div class="lead-ok" id="lead-ok" hidden>
     <svg aria-hidden="true"><use href="#shield"/></svg>
-    <h2>Pedido enviado</h2>
-    <p>Um consultor entra em contato em breve.</p>
-    <button class="btn btn-ghost btn-sm" type="button" data-close-lead>Fechar</button>
+    <h2>Abrimos o WhatsApp</h2>
+    <p>Sua mensagem já está pronta para o consultor. Se o WhatsApp não abriu, toque no botão abaixo.</p>
+    <div class="lead-ok-bts"><a class="btn btn-primary btn-sm" id="lead-zap" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a><button class="btn btn-ghost btn-sm" type="button" data-close-lead>Fechar</button></div>
   </div>
 </dialog>
 

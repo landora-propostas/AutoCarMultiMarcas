@@ -1009,3 +1009,16 @@ main::before { background:
   .cookies-acoes .btn { flex: 1; justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) { .cookies { transition: none; } }
+
+.dlg { box-sizing: border-box; width: min(calc(100vw - 24px), 460px); max-height: calc(100dvh - 24px); overflow-y: auto; margin: auto; }
+.dlg form { grid-template-columns: minmax(0, 1fr); }
+.dlg label { min-width: 0; }
+.dlg input, .dlg select { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; text-overflow: ellipsis; }
+.dlg h2 { padding-right: 44px; overflow-wrap: anywhere; }
+@media (max-width: 520px) {
+  .dlg { padding: 26px 18px 20px; border-radius: 22px; }
+  .dlg h2 { font-size: 26px; }
+  .dlg input, .dlg select { font-size: 16px; }
+  .lead-sub { font-size: 14px; margin-bottom: 14px; }
+}
+.lead-ok-bts { display: flex; flex-wrap: wrap; gap: 10px; } .lead-ok-bts .btn { margin-top: 0; }

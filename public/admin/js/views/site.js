@@ -68,7 +68,7 @@ export async function site(root, app, args) {
     corpo =
       '<section class="cartao"><div class="cartao-topo"><h2>Contato</h2></div><div class="grade g2">' +
       input("contato", "telefone", "Telefone (como aparece no site)", contato, 'maxlength="30" inputmode="tel"') +
-      input("contato", "whatsapp", "WhatsApp (com DDD)", contato, 'maxlength="20" inputmode="tel" placeholder="(11) 90000-0000"') +
+      input("contato", "whatsapp", "WhatsApp do consultor (recebe os pedidos do site)", contato, 'maxlength="20" inputmode="tel" placeholder="(11) 90000-0000"') +
       input("contato", "email", "E-mail", contato, 'type="email" maxlength="80"') +
       input("contato", "horario", "Horário de funcionamento", contato, 'maxlength="60"') +
       '<div class="span-2">' + input("contato", "endereco", "Endereço", contato, 'maxlength="140"') + "</div></div></section>" +

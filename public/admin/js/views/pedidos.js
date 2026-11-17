@@ -16,13 +16,13 @@ export async function pedidos(root, app) {
       '<div class="acoes"><button class="btn" type="button" data-atualizar>Atualizar</button></div></div>' +
       '<div class="barra-filtros"><select id="f-status" aria-label="Filtrar por situação"><option value="">Todas as situações</option>' +
         Object.keys(STATUS_LEAD).map(function (k) { return '<option value="' + k + '"' + (k === filtro ? " selected" : "") + ">" + STATUS_LEAD[k] + "</option>"; }).join("") + "</select></div>" +
-      (lista.length ? '<div class="tabela-rolagem"><table><thead><tr><th>Recebido</th><th>Cliente</th><th>Carro de interesse</th><th>Situação</th><th></th></tr></thead><tbody>' +
+      (lista.length ? '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Recebido</th><th>Cliente</th><th>Carro de interesse</th><th>Situação</th><th></th></tr></thead><tbody>' +
         lista.map(function (l) {
           const st = l.status || "novo";
-          return '<tr data-id="' + esc(l.id) + '"><td style="white-space:nowrap">' + esc(dataHora(l.criadoEm)) + "</td>" +
+          return '<tr data-id="' + esc(l.id) + '"><td data-l="Recebido" style="white-space:nowrap">' + esc(dataHora(l.criadoEm)) + "</td>" +
             "<td><b>" + esc(l.nome) + "</b><br><span class=\"dica\">" + esc(l.whatsapp) + "</span></td>" +
-            "<td>" + esc(l.carro || "Ainda não sei") + "</td>" +
-            '<td><select data-status aria-label="Situação do pedido" style="width:auto;padding:6px 10px">' +
+            '<td data-l="Carro">' + esc(l.carro || "Ainda não sei") + "</td>" +
+            '<td data-l="Situação"><select data-status aria-label="Situação do pedido" style="width:auto;padding:6px 10px">' +
               Object.keys(STATUS_LEAD).map(function (k) { return '<option value="' + k + '"' + (k === st ? " selected" : "") + ">" + STATUS_LEAD[k] + "</option>"; }).join("") + "</select></td>" +
             '<td class="acoes-col"><a class="btn peq primary" target="_blank" rel="noopener" href="' + esc(linkWhats(l.whatsapp, "Olá, " + l.nome + "! Aqui é da AutoCar Multimarcas" + (l.carro && l.carro !== "Ainda não sei" ? " sobre o " + l.carro : "") + ".")) + '">WhatsApp ↗</a>' +
             '<button class="btn peq perigo" type="button" data-del>Excluir</button></td></tr>';

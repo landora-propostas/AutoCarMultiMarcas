@@ -47,13 +47,13 @@ export async function equipe(root, app) {
           '<label>Nome ou e-mail (para identificar)<input name="nome" placeholder="Ex.: Maria · maria@exemplo.com" maxlength="120"></label>' +
           '<div><button class="btn" type="submit">Autorizar</button></div>' +
         '</form></details></section>' +
-      '<div class="tabela-rolagem"><table><thead><tr><th>Pessoa</th><th>UID</th><th>Autorizado por</th><th>Em</th><th></th></tr></thead><tbody>' +
+      '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Pessoa</th><th>UID</th><th>Autorizado por</th><th>Em</th><th></th></tr></thead><tbody>' +
       lista.map(function (m) {
         const eu = m.id === app.uid;
         const quem = m.nome || m.email || (eu ? app.email : "—");
         const sub = m.nome && m.email ? '<div style="font-size:12px;opacity:.65;margin-top:2px">' + esc(m.email) + "</div>" : "";
         return "<tr data-id=\"" + esc(m.id) + "\"><td><b>" + esc(quem) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + (m.id === app.masterUid ? ' <span class="selo">principal</span>' : "") + sub + "</td>" +
-          '<td><code style="font-size:12px">' + esc(m.id) + "</code></td><td>" + esc(m.adicionadoPor || "—") + "</td><td>" + esc(dataHora(m.criadoEm)) + "</td>" +
+          '<td data-l="UID"><code class="uid">' + esc(m.id) + '</code></td><td data-l="Autorizado por">' + esc(m.adicionadoPor || "—") + '</td><td data-l="Em">' + esc(dataHora(m.criadoEm)) + "</td>" +
           '<td class="acoes-col">' + (eu ? "" : '<button class="btn peq perigo" type="button" data-del>Remover acesso</button>') + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
@@ -61,10 +61,10 @@ export async function equipe(root, app) {
     root.innerHTML =
       '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div></div>' +
       '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> pode criar ou remover acessos ao painel. Peça a ele caso precise liberar alguém.</p></section>' +
-      '<div class="tabela-rolagem"><table><thead><tr><th>Pessoa</th><th>Função</th></tr></thead><tbody>' +
+      '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Pessoa</th><th>Função</th></tr></thead><tbody>' +
       membros.map(function (m) {
         const eu = m.id === app.uid;
-        return "<tr><td><b>" + esc(m.nome || m.email || (eu ? app.email : "—")) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + "</td><td>" + (m.id === app.masterUid ? "Administrador principal" : "Administrador") + "</td></tr>";
+        return "<tr><td><b>" + esc(m.nome || m.email || (eu ? app.email : "—")) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + '</td><td data-l="Função">' + (m.id === app.masterUid ? "Administrador principal" : "Administrador") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
   desenhar();

@@ -11,15 +11,15 @@ export async function adicionais(root, app) {
     root.innerHTML =
       '<div class="cab"><div><h1>Adicionais de entrega</h1><p>O que a loja oferece na entrega do carro. Em cada anúncio você escolhe quais valem para aquele carro.</p></div>' +
       '<div class="acoes"><button class="btn primary" type="button" data-novo>+ Novo adicional</button></div></div>' +
-      (lista.length ? '<div class="tabela-rolagem"><table><thead><tr><th>Ordem</th><th>Adicional</th><th>Em novos carros</th><th>Ativo</th><th>Anúncios</th><th></th></tr></thead><tbody>' +
+      (lista.length ? '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Ordem</th><th>Adicional</th><th>Em novos carros</th><th>Ativo</th><th>Anúncios</th><th></th></tr></thead><tbody>' +
         lista.map(function (a, i) {
-          return '<tr data-id="' + esc(a.id) + '"><td style="white-space:nowrap">' +
+          return '<tr data-id="' + esc(a.id) + '"><td class="td-ordem" data-l="Ordem"><span class="ordem-bts">' +
             '<button class="icon-btn mini" type="button" data-sobe aria-label="Subir"' + (i === 0 ? " disabled" : "") + ">" + ico("cima") + "</button> " +
-            '<button class="icon-btn mini" type="button" data-desce aria-label="Descer"' + (i === lista.length - 1 ? " disabled" : "") + ">" + ico("baixo") + "</button></td>" +
-            "<td><b>" + esc(a.titulo) + '</b><br><span class="dica">' + esc(a.descricao || "") + "</span></td>" +
-            '<td><label class="check"><input type="checkbox" data-padrao' + (a.padrao ? " checked" : "") + ' aria-label="Marcado por padrão"><span class="dica">já vem marcado</span></label></td>' +
-            '<td><label class="check"><input type="checkbox" data-ativo' + (a.ativo !== false ? " checked" : "") + ' aria-label="Ativo"></label></td>' +
-            "<td>" + uso(a.id) + '</td><td class="acoes-col"><button class="btn peq" type="button" data-edit>Editar</button><button class="btn peq perigo" type="button" data-del>Excluir</button></td></tr>';
+            '<button class="icon-btn mini" type="button" data-desce aria-label="Descer"' + (i === lista.length - 1 ? " disabled" : "") + ">" + ico("baixo") + "</button></span></td>" +
+            '<td class="td-tit"><b>' + esc(a.titulo) + '</b><br><span class="dica">' + esc(a.descricao || "") + "</span></td>" +
+            '<td data-l="Em novos carros"><label class="check"><input type="checkbox" data-padrao' + (a.padrao ? " checked" : "") + ' aria-label="Marcado por padrão"><span class="dica">já vem marcado</span></label></td>' +
+            '<td data-l="Ativo"><label class="check"><input type="checkbox" data-ativo' + (a.ativo !== false ? " checked" : "") + ' aria-label="Ativo"></label></td>' +
+            '<td data-l="Anúncios">' + uso(a.id) + '</td><td class="acoes-col"><button class="btn peq" type="button" data-edit>Editar</button><button class="btn peq perigo" type="button" data-del>Excluir</button></td></tr>';
         }).join("") + "</tbody></table></div>" : '<div class="vazio">Nenhum adicional cadastrado.</div>') +
       '<p class="dica">“Ativo” desligado esconde o adicional de todos os anúncios, sem apagar. “Já vem marcado” só afeta carros novos que você cadastrar.</p>';
   }

@@ -99,7 +99,12 @@ async function sair() { app.sujo = false; try { await app.ctx.authSdk.signOut(ap
 
 async function aoMudarUsuario(user) {
   app.user = user;
-  if (!user) { app.email = ""; mostrar("entrar"); return; }
+  if (!user) {
+    app.email = ""; app.uid = ""; app.master = false;
+    if (location.hash !== "#/login") history.replaceState(null, "", "/admin/#/login");
+    const v = $("#view"); if (v) v.innerHTML = "";
+    mostrar("entrar"); return;
+  }
   if (!user.emailVerified) { $("#ver-email").textContent = user.email; mostrar("verificar"); return; }
   const email = String(user.email || "").toLowerCase();
   let autorizado = false;
@@ -133,11 +138,13 @@ function entrarNoApp() {
     $("#nav").addEventListener("click", function () { menu(false); });
   }
   atualizarContador();
+  if (!location.hash || location.hash === "#/login") history.replaceState(null, "", "/admin/#/painel");
   rotear();
 }
 function menu(abrir) { $("#side").classList.toggle("aberto", abrir); $("#veu").classList.toggle("aberto", abrir); }
 
 function aoMudarHash() {
+  if (!app.uid) return;
   if (ignorar) { ignorar = false; return; }
   if (app.sujo && !window.confirm("Você tem alterações que ainda não foram salvas. Sair mesmo assim?")) {
     ignorar = true; location.hash = rotaAtual; return;
