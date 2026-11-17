@@ -1,20 +1,8 @@
-// Modelo de dados e funções puras, compartilhadas pelo site e pelo painel.
-//
-// Coleções do Firestore:
-//   carros/{slug}      anúncios (o ID do documento é o slug do carro)
-//   categorias/{slug}  categorias usadas nos filtros do site
-//   adicionais/{id}    catálogo de adicionais de entrega
-//   config/site        marca, imagens, textos e contatos do site
-//   leads/{id}         pedidos de proposta enviados pelo site
-//   admins/{e-mail}    quem pode entrar no painel
-//   midia/{id}         fotos (quando o armazenamento é "firestore")
-
 export const STATUS = { publicado: "Publicado", rascunho: "Rascunho", vendido: "Vendido" };
 export const CONDICOES = ["Novo", "Seminovo", "Usado"];
 export const CAMBIOS = ["Automático", "Manual", "Automatizado", "CVT"];
 export const COMBUSTIVEIS = ["Flex", "Gasolina", "Etanol", "Diesel", "Elétrico", "Híbrido"];
 export const FICHA_PADRAO = ["Motor", "Potência", "Torque", "0 a 100 km/h", "Câmbio", "Tração", "Combustível", "Portas / lugares", "Cor", "Final da placa", "Porta-malas"];
-// Estas frases são reconhecidas pelo filtro "Diferenciais" da busca avançada do site.
 export const HISTORICO_SUGESTOES = ["Único dono", "Revisões em dia", "IPVA pago", "Sem registro de sinistro", "Laudo cautelar aprovado", "Garantia de fábrica", "Documentação inclusa", "Aceita troca", "Aceita financiamento", "Aceita troca e financiamento"];
 export const STATUS_LEAD = { novo: "Novo", contatado: "Em contato", negociando: "Negociando", fechado: "Fechado", perdido: "Perdido" };
 
@@ -25,7 +13,6 @@ export const CATEGORIAS_PADRAO = [
   { id: "suv", nome: "SUVs", ordem: 4 }
 ];
 
-// Textos que já existem no site. Campo vazio no painel = usar este padrão.
 export const SITE_PADRAO = {
   marca: { nome: "AutoCar Multimarcas", sub: "" },
   textos: {
@@ -41,19 +28,22 @@ export const SITE_PADRAO = {
   },
   contato: { telefone: "(14) 99654-7171", whatsapp: "(14) 99654-7171", email: "landora.proposta@gmail.com", endereco: "Av. São Sebastião, 727 - Vila Cantizani, Piraju - SP, 18803-140", horario: "Seg a sex: 08:30–18:00\nSábado: 08:30–14:30\nDomingo: fechado" },
   redes: { instagram: "", facebook: "", youtube: "", tiktok: "" },
-  seo: { titulo: "AutoCar Multimarcas | Carros premium", descricao: "Carros premium para quem valoriza desempenho, tecnologia e estilo. Escolha online e fale com um consultor." }
+  seo: { titulo: "AutoCar Multimarcas | Seminovos em Piraju-SP", descricao: "Carros, picapes e motos seminovos em Piraju-SP. Veja o estoque com fotos e preços, simule o financiamento e fale com um consultor pelo WhatsApp.", pixel: "" }
 };
 
-// Imagens do site que já existem nos arquivos (usadas enquanto nada for enviado pelo painel).
 export const IMAGENS_PADRAO = {
-  logo: "/img/logo-autocar.png",
-  logoClaro: "/img/logo-autocar-escuro.png",
+  logo: "/img/logo-autocar.webp",
+  logoClaro: "/img/logo-autocar-escuro.webp",
   favicon: "/favicon-48.png",
   heroFundo: "/img/entrega.webp",
-  heroCarro: "/img/carros/bmw-m4-hero.webp",
-  sobre: "/img/fachada-noite.webp",
-  cta: "/img/carros/hyundai-creta.webp"
+  sobre: "/img/fachada-noite.webp"
 };
+
+export const ADICIONAIS_PADRAO = [
+  ["Carro lavado e higienizado", "Lavagem completa por fora e por dentro antes da entrega."],
+  ["Documentação e transferência", "Cuidamos da papelada para você."],
+  ["Revisão final", "Checagem de itens e nível de fluidos na entrega."]
+];
 
 export const SEM_FOTO = "data:image/svg+xml;utf8," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#191919"/>' +
@@ -76,13 +66,11 @@ export function anoPartes(ano) {
   const u = String(ano || "").match(/(\d{4})/);
   return u ? [u[1], u[1]] : ["", ""];
 }
-// "510" vira "510 cv"; texto com letras fica como está.
 export function potenciaTxt(t) {
   t = String(t || "").trim();
   return /^\d+$/.test(t) ? t + " cv" : t;
 }
 
-// Remove campos undefined (o Firestore recusa) sem mexer em valores especiais como serverTimestamp().
 export function semUndefined(v) {
   if (Array.isArray(v)) return v.map(semUndefined);
   if (v && Object.getPrototypeOf(v) === Object.prototype) {
@@ -103,7 +91,6 @@ export function carroNovo(opts) {
   };
 }
 
-// Valida o formulário do carro. Devolve { campo: mensagem }; vazio = tudo certo.
 export function validarCarro(s, opts) {
   opts = opts || {};
   const e = {};
@@ -129,7 +116,6 @@ function pares(lista) {
     .map(function (x) { return [x.rotulo || "", x.valor || ""]; });
 }
 
-// Converte um documento de "carros" no formato que o site (main.js / busca.js) espera.
 export function carroParaSite(c, catalogo) {
   catalogo = catalogo || [];
   const imgs = (c.galeria || []).filter(function (i) { return i && (i.src || i.midia); });
@@ -155,26 +141,5 @@ export function carroParaSite(c, catalogo) {
     historico: (c.historico || []).filter(Boolean),
     adicionais: doCatalogo.concat(extras),
     descricao: c.descricao || ""
-  };
-}
-
-// Converte um carro do formato antigo (js/carros.js) para documento do Firestore.
-export function carroDoSeed(c, indice) {
-  const fotos = [];
-  const vistos = {};
-  [c.foto].concat(c.galeria || []).forEach(function (f) {
-    if (!f || vistos[f.src]) return;
-    vistos[f.src] = 1;
-    fotos.push({ src: "/" + String(f.src).replace(/^\//, ""), alt: f.alt || c.nome, pos: f.pos || "50% 50%" });
-  });
-  return {
-    slug: c.slug, nome: c.nome, marca: c.marca || String(c.nome).split(" ")[0], categoria: c.categoria,
-    condicao: c.condicao, status: "publicado", ano: c.ano, km: c.km, preco: c.preco, motor: c.motor,
-    potencia: c.potencia, cambio: c.cambio, combustivel: c.combustivel, cor: c.cor,
-    foto: fotos[0] || null, galeria: fotos,
-    destaques: (c.destaques || []).map(function (d) { return { rotulo: d[0], valor: d[1] }; }),
-    ficha: (c.ficha || []).map(function (d) { return { rotulo: d[0], valor: d[1] }; }),
-    historico: c.historico || [], adicionais: [], adicionaisExtras: [], descricao: c.descricao || "",
-    ordem: indice + 1, procura: 0, adicionado: c.adicionado || hoje()
   };
 }

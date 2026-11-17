@@ -1,4 +1,3 @@
-// Cadastro e edição de um anúncio de carro.
 import { esc, toast, mascaraNumero, ordenarPor, ico } from "../ui.js";
 import { galeria, prepararPrevias, persistir, miniaturaDaCapa, apagarSemUso } from "../fotos.js";
 import { apagar, chaveDe } from "/js/midia.js";
@@ -19,7 +18,6 @@ export async function carroForm(root, app, slugEditar) {
   const categorias = ordenarPor(cats, "ordem").filter(function (c) { return c.ativa !== false || (doc && doc.categoria === c.id); });
   const catalogo = ordenarPor(ads, "ordem").filter(function (a) { return a.ativo !== false; });
 
-  /* ---------- Estado ---------- */
   let S, originais = [];
   if (novo) {
     S = carroNovo({ categoria: categorias[0] ? categorias[0].id : "", adicionais: catalogo.filter(function (a) { return a.padrao; }).map(function (a) { return a.id; }) });
@@ -44,7 +42,6 @@ export async function carroForm(root, app, slugEditar) {
   let slugAuto = novo;
   const marcar = function () { app.sujo = true; };
 
-  /* ---------- Modelo da tela ---------- */
   const campo = function (k, rotulo, extra, dica) {
     return '<label data-campo="' + k + '">' + rotulo + '<input data-k="' + k + '" value="' + esc(S[k]) + '" ' + (extra || "") + ">" +
       (dica ? '<small>' + dica + "</small>" : "") + '<span class="msg-erro" hidden></span></label>';
@@ -99,7 +96,6 @@ export async function carroForm(root, app, slugEditar) {
       '<button class="btn" type="button" id="b-salvar">Salvar</button>' +
       '<button class="btn primary" type="button" id="b-publicar">' + (S.status === "publicado" ? "Salvar e manter publicado" : "Salvar e publicar") + "</button></div>";
 
-  /* ---------- Listas dinâmicas ---------- */
   const botX = function (lista, i) { return '<button class="icon-btn mini perigo" type="button" data-del="' + lista + ":" + i + '" aria-label="Remover">' + ico("x") + "</button>"; };
   const desenhar = {
     destaques: function () {
@@ -139,7 +135,6 @@ export async function carroForm(root, app, slugEditar) {
   Object.keys(desenhar).forEach(function (k) { desenhar[k](); });
   galeria(root.querySelector("#galeria"), app, { itens: S.fotos, aoMudar: function () { marcar(); limparErro("fotos"); } });
 
-  /* ---------- Eventos ---------- */
   function limparErro(k) {
     const w = root.querySelector('[data-campo="' + k + '"]');
     if (!w) return;
@@ -198,7 +193,6 @@ export async function carroForm(root, app, slugEditar) {
     else if (e.target.closest("#b-publicar")) salvar(true);
   };
 
-  /* ---------- Salvar ---------- */
   function mostrarErros(erros) {
     root.querySelectorAll(".invalido").forEach(function (w) { w.classList.remove("invalido"); });
     root.querySelectorAll(".msg-erro").forEach(function (m) { m.hidden = true; });
@@ -222,7 +216,7 @@ export async function carroForm(root, app, slugEditar) {
     if (S.fotos.some(function (f) { return f._carregando; })) { toast("Aguarde as fotos terminarem de ser reduzidas.", "info"); return; }
     const erros = validarCarro(S, { novo: novo, slugs: [] });
     if (!erros.slug && novo) {
-      try { if (await repo.obter("carros", S.slug)) erros.slug = "Já existe um carro com esse endereço."; } catch (e) { /* o save acusa */ }
+      try { if (await repo.obter("carros", S.slug)) erros.slug = "Já existe um carro com esse endereço."; } catch (e) { }
     }
     mostrarErros(erros);
     if (Object.keys(erros).length) { toast("Confira os campos destacados.", "erro"); return; }

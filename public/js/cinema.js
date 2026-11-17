@@ -1,9 +1,5 @@
-// Movimento da experiência AutoCar: categorias do hero, câmera ligada ao scroll,
-// busca do hero conectada aos filtros reais do estoque, parallax e contadores.
-// Tudo em JavaScript puro, com requestAnimationFrame e suavização (lerp).
 (function () {
   'use strict';
-  // Sem zoom: o iPhone ignora user-scalable=no, então bloqueamos o gesto de pinça e o toque duplo aqui.
   ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
   document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
   var ultimoToque = 0;
@@ -20,9 +16,6 @@
   var CARROS = window.CARROS || [];
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
 
-  /* ---------- Hero: carro troca conforme a categoria de "Buscar no estoque" ----------
-     Sai acelerando para a esquerda (frente sobe) e o novo entra pela direita em velocidade,
-     freia (frente mergulha), passa um pouco do ponto e assenta — como na referência. */
   var hero = $('.hero');
   var palco = $('.hero-cars');
   var figs = $$('.hc');
@@ -33,7 +26,6 @@
   function fig(cls) { return figs.filter(function (f) { return f.dataset.cls === cls; })[0] || figs[0]; }
   function pararTudo() { animando.forEach(function (a) { try { a.cancel(); } catch (e) {} }); animando = []; }
 
-  // Só transform e opacity (sem filtros animados): fica nítido no celular e roda liso a 60 fps.
   function entrar(f, atraso) {
     var img = $('img', f);
     if (img.loading === 'lazy') img.loading = 'eager';
@@ -83,8 +75,6 @@
       if (an) an.onfinish = function () { fim2(); an.cancel(); }; else fim2();
     });
   }
-  // Entrada inicial: espera a imagem estar pronta (decodificada) e a tela de carregamento sair;
-  // assim o carro nunca "pula" na tela atrasado em aparelhos/conexões mais lentos.
   if (figs.length && window.HERO_ENTRADA) {
     setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) { im.loading = 'eager'; pronta(im); } }); }, 1400);
   } else if (figs.length) {
@@ -95,12 +85,10 @@
       if (atual !== 'todos') return;
       var an0 = entrar(primeiro, Math.max(0, 1700 - performance.now()));
       if (an0) an0.onfinish = function () { an0.cancel(); };
-      // depois, as outras categorias são baixadas e decodificadas em segundo plano
       setTimeout(function () { figs.forEach(function (f) { var im = $('img', f); if (im) { im.loading = 'eager'; pronta(im); } }); }, 1400);
     });
   }
 
-  /* ---------- Busca do hero → filtros reais do estoque ---------- */
   var form = $('#hero-busca');
   var segs = $$('.seg [data-hcat]');
   var hcat = 'todos';
@@ -129,7 +117,6 @@
     if (alvo) alvo.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   });
 
-  /* ---------- Revelação da foto do mosaico ---------- */
   var imgs = $$('.reveal-img');
   if ('IntersectionObserver' in window) {
     var ioImg = new IntersectionObserver(function (en) {
@@ -138,7 +125,6 @@
     imgs.forEach(function (i) { ioImg.observe(i); });
   } else imgs.forEach(function (i) { i.classList.add('in'); });
 
-  /* ---------- Contador do estoque quando aparece ---------- */
   var cont = $('.mo-count b');
   if (cont && 'IntersectionObserver' in window) {
     var ioC = new IntersectionObserver(function (en) {
@@ -156,7 +142,6 @@
     ioC.observe(cont);
   }
 
-  /* ---------- Motor de scroll: câmera do hero, passos, parallax ---------- */
   var steps = $('.steps'), stepItems = $$('.steps li'), track = $('.track'), secPassos = $('#como-funciona');
   var mo = $('.mo-photo'), scene = $('.scene');
   if (steps && stepItems.length) steps.classList.add('ligado');
@@ -172,15 +157,12 @@
       alvo.hp = clamp(-r.top / Math.max(r.height - innerHeight, 1), 0, 1);
     } else alvo.hp = 0;
     if (secPassos) {
-      // começa quando a seção entra pela base e termina quando o centro dela chega ao meio da tela
       var rp = secPassos.getBoundingClientRect(), vh = innerHeight;
       alvo.tp = clamp((vh - rp.top) / (vh / 2 + rp.height / 2), 0, 1);
     }
     if (!reduce && mo) { var pm = mo.getBoundingClientRect(); if (pm.bottom > -200 && pm.top < innerHeight + 200) alvo.py = (pm.top + pm.height / 2 - innerHeight / 2) * -.06; }
     if (!reduce && scene) { var rs = scene.getBoundingClientRect(); alvo.sk = clamp(1 - (rs.top + rs.height * .5) / (innerHeight + rs.height * .5), 0, 1); }
   }
-  // --hp vai direto nos 4 elementos que usam; definir no .hero inteiro recalculava o estilo de
-  // tudo dentro dele (busca, botões...) a cada quadro, e era isso que travava o zoom do carro.
   var usaHp = hero ? [$('.hero-pin', hero), $('.hero-light', hero), $('.hero-copy', hero), palco].filter(Boolean) : [];
   var hpAnt = -1;
   function aplicar() {
@@ -207,7 +189,6 @@
     if (mexe) requestAnimationFrame(quadro); else rodando = false;
   }
   function pedir() { if (!rodando) { rodando = true; requestAnimationFrame(quadro); } }
-  // Calibra o zoom: no fim do scroll do hero, o carro ocupa a largura da barra de busca.
   var dock = $('.hero-search');
   function calibrar() {
     if (!palco || !dock || !desktop.matches || reduce) return;
@@ -234,7 +215,6 @@
   if (desktop.addEventListener) desktop.addEventListener('change', pedir);
   pedir();
 
-  /* ---------- Botões magnéticos sutis ---------- */
   if (fino && !reduce) {
     $$('.magnetic, .header-cta, .hs-fields .btn').forEach(function (b) {
       b.addEventListener('pointermove', function (e) {

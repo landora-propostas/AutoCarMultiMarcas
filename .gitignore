@@ -5,3 +5,5 @@ firebase-debug.log*
 .env.*
 *.local
 .DS_Store
+
+public/carro/

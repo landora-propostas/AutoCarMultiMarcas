@@ -1,4 +1,3 @@
-// Utilidades de interface do painel.
 export const $ = function (s, r) { return (r || document).querySelector(s); };
 export const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
@@ -35,7 +34,6 @@ export function toast(msg, tipo) {
   setTimeout(function () { el.remove(); }, tipo === "erro" ? 7000 : 3800);
 }
 
-// Abre uma janela. Devolve { el, fechar }.
 export function abrirModal(html, opcoes) {
   opcoes = opcoes || {};
   const m = $("#modal");
@@ -86,7 +84,6 @@ export function dataHora(ts) {
   return d ? d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "—";
 }
 
-// Mostra "1.234" enquanto se digita; devolve só o número.
 export function mascaraNumero(input) {
   const n = parseInt(String(input.value).replace(/\D/g, ""), 10);
   input.value = isNaN(n) ? "" : n.toLocaleString("pt-BR");
@@ -102,7 +99,6 @@ export function ordenarPor(lista, campo) {
   return lista.slice().sort(function (a, b) { return (a[campo] || 0) - (b[campo] || 0); });
 }
 
-// Link do WhatsApp a partir de um telefone brasileiro.
 export function linkWhats(tel, texto) {
   let d = String(tel || "").replace(/\D/g, "");
   if (d.length === 10 || d.length === 11) d = "55" + d;

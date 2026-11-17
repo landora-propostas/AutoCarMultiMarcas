@@ -1,4 +1,3 @@
-// Lista de carros (estoque) e roteamento para o formulário de cadastro/edição.
 import { esc, toast, confirmar, debounce, ordenarPor } from "../ui.js";
 import { carroForm } from "./carro-form.js";
 import { apagarSemUso, persistir } from "../fotos.js";
@@ -64,8 +63,6 @@ async function lista(root, app) {
   otimizarCapas(app, todos);
   corrigirImportados(app, todos);
 
-  // Importa a pasta "autocar-importacao": importar.json + fotos/<endereço>/01.jpg...
-  // Carros com endereço já existente são pulados. Tudo entra como rascunho.
   const inp = root.querySelector("#f-importar");
   root.querySelector("#b-importar").onclick = function () { inp.click(); };
   inp.onchange = async function () {
@@ -110,7 +107,6 @@ async function lista(root, app) {
         delete d.slug; delete d.fotos;
         await app.repo.salvar("carros", c.slug, d, true);
         feitos++;
-        // Já mostra o carro na lista assim que ele termina.
         todos.push(Object.assign({ id: c.slug }, d));
         if (!cats.some(function (x) { return x.id === c.categoria; })) { cats.push({ id: c.categoria, nome: NOMES[c.categoria] || c.categoria }); nomeCat[c.categoria] = NOMES[c.categoria] || c.categoria; }
         desenhar();
@@ -174,7 +170,6 @@ async function lista(root, app) {
   };
 }
 
-// Tela de carregamento da importação: barra, porcentagem e tempo restante estimado.
 function barraProgresso(nCarros, total) {
   const el = document.createElement("div");
   el.id = "imp-prog";
@@ -215,12 +210,9 @@ function barraProgresso(nCarros, total) {
   };
 }
 
-// Capas antigas foram gravadas grandes (800 px) e deixavam o site lento para abrir.
-// Ao abrir o estoque, reduz em segundo plano as capas pesadas. Roda uma vez por carro.
 let otimizando = false;
 async function otimizarCapas(app, carros) {
   if (otimizando || app.ctx.opcoes.armazenamento === "storage") return;
-  // Só capas nunca otimizadas (marca "otimizada" evita repetir a cada vez que abre a página)
   const pesadas = carros.filter(function (c) { return c.foto && c.foto.thumb && !c.foto.otimizada && c.foto.thumb.length > 40000; });
   if (!pesadas.length) return;
   otimizando = true;
@@ -238,8 +230,6 @@ async function otimizarCapas(app, carros) {
   otimizando = false;
 }
 
-// Correção única da importação do WhatsApp: estes carros vieram sem km no anúncio e foram
-// marcados como "Novo" por engano. Passam para "Seminovo" (o km continua 0 = "a consultar").
 async function corrigirImportados(app, carros) {
   const ids = ["fiat-uno-way-1-0-2012", "ford-fiesta-sedan-1-6-2013", "fiat-palio-essence-1-6-2015", "chevrolet-agile-ltz-1-4-2011",
     "chevrolet-astra-hatch-2-portas-2006", "volkswagen-fox-1-0-2012", "chevrolet-corsa-classic-ls-1-0-2012"];

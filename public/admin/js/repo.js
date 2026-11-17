@@ -1,13 +1,8 @@
-// Acesso ao Firestore para o painel (coleções pequenas: lê tudo e filtra no navegador).
 import { semUndefined } from "/js/modelo.js";
 
-// Cada alteração no painel apaga o cache do site neste aparelho, para ver o resultado na hora.
-// (Nos aparelhos dos visitantes o site se atualiza sozinho em até 30 minutos.)
-function limparCacheDoSite() { try { indexedDB.deleteDatabase("autocar-cache"); } catch (e) { /* sem IndexedDB */ } }
+function limparCacheDoSite() { try { indexedDB.deleteDatabase("autocar-cache"); } catch (e) { } }
 limparCacheDoSite();
 
-// Cache de leitura em memória: trocar de tela reaproveita o que já foi lido (sem novo "Carregando…").
-// Qualquer gravação limpa o cache da coleção alterada; um lote limpa tudo.
 const VALIDADE = 3 * 60 * 1000;
 const cache = new Map();
 function copia(o) { return o ? Object.assign({}, o) : o; }
@@ -43,7 +38,6 @@ export function criarRepo(ctx) {
       });
       return copia(o);
     },
-    // Cria ou mescla campos. Sempre registra a data da alteração.
     async salvar(col, id, dados, substituir) {
       const d = semUndefined(dados);
       d.atualizadoEm = f.serverTimestamp();

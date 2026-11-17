@@ -1,5 +1,3 @@
-// Página /conta/: entrar, criar conta e perfil do cliente (foto, nome, WhatsApp e pedidos).
-// Se quem entrar for administrador, vai direto para o painel (/admin/).
 import { iniciar } from "./firebase-boot.js";
 import { STATUS_LEAD } from "./modelo.js";
 
@@ -7,7 +5,7 @@ const MARCA = "autocar:logado";
 const $ = function (s) { return document.querySelector(s); };
 const $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
 const esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-function marcar(v) { try { v ? localStorage.setItem(MARCA, "1") : localStorage.removeItem(MARCA); } catch (e) { /* ok */ } }
+function marcar(v) { try { v ? localStorage.setItem(MARCA, "1") : localStorage.removeItem(MARCA); } catch (e) { } }
 
 let tt = 0;
 function toast(msg, tipo) {
@@ -58,7 +56,6 @@ function quando(v) {
   const a = c.authSdk, f = c.fs, db = c.db;
   let aba = "entrar", nomeCadastro = "", foto = null, uid = null;
 
-  /* ---------- Entrar / criar conta ---------- */
   function trocarAba(v) {
     aba = v;
     $$("[data-aba]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.aba === v)); });
@@ -84,7 +81,7 @@ function quando(v) {
       if (aba === "criar") {
         nomeCadastro = nome;
         const cred = await a.createUserWithEmailAndPassword(c.auth, email, senha);
-        try { await a.updateProfile(cred.user, { displayName: nome }); } catch (x) { /* opcional */ }
+        try { await a.updateProfile(cred.user, { displayName: nome }); } catch (x) { }
       } else {
         await a.signInWithEmailAndPassword(c.auth, email, senha);
       }
@@ -98,7 +95,6 @@ function quando(v) {
     catch (err) { erro.textContent = msgAuth(err); erro.hidden = false; }
   };
 
-  /* ---------- Perfil ---------- */
   function desenharAvatar(nome) {
     $("#ct-avatar").innerHTML = foto ? '<img src="' + esc(foto) + '" alt="">' : esc((nome || "?").charAt(0).toUpperCase());
     $("#ct-tirar").hidden = !foto;
@@ -149,9 +145,8 @@ function quando(v) {
     if (!user) { uid = null; marcar(false); tela("auth"); return; }
     marcar(true);
     tela("carregando");
-    // Administrador: vai direto para o painel.
     if (user.emailVerified) {
-      try { const d = await f.getDoc(f.doc(db, "admins", user.uid)); if (d.exists()) { location.replace("/admin/"); return; } } catch (e) { /* cliente */ }
+      try { const d = await f.getDoc(f.doc(db, "admins", user.uid)); if (d.exists()) { location.replace("/admin/"); return; } } catch (e) { }
     }
     uid = user.uid;
     let p = {};
@@ -162,7 +157,7 @@ function quando(v) {
         p = { nome: nomeCadastro || user.displayName || "", email: user.email || "", telefone: "", foto: null };
         await f.setDoc(ref, Object.assign({}, p, { criadoEm: f.serverTimestamp() }));
       }
-    } catch (e) { /* segue com o básico */ }
+    } catch (e) { }
     foto = p.foto || null;
     const nome = p.nome || user.displayName || "";
     const el = $("#ct-pf").elements;

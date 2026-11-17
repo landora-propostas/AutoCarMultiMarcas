@@ -1,9 +1,5 @@
 rules_version = '2';
 
-// Regras do Firebase Storage — só usadas se você escolher o armazenamento "storage"
-// (veja o README, seção "Fotos no Firebase Storage"). Para ativar, adicione em firebase.json:
-//   "storage": { "rules": "storage.rules" }
-// e rode: firebase deploy --only storage
 service firebase.storage {
   match /b/{bucket}/o {
     function admin() {

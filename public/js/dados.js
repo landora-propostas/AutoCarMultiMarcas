@@ -1,12 +1,7 @@
-// Carregador do site público: lê categorias, carros, adicionais e configurações do Firestore,
-// monta window.CARROS / window.ADICIONAIS (o formato que busca.js e main.js já esperam)
-// e só então inicia os scripts do site.
-//
-// Se o Firebase não estiver disponível, ou o painel ainda não tiver sido configurado,
-// o site mostra os carros de exemplo de js/carros.js (modo "demo").
 import { iniciar } from "./firebase-boot.js";
 import { carroParaSite } from "./modelo.js";
 import { carregar } from "./midia.js";
+import { iniciarPixel, rastrear } from "./pixel.js";
 
 const $ = function (s, r) { return (r || document).querySelector(s); };
 const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -36,9 +31,7 @@ function urlRede(tipo, v) {
   return { instagram: "https://instagram.com/", facebook: "https://facebook.com/", youtube: "https://youtube.com/@", tiktok: "https://tiktok.com/@" }[tipo] + v;
 }
 
-/* ---------- Aplica as configurações do painel na página ---------- */
 function aplicarSite(cfg, urls) {
-  // Textos simples: <span data-s="contato.telefone">…</span>
   $$("[data-s]").forEach(function (el) {
     const v = dig(cfg, el.dataset.s);
     if (typeof v === "string" && v.trim()) el.textContent = v.trim();
@@ -51,11 +44,9 @@ function aplicarSite(cfg, urls) {
     $$(".brand-sub").forEach(function (s) { s.innerHTML = letras.map(function (ch) { return "<i>" + esc(ch) + "</i>"; }).join(""); s.hidden = !letras.length; });
   }
 
-  // Imagens: <img data-img="heroFundo">
   $$("[data-img]").forEach(function (img) { const u = urls[img.dataset.img]; if (!u) return; img.src = u; if (img.parentNode && img.parentNode.tagName === "PICTURE") img.parentNode.querySelectorAll("source").forEach(function (s) { s.remove(); }); });
   if (urls.favicon) { const f = $("#favicon"); if (f) { f.removeAttribute("type"); f.href = urls.favicon; } }
 
-  // Título do topo e bloco final têm estrutura própria
   const h1 = $(".hero h1");
   if (h1 && [t.heroL1, t.heroL2, t.heroL3, t.heroL4].some(Boolean)) {
     const linhas = [t.heroL1, t.heroL2, t.heroL3, t.heroL4], spans = $$(".ln > span", h1);
@@ -73,7 +64,6 @@ function aplicarSite(cfg, urls) {
     h2.innerHTML = esc(l1) + "<br><em>" + esc(l2) + "</em>";
   }
 
-  // Links de contato e redes
   const tel = c.telefone && hrefTel(c.telefone);
   if (tel) $$('[data-href="telefone"]').forEach(function (a) { a.href = tel; });
   if (c.email && c.email.trim()) $$('[data-href="email"]').forEach(function (a) { a.href = "mailto:" + c.email.trim(); });
@@ -91,7 +81,41 @@ function aplicarSite(cfg, urls) {
   }
 
   if (seo.titulo && seo.titulo.trim()) document.title = seo.titulo.trim();
+  iniciarPixel(seo.pixel);
   if (seo.descricao && seo.descricao.trim()) { const md = $('meta[name="description"]'); if (md) md.content = seo.descricao.trim(); }
+}
+
+function schemaEstoque(carros, cfg) {
+  const base = location.origin, c = cfg.contato || {};
+  const loja = document.getElementById("schema-loja");
+  if (loja) {
+    try {
+      const j = JSON.parse(loja.textContent);
+      if (c.telefone && c.telefone.trim()) j.telephone = c.telefone.trim();
+      if (c.email && c.email.trim()) j.email = c.email.trim();
+      const redes = Object.keys(cfg.redes || {}).map(function (k) { return urlRede(k, cfg.redes[k]); }).filter(Boolean);
+      if (redes.length) j.sameAs = redes;
+      loja.textContent = JSON.stringify(j);
+    } catch (e) {}
+  }
+  if (!carros.length) return;
+  const s = document.createElement("script");
+  s.type = "application/ld+json";
+  s.textContent = JSON.stringify({
+    "@context": "https://schema.org", "@type": "ItemList", name: "Estoque",
+    itemListElement: carros.slice(0, 60).map(function (x, i) {
+      const anos = String(x.ano || "").match(/\d{4}/g) || [];
+      const item = { "@type": "Car", name: x.nome, url: base + "/carro/" + x.slug, image: base + "/carro/img/" + x.slug + ".webp", brand: { "@type": "Brand", name: x.marca || x.nome.split(" ")[0] }, itemCondition: x.condicao === "Novo" ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition" };
+      if (anos.length) item.vehicleModelDate = anos[anos.length - 1];
+      if (x.km > 0) item.mileageFromOdometer = { "@type": "QuantitativeValue", value: x.km, unitCode: "KMT" };
+      if (x.cor) item.color = x.cor;
+      if (x.combustivel) item.fuelType = x.combustivel;
+      if (x.cambio) item.vehicleTransmission = x.cambio;
+      if (x.preco > 0) item.offers = { "@type": "Offer", price: x.preco, priceCurrency: "BRL", availability: "https://schema.org/InStock", url: base + "/carro/" + x.slug };
+      return { "@type": "ListItem", position: i + 1, item: item };
+    })
+  });
+  document.head.appendChild(s);
 }
 
 function pintarCategorias(categorias, carros) {
@@ -122,10 +146,6 @@ async function resolverImagens(ctx, cfg) {
   return urls;
 }
 
-/* ---------- Cache no aparelho (IndexedDB) ----------
-   A primeira visita lê o Firestore e guarda tudo no aparelho. As visitas seguintes abrem
-   na hora com o que está guardado, sem ler o banco. Passado o prazo (VALIDADE), o site
-   ainda abre com o guardado e atualiza em segundo plano para a próxima visita. */
 const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v4", VALIDADE = 30 * 60 * 1000;
 function abrirCache() {
   return new Promise(function (ok, erro) {
@@ -149,15 +169,11 @@ async function lerCache() {
 async function gravarCache(dados) {
   try {
     const db = await abrirCache();
-    // Guarda no máximo as 120 fotos de galeria mais recentes, para não encher o aparelho.
     if (dados.midia) { const ks = Object.keys(dados.midia); if (ks.length > 120) ks.slice(0, ks.length - 120).forEach(function (k) { delete dados.midia[k]; }); }
     db.transaction("kv", "readwrite").objectStore("kv").put({ t: Date.now(), dados: dados }, CACHE_CHAVE);
-  } catch (e) { /* sem espaço ou modo privado: segue sem cache */ }
+  } catch (e) { }
 }
 
-/* ---------- Leitura rápida pela API REST do Firestore ----------
-   Evita baixar o SDK do Firebase (centenas de KB) e a conexão em tempo real só para mostrar
-   o estoque. Se algo falhar, cai no SDK normal (buscarDoFirebase). */
 function valorRest(v) {
   if (!v) return null;
   if ("stringValue" in v) return v.stringValue;
@@ -176,8 +192,7 @@ function docRest(d) {
   if (d && d.name) o.id = d.name.split("/").pop();
   return o;
 }
-// anterior: o que já está guardado no aparelho ({ raw, midia }). Só baixa carros novos ou alterados.
-let REST = null; // { base, chave } — também usado para baixar fotos da galeria sem o SDK
+let REST = null;
 async function restCfg() {
   if (REST) return REST;
   const r0 = await fetch("/__/firebase/init.json");
@@ -209,7 +224,6 @@ async function buscarRest(anterior) {
     if (campos) q.select = { fields: campos.map(function (f) { return { fieldPath: f }; }) };
     return pegaJson(R.base + ":runQuery" + R.chave, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ structuredQuery: q }) });
   };
-  // 1) Leve: só o endereço e a data de alteração de cada carro publicado
   const [cfgDoc, categorias, adicionais, indice] = await Promise.all([
     pegaJson(R.base + "/config/site" + R.chave).then(docRest), lista("categorias"), lista("adicionais"), consulta(["__name__"])
   ]);
@@ -220,7 +234,6 @@ async function buscarRest(anterior) {
     const id = x.document.name.split("/").pop(), u = x.document.updateTime;
     if (rawAnt[id] && rawAnt[id].u === u) raw[id] = rawAnt[id]; else faltam.push({ id: id, u: u, name: x.document.name });
   });
-  // 2) Pesado só para o que é novo ou mudou
   for (let i = 0; i < faltam.length; i += 100) {
     const parte = faltam.slice(i, i + 100);
     const res = await pegaJson(R.base + ":batchGet" + R.chave, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documents: parte.map(function (f) { return f.name; }) }) });
@@ -228,7 +241,6 @@ async function buscarRest(anterior) {
   }
   const carros = Object.keys(raw).map(function (id) { return carroParaSite(raw[id].d, adicionais); })
     .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
-  // Imagens do site (logo, fundo do topo...) — reaproveita as já guardadas
   const urls = {}, jobs = [];
   const img = function (k, im) {
     if (!im) return;
@@ -248,7 +260,6 @@ async function buscarDados(anterior) {
   catch (e) { if (e && e.message === "nao-iniciado") throw e; return buscarDoFirebase(await iniciar()); }
 }
 
-/* ---------- Modo real (Firestore) ---------- */
 async function buscarDoFirebase(ctx) {
   const f = ctx.fs, db = ctx.db;
   const [cfgSnap, cs, cars, ads] = await Promise.all([
@@ -259,7 +270,7 @@ async function buscarDoFirebase(ctx) {
   ]);
   if (!cfgSnap.exists() || !cfgSnap.data().inicializado) throw new Error("nao-iniciado");
   const lista = function (s) { return s.docs.map(function (d) { const o = d.data(); o.id = d.id; return o; }); };
-  const plano = function (o) { return JSON.parse(JSON.stringify(o)); }; // tira Timestamps do Firestore
+  const plano = function (o) { return JSON.parse(JSON.stringify(o)); };
   const cfg = plano(cfgSnap.data()), categorias = plano(lista(cs)), adicionais = lista(ads);
   const carros = plano(lista(cars).map(function (c) { return carroParaSite(c, adicionais); })
     .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); }));
@@ -273,38 +284,38 @@ function montarSite(d) {
   window.CARROS = carros;
   pintarCategorias(d.categorias, carros);
   aplicarSite(d.cfg, d.urls);
+  schemaEstoque(carros, d.cfg);
   if (!carros.length) {
     const v = $("#vazio");
     if (v) { v.hidden = false; const p = $("p", v), b = $("button", v); if (p) p.textContent = "Estamos atualizando o estoque. Volte em breve!"; if (b) b.hidden = true; }
   }
 
-  // O Firebase só é carregado quando precisa (pedido, visita ou galeria de fotos)
   let ctxP = null;
   const ctx = function () { return ctxP || (ctxP = iniciar()); };
   const jaContou = {};
   window.LANDORA = {
-    modo: "firebase",
     salvarLead: async function (dd) {
       const c = await ctx(), f = c.fs;
       const lead = {
         nome: String(dd.nome).slice(0, 100), whatsapp: String(dd.whatsapp).slice(0, 20), carro: String(dd.carro || "").slice(0, 120),
         status: "novo", origem: "site", criadoEm: f.serverTimestamp()
       };
-      // Logado no site: o pedido fica salvo no perfil da pessoa (página /conta/).
       const s = window.SESSAO;
       if (s && s.user) { lead.uid = s.user.uid; if (s.user.email) lead.email = String(s.user.email).slice(0, 120); }
-      return f.addDoc(f.collection(c.db, "leads"), lead);
+      const r = await f.addDoc(f.collection(c.db, "leads"), lead);
+      rastrear("Lead", { content_name: lead.carro });
+      return r;
     },
     contarVisita: function (slug) {
+      const v = carros.filter(function (x) { return x.slug === slug; })[0];
+      if (v) rastrear("ViewContent", { content_ids: [slug], content_name: v.nome, content_type: "vehicle", value: v.preco || 0, currency: "BRL" });
       if (jaContou[slug]) return;
       jaContou[slug] = 1;
-      try { if (sessionStorage.getItem("visto:" + slug)) return; sessionStorage.setItem("visto:" + slug, "1"); } catch (e) { /* sem sessionStorage */ }
+      try { if (sessionStorage.getItem("visto:" + slug)) return; sessionStorage.setItem("visto:" + slug, "1"); } catch (e) { }
       ctx().then(function (c) { return c.fs.updateDoc(c.fs.doc(c.db, "carros", slug), { procura: c.fs.increment(1) }); }).catch(function () {});
       const car = carros.filter(function (x) { return x.slug === slug; })[0];
       if (car) car.procura = (car.procura || 0) + 1;
     },
-    // Fotos da galeria vêm do Firestore só quando o carro é aberto.
-    // Fotos guardadas no aparelho: abrem na hora nas próximas visitas.
     _midia: Object.assign({}, d.midia || {}),
     preparar: function (c) {
       if (c._pronto) return Promise.resolve();
@@ -326,7 +337,6 @@ function montarSite(d) {
 async function carregarDoFirebase() {
   const guardado = await lerCache();
   if (guardado && guardado.dados && guardado.dados.carros) {
-    // Abre na hora com o que está no aparelho e, em segundo plano, baixa só o que mudou.
     montarSite(guardado.dados);
     buscarDados(guardado.dados).then(function (novo) {
       novo.midia = Object.assign({}, guardado.dados.midia || {}, novo.midia || {}, (window.LANDORA && window.LANDORA._midia) || {});
@@ -339,23 +349,21 @@ async function carregarDoFirebase() {
   gravarCache(dados);
 }
 
-/* ---------- Modo demonstração (arquivos locais) ---------- */
-async function carregarDemo() {
-  await carregarScript("js/carros.js");
-  window.LANDORA = { modo: "demo" };
+function semEstoque() {
+  window.CARROS = []; window.ADICIONAIS = []; window.LANDORA = {};
+  const v = $("#vazio");
+  if (v) { v.hidden = false; const p = $("p", v), b = $("button", v); if (p) p.textContent = "Estamos atualizando o estoque. Volte em breve!"; if (b) b.hidden = true; }
 }
 
-// O movimento do hero (zoom do carro ao rolar) não depende do estoque: começa já, sem esperar os dados.
-const cinemaP = carregarScript("js/cinema.js").catch(function (e) { console.error(e); });
+const cinemaP = carregarScript("/js/cinema.js").catch(function (e) { console.error(e); });
 (async function () {
   try {
     await carregarDoFirebase();
   } catch (e) {
-    if (e && e.message !== "nao-iniciado") console.warn("AutoCar: usando os carros de exemplo.", e);
-    try { await carregarDemo(); } catch (e2) { console.error(e2); window.CARROS = []; window.ADICIONAIS = []; window.LANDORA = { modo: "demo" }; }
+    semEstoque();
   }
   try {
-    for (const s of ["js/busca.js", "js/main.js"]) await carregarScript(s);
+    for (const s of ["/js/busca.js", "/js/main.js"]) await carregarScript(s);
     await cinemaP;
   } catch (e) { console.error(e); }
 })();

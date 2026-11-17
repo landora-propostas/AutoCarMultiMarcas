@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /conta/
+
+Sitemap: https://autocarpiraju.com.br/sitemap.xml

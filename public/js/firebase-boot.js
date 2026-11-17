@@ -1,5 +1,3 @@
-// Inicialização do Firebase, compartilhada pelo site e pelo painel.
-// Usa o SDK modular direto do CDN do Google (o projeto não tem etapa de build).
 import { FIREBASE_CONFIG, OPCOES } from "./firebase-config.js";
 
 export const VERSAO_SDK = "10.14.1";
@@ -8,7 +6,6 @@ let ctx = null;
 
 async function configuracao() {
   if (FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey) return FIREBASE_CONFIG;
-  // O Firebase Hosting publica a configuração do app Web neste endereço.
   const r = await fetch("/__/firebase/init.json", { cache: "no-store" });
   if (!r.ok) throw new Error("config-indisponivel");
   const j = await r.json();
@@ -16,7 +13,6 @@ async function configuracao() {
   return j;
 }
 
-// quer: { auth: true } para login, { storage: true } para o Firebase Storage.
 export async function iniciar(quer) {
   quer = quer || {};
   if (!ctx) {

@@ -1,5 +1,3 @@
-// Catálogo de adicionais de entrega (carro lavado, PPF, laço, entrega no local…).
-// Cada anúncio escolhe quais adicionais mostra, no formulário do carro.
 import { esc, toast, confirmar, abrirModal, ico, ordenarPor } from "../ui.js";
 
 export async function adicionais(root, app) {

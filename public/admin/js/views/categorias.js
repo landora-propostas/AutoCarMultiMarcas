@@ -1,5 +1,3 @@
-// Categorias: só visualização. Elas fazem parte da estrutura do site (filtros do estoque e carro do topo),
-// então criar ou alterar categorias é feito pelos desenvolvedores.
 import { esc, abrirModal, ordenarPor } from "../ui.js";
 
 export async function categorias(root, app) {

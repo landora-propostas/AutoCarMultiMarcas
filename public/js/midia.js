@@ -1,14 +1,5 @@
-// Fotos: redução no navegador, gravação (Firestore ou Storage) e leitura.
-//
-// Uma foto é um objeto { src?, midia?, path?, thumb?, alt, pos }:
-//   src    endereço da imagem (arquivo do site ou URL do Storage)
-//   midia  ID do documento em "midia" (quando o armazenamento é "firestore")
-//   path   caminho no Storage (para apagar depois)
-//   thumb  miniatura embutida (só na capa do carro, para a vitrine carregar rápido)
-//   alt    descrição para acessibilidade       pos  ponto de foco ("50% 60%")
-
-const LIMITE_DOC = 900000; // caracteres do data URL; o Firestore aceita ~1 MiB por documento
-const cache = new Map();   // ID da mídia -> data URL
+const LIMITE_DOC = 900000;
+const cache = new Map();
 
 function lerDataUrl(blob) {
   return new Promise(function (ok, erro) {
@@ -21,7 +12,7 @@ function lerDataUrl(blob) {
 
 async function abrirImagem(arquivo) {
   if (window.createImageBitmap) {
-    try { return await createImageBitmap(arquivo); } catch (e) { /* tenta pelo <img> */ }
+    try { return await createImageBitmap(arquivo); } catch (e) { }
   }
   const url = URL.createObjectURL(arquivo);
   try {
@@ -50,15 +41,12 @@ function paraBlob(canvas, tipo, q) {
   return new Promise(function (ok) { canvas.toBlob(ok, tipo, q); });
 }
 
-// WebP quando o navegador sabe gerar; senão JPEG (ou PNG se precisar de transparência).
 async function codificar(canvas, transparente, q) {
   let b = await paraBlob(canvas, "image/webp", q);
   if (!b || b.type !== "image/webp") b = await paraBlob(canvas, transparente ? "image/png" : "image/jpeg", q);
   return b;
 }
 
-// Reduz a imagem. opts: max (maior lado em px), qualidade, miniatura (px, 0 = sem), transparente,
-// limite (tamanho máximo do data URL; Infinity para o Storage).
 export async function processar(arquivo, opts) {
   opts = opts || {};
   const limite = opts.limite == null ? LIMITE_DOC : opts.limite;
@@ -83,7 +71,6 @@ export async function processar(arquivo, opts) {
   return { blob: blob, dataUrl: dataUrl, tipo: blob.type, w: canvas.width, h: canvas.height, thumbDataUrl: thumbDataUrl };
 }
 
-// Gera uma miniatura a partir de um data URL (usado quando uma foto antiga vira capa).
 export const CAPA_LADO = 480;
 export async function miniaturaDe(dataUrl, maiorLado, q) {
   const blob = await (await fetch(dataUrl)).blob();
@@ -95,7 +82,6 @@ function extensao(tipo) {
   return tipo === "image/webp" ? "webp" : tipo === "image/png" ? "png" : tipo === "image/svg+xml" ? "svg" : "jpg";
 }
 
-// Grava uma imagem já processada. Devolve { midia } ou { src, path }.
 export async function gravar(ctx, proc, opts) {
   opts = opts || {};
   if (ctx.opcoes.armazenamento === "storage") {
@@ -114,7 +100,6 @@ export async function gravar(ctx, proc, opts) {
   return { midia: ref.id };
 }
 
-// Endereço utilizável de uma foto (lê do Firestore se for preciso).
 export async function carregar(ctx, img) {
   if (!img) return "";
   if (img.src) return img.src;
@@ -130,7 +115,7 @@ export async function apagar(ctx, img) {
   try {
     if (img.path && ctx.storage) await ctx.storageSdk.deleteObject(ctx.storageSdk.ref(ctx.storage, img.path));
     else if (img.midia) await ctx.fs.deleteDoc(ctx.fs.doc(ctx.db, "midia", img.midia));
-  } catch (e) { /* já não existe: tudo bem */ }
+  } catch (e) { }
   if (img.midia) cache.delete(img.midia);
 }
 

@@ -1,9 +1,5 @@
 rules_version = '2';
 
-// Regras do Firestore da AutoCar Multimarcas.
-//  - O público (site) só lê o que precisa e só consegue: enviar um pedido (leads) e somar +1 visita num carro publicado.
-//  - Tudo o mais (criar/editar/excluir) exige login com e-mail CONFIRMADO e autorizado na coleção "admins".
-//  - O ID de cada documento em "admins" é o UID da conta (Authentication → Usuários → UID do usuário).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -14,13 +10,11 @@ service cloud.firestore {
       return logado() &&
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
-    // Administrador principal (o primeiro que abriu o painel): só ele cria e remove acessos de administrador.
     function master() {
       return admin() &&
         get(/databases/$(database)/documents/config/equipe).data.master == request.auth.uid;
     }
 
-    // Quem pode entrar no painel. Cada pessoa lê o próprio documento e edita só o próprio perfil.
     match /admins/{uid} {
       allow get: if (logado() && request.auth.uid == uid) || admin();
       allow list: if admin();
@@ -32,20 +26,17 @@ service cloud.firestore {
       );
     }
 
-    // Equipe: guarda quem é o administrador principal. O primeiro administrador se registra sozinho.
     match /config/equipe {
       allow read: if admin();
       allow create: if admin() && request.resource.data.master == request.auth.uid;
       allow update, delete: if master();
     }
 
-    // Configurações do site, categorias e catálogo de adicionais: leitura pública.
     match /config/{doc} {
       allow read: if doc != 'equipe';
       allow write: if admin() && doc != 'equipe';
     }
 
-    // Contas de clientes do site: cada um lê e edita só o próprio perfil; o painel pode consultar.
     match /usuarios/{uid} {
       allow read: if (request.auth != null && request.auth.uid == uid) || admin();
       allow create, update: if request.auth != null && request.auth.uid == uid
@@ -65,19 +56,16 @@ service cloud.firestore {
       allow write: if admin();
     }
 
-    // Carros: o público só enxerga os publicados (rascunhos e vendidos ficam só no painel).
     match /carros/{id} {
       allow read: if resource.data.status == 'publicado' || admin();
       allow create, delete: if admin();
       allow update: if admin() || (
-        // contador de visitas: o site só pode somar exatamente +1 no campo "procura"
         resource.data.status == 'publicado' &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['procura']) &&
         request.resource.data.procura == resource.data.get('procura', 0) + 1
       );
     }
 
-    // Fotos guardadas no Firestore (armazenamento "firestore"): o site lê pelo ID, sem listar.
     match /midia/{id} {
       allow get: if true;
       allow list: if admin();
@@ -85,8 +73,6 @@ service cloud.firestore {
       allow update, delete: if admin();
     }
 
-    // Pedidos de proposta: qualquer visitante pode criar (com campos validados); só o painel gerencia.
-    // Quem está logado no site grava o próprio UID no pedido e consegue ver os seus pedidos no perfil.
     match /leads/{id} {
       allow create: if request.resource.data.keys().hasOnly(['nome', 'whatsapp', 'carro', 'status', 'origem', 'criadoEm', 'uid', 'email'])
         && (!('uid' in request.resource.data) || (request.auth != null && request.resource.data.uid == request.auth.uid))

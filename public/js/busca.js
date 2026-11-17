@@ -1,5 +1,3 @@
-// Busca avançada do estoque: marca, ano (exato ou faixa), quilometragem, preço, câmbio, combustível,
-// condição, cor, potência, diferenciais e ordenação. Os dados vêm de window.CARROS (js/carros.js).
 (function () {
   'use strict';
   var CARROS = window.CARROS || [];
@@ -9,7 +7,6 @@
   var brl = function (n) { return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }); };
   var num = function (n) { return n.toLocaleString('pt-BR'); };
 
-  // ---------- Dados derivados de cada carro ----------
   CARROS.forEach(function (c, i) {
     c._ordem = i;
     c._anoModelo = parseInt(String(c.ano).split('/').pop(), 10);
@@ -56,7 +53,6 @@
     ['nome', 'Nome (A–Z)']
   ];
 
-  // ---------- Estado ----------
   var S;
   function vazio() {
     return { marcas: {}, cambio: {}, comb: {}, cond: {}, cor: {}, dif: {}, kmMin: B.km[0], kmMax: B.km[1], pMin: B.preco[0], pMax: B.preco[1],
@@ -72,7 +68,7 @@
     m = ativo(S.comb); if (m.length && m.indexOf(c.combustivel) < 0) return false;
     m = ativo(S.cond); if (m.length && m.indexOf(c.condicao) < 0) return false;
     m = ativo(S.cor); if (m.length && m.indexOf(c.cor) < 0) return false;
-    m = ativo(S.dif); if (m.some(function (d) { return !c._dif[d]; })) return false;   // todos os diferenciais marcados
+    m = ativo(S.dif); if (m.some(function (d) { return !c._dif[d]; })) return false;
     if (c.km < S.kmMin || c.km > S.kmMax) return false;
     if (c.preco < S.pMin || c.preco > S.pMax) return false;
     if (S.anoDe !== '' && c._anoModelo < +S.anoDe) return false;
@@ -99,7 +95,6 @@
     return slugs.map(porSlug).sort(function (a, b) { return cmp(a, b) || a._ordem - b._ordem; }).map(function (c) { return c.slug; });
   }
 
-  // ---------- Interface ----------
   var inner = $('#adv-inner'), toggle = $('#adv-toggle'), painel = $('#busca-avancada'), badge = $('#adv-badge'), tagsEl = $('#adv-tags'), selOrdem = $('#ordem');
   if (!inner || !CARROS.length) { window.BUSCA = { passa: function () { return true; }, ordenar: function (s) { return s; }, porSlug: porSlug, limpar: function () {} }; return; }
 
@@ -141,7 +136,6 @@
     '<div class="adv-actions"><button type="button" class="btn btn-ghost btn-sm" data-limpar>Limpar filtros</button>' +
     '<button type="button" class="btn btn-primary btn-sm" data-fechar>Ver resultados</button></div>';
 
-  // ---------- Sincronização da tela com o estado ----------
   function pintarFaixa(id) {
     var wrap = $('[data-range="' + id + '"]', inner), mn = S[id + 'Min'], mx = S[id + 'Max'], lim = id === 'km' ? B.km : B.preco;
     var a = $('[data-r="' + id + 'Min"]', wrap), b = $('[data-r="' + id + 'Max"]', wrap);
@@ -165,7 +159,6 @@
     etiquetas();
   }
 
-  // ---------- Etiquetas dos filtros ativos ----------
   function etiquetas() {
     var t = [];
     function add(rot, limpar) { t.push([rot, limpar]); }
@@ -192,7 +185,6 @@
   function mudou() { sincronizar(); document.dispatchEvent(new Event('busca')); }
   function limpar(semEvento) { S = vazio(); sincronizar(); if (!semEvento) document.dispatchEvent(new Event('busca')); }
 
-  // ---------- Eventos ----------
   inner.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     if (b.dataset.g) { S[b.dataset.g][b.dataset.v] = !S[b.dataset.g][b.dataset.v]; mudou(); }
@@ -202,11 +194,11 @@
   });
   inner.addEventListener('input', function (e) {
     var t = e.target;
-    if (t.dataset.r) {                      // controles deslizantes
+    if (t.dataset.r) {
       var id = t.dataset.r.replace(/(Min|Max)$/, ''), isMin = /Min$/.test(t.dataset.r), v = +t.value;
       if (isMin) S[id + 'Min'] = Math.min(v, S[id + 'Max']); else S[id + 'Max'] = Math.max(v, S[id + 'Min']);
       pintarFaixa(id); document.dispatchEvent(new Event('busca')); etiquetas();
-    } else if (t.dataset.n) {               // campos digitados
+    } else if (t.dataset.n) {
       var dig = t.value.replace(/\D/g, ''); var id2 = t.dataset.n.replace(/(Min|Max)$/, ''), min = /Min$/.test(t.dataset.n);
       var lim = id2 === 'km' ? B.km : B.preco;
       if (dig === '') return;
@@ -231,15 +223,11 @@
   }
   var fixo = document.getElementById('filtro-fixo');
   toggle.addEventListener('click', function () {
-    // Barra presa com o painel recolhido automaticamente: o clique só mostra o painel de novo
     if (fixo && fixo.classList.contains('preso') && fixo.classList.contains('auto-recolhe')) { fixo.classList.remove('auto-recolhe'); toggle.setAttribute('aria-expanded', 'true'); return; }
     if (fixo) fixo.classList.remove('auto-recolhe');
     abrir();
   });
-  // No computador a busca avançada já vem aberta; no celular começa fechada.
-  // Ao rolar pelos anúncios, a barra fica presa no topo com o painel aberto.
   if (matchMedia('(min-width: 901px)').matches) abrir(true);
-  // Fundo na barra só enquanto ela está presa no topo
   if (fixo && window.IntersectionObserver) {
     var marca = document.createElement('div'); marca.style.height = '1px'; fixo.parentNode.insertBefore(marca, fixo);
     new IntersectionObserver(function (en) {

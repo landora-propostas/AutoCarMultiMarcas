@@ -1,4 +1,3 @@
-// Visão geral: números do estoque, mais procurados e últimos pedidos.
 import { esc, toast, confirmar, dataHora, milis } from "../ui.js";
 import { inicializarSite } from "../semente.js";
 import { STATUS_LEAD, reais, SEM_FOTO } from "/js/modelo.js";
@@ -15,10 +14,9 @@ export async function painel(root, app) {
     '<div class="cab"><div><h1>Como está a loja</h1><p>Resumo do estoque e dos pedidos que chegaram pelo site.</p></div>' +
     '<div class="acoes"><a class="btn primary" href="#/carros/novo">+ Novo carro</a></div></div>' +
     (cfg ? "" :
-      '<div class="aviso"><div><b>Seu site ainda mostra os carros de exemplo do repositório.</b>' +
-      "<p>Faça a primeira configuração para o site passar a ler tudo daqui (categorias, adicionais e carros).</p></div>" +
-      '<div class="acoes"><button class="btn primary" type="button" data-init="importar">Importar os carros de exemplo</button>' +
-      '<button class="btn" type="button" data-init="zero">Começar do zero</button></div></div>') +
+      '<div class="aviso"><div><b>Falta a configuração inicial.</b>' +
+      "<p>Crie as categorias e os adicionais para o site passar a ler tudo daqui.</p></div>" +
+      '<div class="acoes"><button class="btn primary" type="button" data-init>Fazer a configuração inicial</button></div></div>') +
     '<div class="grade g4">' +
       '<div class="stat dest"><small>Publicados</small><b>' + cont("publicado") + "</b></div>" +
       "<div class=\"stat\"><small>Rascunhos</small><b>" + cont("rascunho") + "</b></div>" +
@@ -40,16 +38,14 @@ export async function painel(root, app) {
   root.onclick = async function (e) {
     const b = e.target.closest("[data-init]");
     if (!b) return;
-    const importar = b.dataset.init === "importar";
     if (!(await confirmar({
-      titulo: importar ? "Importar carros de exemplo?" : "Começar do zero?",
-      texto: importar ? "Vamos criar as categorias, os adicionais e os 4 carros de exemplo no banco. Depois você edita ou apaga o que quiser."
-        : "Vamos criar só as categorias e os adicionais iniciais. O site ficará sem carros até você cadastrar o primeiro.",
-      ok: importar ? "Importar" : "Começar"
+      titulo: "Fazer a configuração inicial?",
+      texto: "Vamos criar as categorias e os adicionais iniciais. O site fica sem carros até você cadastrar o primeiro.",
+      ok: "Começar"
     }))) return;
     document.querySelectorAll("[data-init]").forEach(function (x) { x.disabled = true; });
     try {
-      await inicializarSite(app, { importar: importar });
+      await inicializarSite(app);
       toast("Pronto! O site agora lê os dados do painel.");
       await painel(root, app);
     } catch (err) {

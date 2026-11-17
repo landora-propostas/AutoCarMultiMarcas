@@ -1,4 +1,3 @@
-/* Página /conta/ — mesma identidade do site (grafite, amarelo, textura) */
 .pg-conta { min-height: 100svh; display: flex; flex-direction: column; }
 .pg-conta main::before { content: none; }
 .pg-conta::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;

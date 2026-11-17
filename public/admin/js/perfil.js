@@ -1,5 +1,3 @@
-// Perfil de quem está logado: foto, nome e troca de senha.
-// A foto é recortada em quadrado e reduzida no navegador (256 px) e fica no documento admins/{uid}.
 import { $, esc, toast, abrirModal } from "./ui.js";
 
 const LADO = 256;
@@ -26,7 +24,6 @@ function recortar(arquivo) {
 
 function nomePadrao(app) { return (app.email || "").split("@")[0] || "Administrador"; }
 
-// Atualiza o cartão do usuário na barra lateral.
 export function aplicarPerfil(app) {
   const p = app.perfil || {};
   const nome = p.nome || nomePadrao(app);

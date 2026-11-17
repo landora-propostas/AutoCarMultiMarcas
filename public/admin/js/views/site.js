@@ -1,4 +1,3 @@
-// Site e marca: logos, imagens do site (inclui a foto da concessionária), textos, contato e redes.
 import { esc, toast } from "../ui.js";
 import { campoImagem, persistir, apagarSemUso } from "../fotos.js";
 import { SITE_PADRAO, IMAGENS_PADRAO } from "/js/modelo.js";
@@ -22,7 +21,7 @@ export async function site(root, app, args) {
   const repo = app.repo;
   const cfg = await repo.obter("config", "site");
   if (!cfg || !cfg.inicializado) {
-    root.innerHTML = '<div class="cab"><div><h1>Site e marca</h1></div></div><div class="aviso"><div><b>Falta a configuração inicial.</b><p>Antes de personalizar o site, faça a primeira configuração na Visão geral (importar os carros de exemplo ou começar do zero).</p></div><div class="acoes"><a class="btn primary" href="#/painel">Ir para a Visão geral</a></div></div>';
+    root.innerHTML = '<div class="cab"><div><h1>Site e marca</h1></div></div><div class="aviso"><div><b>Falta a configuração inicial.</b><p>Antes de personalizar o site, faça a primeira configuração na Visão geral.</p></div><div class="acoes"><a class="btn primary" href="#/painel">Ir para a Visão geral</a></div></div>';
     return;
   }
   const aba = ABAS.some(function (a) { return a[0] === args[0]; }) ? args[0] : "marca";
@@ -32,7 +31,7 @@ export async function site(root, app, args) {
   const redes = Object.assign({}, SITE_PADRAO.redes, cfg.redes || {});
   const seo = Object.assign({}, SITE_PADRAO.seo, cfg.seo || {});
   const imagens = cfg.imagens || {};
-  const campos = {};   // campoImagem por chave
+  const campos = {};
 
   const input = function (grupo, k, rotulo, dado, extra) {
     return '<label>' + rotulo + '<input data-g="' + grupo + '" data-k="' + k + '" value="' + esc(dado[k]) + '" ' + (extra || "") + "></label>";
@@ -62,7 +61,9 @@ export async function site(root, app, args) {
     }).join("") +
       '<section class="cartao"><div class="cartao-topo"><div><h2>Google e redes sociais</h2><p>Título e descrição que aparecem nos resultados de busca e ao compartilhar o link.</p></div></div><div class="grade">' +
       '<div class="span-2">' + input("seo", "titulo", "Título da página", seo, 'maxlength="70"') + "</div>" +
-      '<div class="span-2">' + area("seo", "descricao", "Descrição", seo) + "</div></div></section>";
+      '<div class="span-2">' + area("seo", "descricao", "Descrição", seo) + "</div></div></section>" +
+      '<section class="cartao"><div class="cartao-topo"><div><h2>Pixel da Meta</h2><p>Mede visitas e pedidos vindos de anúncios do Facebook e Instagram. Cole só o número do pixel (Gerenciador de Eventos → Fontes de dados). Deixe vazio para desligar.</p></div></div><div class="grade">' +
+      '<div class="span-2">' + input("seo", "pixel", "ID do pixel", seo, 'maxlength="20" inputmode="numeric" pattern="[0-9]*" placeholder="Somente números"') + "</div></div></section>";
   } else {
     corpo =
       '<section class="cartao"><div class="cartao-topo"><h2>Contato</h2></div><div class="grade g2">' +
@@ -84,14 +85,11 @@ export async function site(root, app, args) {
     corpo +
     '<div class="barra-salvar"><span class="esq" id="estado-salvar"></span><button class="btn primary" type="button" id="b-salvar">Salvar alterações</button></div>';
 
-  /* Campos de imagem desta aba */
   const CAMPOS_IMG = {
     logo: { onde: "marca", padrao: IMAGENS_PADRAO.logo, escura: true, proc: { max: 700, transparente: true }, aceita: "image/png,image/webp,image/svg+xml,image/jpeg", texto: "PNG, WebP, SVG ou JPG." },
     logoClaro: { onde: "marca", padrao: IMAGENS_PADRAO.logoClaro, clara: true, proc: { max: 700, transparente: true }, aceita: "image/png,image/webp,image/svg+xml,image/jpeg", texto: "PNG, WebP, SVG ou JPG." },
     heroFundo: { onde: "imagens", padrao: IMAGENS_PADRAO.heroFundo, cobre: true, proc: { max: 1920, qualidade: 0.78 }, texto: "JPG, PNG ou WebP." },
-    heroCarro: { onde: "imagens", padrao: IMAGENS_PADRAO.heroCarro, escura: true, proc: { max: 1600, transparente: true }, texto: "PNG ou WebP com fundo transparente." },
-    sobre: { onde: "imagens", padrao: IMAGENS_PADRAO.sobre, cobre: true, proc: { max: 1400 }, texto: "JPG, PNG ou WebP." },
-    cta: { onde: "imagens", padrao: IMAGENS_PADRAO.cta, cobre: true, proc: { max: 1400, qualidade: 0.78 }, texto: "JPG, PNG ou WebP." }
+    sobre: { onde: "imagens", padrao: IMAGENS_PADRAO.sobre, cobre: true, proc: { max: 1400 }, texto: "JPG, PNG ou WebP." }
   };
   root.querySelectorAll("[data-slot]").forEach(function (el) {
     const k = el.dataset.slot, c = CAMPOS_IMG[k];
@@ -100,7 +98,6 @@ export async function site(root, app, args) {
   });
   root.oninput = function () { app.sujo = true; };
 
-  /* Salvar só o que é desta aba */
   let salvando = false;
   root.onclick = async function (e) {
     if (!e.target.closest("#b-salvar") || salvando) return;

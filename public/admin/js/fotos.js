@@ -1,4 +1,3 @@
-// Componentes de foto do painel: galeria do carro e campo de imagem única (logo, hero, etc.).
 import { processar, gravar, carregar, miniaturaDe, apagar, chaveDe, CAPA_LADO } from "/js/midia.js";
 import { semUndefined } from "/js/modelo.js";
 import { esc, ico, toast, abrirModal } from "./ui.js";
@@ -8,7 +7,6 @@ function opcoesProc(app, extra) {
   return Object.assign({ max: 1600, limite: storage ? Infinity : undefined }, extra || {});
 }
 
-// Preenche _url (endereço para mostrar na tela) de fotos já salvas.
 export async function prepararPrevias(app, itens) {
   await Promise.all(itens.map(async function (it) {
     if (it._url || it._novo) return;
@@ -16,7 +14,6 @@ export async function prepararPrevias(app, itens) {
   }));
 }
 
-// Grava a foto (se for nova) e devolve o objeto limpo que vai para o Firestore.
 export async function persistir(app, it, pasta) {
   let base;
   if (it._novo) {
@@ -28,7 +25,6 @@ export async function persistir(app, it, pasta) {
   return semUndefined(Object.assign(base, { alt: it.alt || "", pos: it.pos || "50% 50%" }));
 }
 
-// Miniatura da capa (só no modo "firestore"; no Storage a própria URL já é leve).
 export async function miniaturaDaCapa(app, it) {
   if (app.ctx.opcoes.armazenamento === "storage" || it.src) return null;
   if (it._novo && it._novo.thumbDataUrl) return it._novo.thumbDataUrl;
@@ -37,8 +33,6 @@ export async function miniaturaDaCapa(app, it) {
   return it._url ? miniaturaDe(it._url, CAPA_LADO) : null;
 }
 
-// Apaga fotos que não estão mais em uso por nenhum carro nem pelas configurações do site.
-// Chame DEPOIS de gravar/excluir o carro: a verificação lê o estado atual do banco.
 export async function apagarSemUso(app, imagens) {
   const quer = (imagens || []).filter(Boolean);
   if (!quer.length) return;
@@ -57,7 +51,6 @@ export async function apagarSemUso(app, imagens) {
   } catch (e) { console.warn("Não consegui limpar fotos sem uso", e); }
 }
 
-/* ---------- Editor de ponto de foco + descrição ---------- */
 function editarFoto(it, aoSalvar) {
   let pos = it.pos || "50% 50%";
   const j = abrirModal(
@@ -89,8 +82,6 @@ function editarFoto(it, aoSalvar) {
   };
 }
 
-/* ---------- Galeria do carro ---------- */
-// itens é alterado no lugar. A primeira foto é a capa.
 export function galeria(box, app, cfg) {
   const itens = cfg.itens, max = cfg.max || 15;
   const miniatura = app.ctx.opcoes.armazenamento === "storage" ? 0 : CAPA_LADO;
@@ -161,8 +152,6 @@ export function galeria(box, app, cfg) {
   return { render: render };
 }
 
-/* ---------- Imagem única (logo, hero, foto da concessionária...) ---------- */
-// cfg: { valor, padrao, proc, cobre, escura, texto }. valor() devolve o item atual (null = voltar ao padrão).
 export function campoImagem(box, app, cfg) {
   const estado = { item: cfg.valor ? Object.assign({}, cfg.valor) : null, mudou: false, carregando: false };
   const id = "img-" + Math.random().toString(36).slice(2, 8);

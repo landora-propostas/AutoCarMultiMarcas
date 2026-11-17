@@ -1,4 +1,3 @@
-// Pedidos de proposta enviados pelo formulário do site.
 import { esc, toast, confirmar, dataHora, milis, linkWhats } from "../ui.js";
 import { STATUS_LEAD } from "/js/modelo.js";
 

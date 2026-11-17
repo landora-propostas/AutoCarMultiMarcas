@@ -1,9 +1,6 @@
-// Equipe: contas autorizadas a entrar no painel (coleção "admins", ID = UID da conta no Firebase Authentication).
 import { esc, toast, confirmar, dataHora, milis } from "../ui.js";
 import { VERSAO_SDK } from "/js/firebase-boot.js";
 
-// Cria a conta nova num "app" Firebase separado, só na memória: assim quem está logado no painel
-// continua logado, e o UID da conta criada já vem pronto para autorizar.
 const CDN = "https://www.gstatic.com/firebasejs/" + VERSAO_SDK + "/";
 let cadastro = null;
 async function authCadastro(cfg) {
@@ -85,8 +82,8 @@ export async function equipe(root, app) {
       c = await authCadastro(app.ctx.cfg);
       const cred = await c.a.createUserWithEmailAndPassword(c.auth, email, senha);
       const uid = cred.user.uid;
-      try { await c.a.updateProfile(cred.user, { displayName: nome || null }); } catch (x) { /* opcional */ }
-      try { await c.a.sendEmailVerification(cred.user); } catch (x) { /* pode reenviar no login */ }
+      try { await c.a.updateProfile(cred.user, { displayName: nome || null }); } catch (x) { }
+      try { await c.a.sendEmailVerification(cred.user); } catch (x) { }
       const dados = { ativo: true, nome: nome, email: email, adicionadoPor: app.email, criadoEm: app.ctx.fs.serverTimestamp() };
       await repo.salvar("admins", uid, dados, true);
       membros.push(Object.assign({ id: uid }, dados, { criadoEm: new Date() }));
@@ -96,7 +93,7 @@ export async function equipe(root, app) {
       toast(msgCadastro(err), "erro");
       botao.disabled = false; botao.textContent = "Criar acesso";
     } finally {
-      if (c) { try { await c.a.signOut(c.auth); } catch (x) { /* ok */ } }
+      if (c) { try { await c.a.signOut(c.auth); } catch (x) { } }
     }
   }
 

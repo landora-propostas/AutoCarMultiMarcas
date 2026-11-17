@@ -1,11 +1,9 @@
-// Painel da AutoCar Multimarcas: login (Firebase Authentication), autorização e navegação.
 import { iniciar } from "/js/firebase-boot.js";
 import { OPCOES } from "/js/firebase-config.js";
 import { $, $$, esc, toast } from "./ui.js";
 import { criarRepo } from "./repo.js";
 import { aplicarPerfil, abrirPerfil } from "./perfil.js";
 
-// Sem zoom por pinça (o iPhone ignora user-scalable=no).
 ["gesturestart", "gesturechange", "gestureend"].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
 document.addEventListener("touchmove", function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
 import { painel } from "./views/painel.js";
@@ -19,7 +17,6 @@ import { equipe } from "./views/equipe.js";
 const app = { ctx: null, repo: null, user: null, email: "", sujo: false, atualizarContador: atualizarContador, definirContador: definirContador };
 const ROTAS = { painel: painel, carros: carros, categorias: categorias, adicionais: adicionais, pedidos: pedidos, site: site, equipe: equipe };
 
-/* ---------- Telas ---------- */
 function mostrar(estado) {
   $("#boot").hidden = true;
   const noApp = estado === "app";
@@ -44,7 +41,6 @@ const ERROS_AUTH = {
 };
 function msgAuth(e) { return ERROS_AUTH[e && e.code] || "Não deu certo (" + ((e && (e.code || e.message)) || "erro desconhecido") + ")."; }
 
-/* ---------- Login ---------- */
 let modo = "entrar";
 function definirModo(m) {
   modo = m;
@@ -69,7 +65,7 @@ function ligarLogin() {
     try {
       if (modo === "criar") {
         const cred = await a.createUserWithEmailAndPassword(auth, email, senha);
-        try { await a.sendEmailVerification(cred.user); } catch (e) { /* dá para reenviar depois */ }
+        try { await a.sendEmailVerification(cred.user); } catch (e) { }
       } else {
         await a.signInWithEmailAndPassword(auth, email, senha);
       }
@@ -88,7 +84,7 @@ function ligarLogin() {
   };
   $("#ver-ja").onclick = async function () {
     const u = app.ctx.auth.currentUser;
-    try { await u.reload(); await u.getIdToken(true); } catch (e) { /* segue */ }
+    try { await u.reload(); await u.getIdToken(true); } catch (e) { }
     if (!u.emailVerified) { toast("Ainda não apareceu como confirmado. Confira o e-mail e tente de novo.", "info"); return; }
     aoMudarUsuario(app.ctx.auth.currentUser);
   };
@@ -99,7 +95,7 @@ function ligarLogin() {
   };
   $$("[data-sair]").forEach(function (b) { b.onclick = sair; });
 }
-async function sair() { app.sujo = false; try { await app.ctx.authSdk.signOut(app.ctx.auth); } catch (e) { /* ok */ } }
+async function sair() { app.sujo = false; try { await app.ctx.authSdk.signOut(app.ctx.auth); } catch (e) { } }
 
 async function aoMudarUsuario(user) {
   app.user = user;
@@ -114,7 +110,6 @@ async function aoMudarUsuario(user) {
   if (!autorizado) { $("#neg-email").textContent = email; $("#neg-uid").textContent = user.uid; mostrar("negado"); return; }
   app.email = email;
   app.uid = user.uid;
-  // Administrador principal: o primeiro que abre o painel fica registrado em config/equipe.
   try {
     let eq = await app.repo.obter("config", "equipe");
     if (!eq) { await app.repo.salvar("config", "equipe", { master: user.uid, criadoEm: app.ctx.fs.serverTimestamp() }, true); eq = { master: user.uid }; }
@@ -124,7 +119,6 @@ async function aoMudarUsuario(user) {
   entrarNoApp();
 }
 
-/* ---------- Navegação ---------- */
 let rotaAtual = "", ignorar = false, jaLigou = false, seq = 0;
 
 function entrarNoApp() {
@@ -158,10 +152,8 @@ function rotear() {
   const partes = h.split("/");
   const nome = ROTAS[partes[0]] ? partes[0] : "painel";
   $$("#nav a").forEach(function (a) { a.classList.toggle("is-on", a.dataset.r === nome); });
-  // Elemento novo a cada tela: os eventos da tela anterior ficam para trás.
   const velho = $("#view"), view = velho.cloneNode(false), meu = ++seq;
   velho.replaceWith(view);
-  // Esqueleto discreto: só aparece se a tela demorar (com o cache, a troca costuma ser instantânea).
   view.innerHTML = '<div class="esqueleto" aria-label="Carregando"><i></i><i></i><i></i><i></i></div>';
   window.scrollTo(0, 0);
   const link = $('#nav a[data-r="' + nome + '"]');
@@ -181,8 +173,6 @@ function rotear() {
   });
 }
 
-// Bolinha com a quantidade de pedidos novos no menu. As telas Visão geral e Pedidos já leem
-// os pedidos e atualizam o número sem uma nova consulta.
 function definirContador(n) {
   const el = $("#nav-pedidos");
   el.textContent = n; el.hidden = !n;
@@ -191,16 +181,15 @@ async function atualizarContador() {
   try {
     const leads = await app.repo.listar("leads");
     definirContador(leads.filter(function (l) { return (l.status || "novo") === "novo"; }).length);
-  } catch (e) { /* sem acesso: ignora */ }
+  } catch (e) { }
 }
 
-/* ---------- Início ---------- */
 (async function () {
   try {
     app.ctx = await iniciar({ auth: true, storage: OPCOES.armazenamento === "storage" });
   } catch (e) {
     console.error(e);
-    $("#cfg-msg").innerHTML = "Não consegui ler a configuração do projeto. Abra o painel pelo endereço do Firebase Hosting (<code>https://SEU-PROJETO.web.app/admin</code>) ou preencha <code>FIREBASE_CONFIG</code> em <code>public/js/firebase-config.js</code>. Confirme também que existe um app Web registrado no projeto.";
+    $("#cfg-msg").innerHTML = "Não consegui ler a configuração do projeto. Abra o painel pelo endereço do Firebase Hosting (<code>https://autocar-multimarcas.web.app/admin</code>) ou preencha <code>FIREBASE_CONFIG</code> em <code>public/js/firebase-config.js</code>. Confirme também que existe um app Web registrado no projeto.";
     mostrar("config");
     return;
   }

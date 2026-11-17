@@ -1,7 +1,3 @@
-// Interações do site da AutoCar Multimarcas.
-// Os carros vêm de js/carros.js. A integração com o Firebase (login, estoque, pedidos)
-// entra em uma próxima etapa.
-
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -10,16 +6,13 @@
 
   function brl(n) { return 'R$ ' + n.toLocaleString('pt-BR'); }
   function kmTxt(n) { return n.toLocaleString('pt-BR') + ' km'; }
-  // km 0 só é "0 km" em carro novo; em usado significa que o km não foi informado
   function kmZero(c) { return c.condicao === 'Novo' ? '0 km' : 'Km a consultar'; }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  // Endereço de imagem só pode ser foto (data:image), https ou caminho do próprio site
   function urlSegura(u) { u = String(u || ''); return /^(data:image\/(png|jpe?g|webp|gif|avif|svg\+xml)[;,]|https:\/\/|\/|img\/)/i.test(u) ? esc(u) : ''; }
   function posSegura(p) { p = String(p || ''); return /^[\d.]+% [\d.]+%$/.test(p) ? p : '50% 50%'; }
   function icon(id) { return '<svg aria-hidden="true"><use href="#' + id + '"/></svg>'; }
   function norm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
 
-  /* ---------- Menu mobile ---------- */
   var toggle = $('.menu-toggle');
   var menu = $('#menu');
   if (toggle && menu) {
@@ -37,7 +30,6 @@
     });
   }
 
-  /* ---------- Rolagem: progresso e cabeçalho em forma de ilha ---------- */
   var header = $('.site-header');
   var ticking = false;
   function onScroll() {
@@ -49,7 +41,6 @@
   }, { passive: true });
   onScroll();
 
-  /* ---------- Pílula deslizante do menu + seção ativa ---------- */
   var pill = $('.nav-pill');
   var links = $$('.main-nav a');
   var activeLink = null;
@@ -92,7 +83,6 @@
     }, { threshold: 0.5 }).observe(hero);
   }
 
-  /* ---------- Estoque: cartões gerados a partir de js/carros.js ---------- */
   var list = $('#lista-carros');
   list.innerHTML = CARROS.map(function (c, i) {
     var ano = c.ano.split('/')[1] || c.ano;
@@ -124,7 +114,6 @@
   $('#contagem').textContent = cards.length;
   $$('[data-live="estoque"]').forEach(function (el) { el.setAttribute('data-count', cards.length); });
 
-  /* ---------- Entrada ao rolar ---------- */
   var revealTargets = $$('.section-head .eyebrow, .section-head h2, .section-side, .steps li, .adv, .cc-cta, .toolbar, .mo-card, .mo-values li, .mo-count, .scene-body > *');
   var groups = new Map();
   revealTargets.forEach(function (el) {
@@ -132,12 +121,8 @@
     var n = groups.get(key) || 0;
     groups.set(key, n + 1);
     el.setAttribute('data-reveal', el.tagName === 'H2' ? 'wipe' : 'rise');
-    // Nos cartões do estoque o atraso vai só até 3 passos (por linha), senão o 40º carro
-    // esperaria segundos para aparecer.
     el.style.setProperty('--d', el.classList.contains('car-card') ? n % 3 : Math.min(n, 6));
   });
-  // Os títulos começam totalmente recortados (clip-path), então o navegador os trata como
-  // invisíveis. Por isso observamos o bloco que os contém e revelamos o título junto.
   var porAlvo = new Map();
   revealTargets.forEach(function (el) {
     var alvo = el.tagName === 'H2' ? el.parentElement : el;
@@ -147,7 +132,6 @@
   });
   function revelar(el) {
     el.classList.add('in');
-    // Remove o estado de entrada ao terminar, para não atrasar o hover depois
     var done = function (e) {
       if (e.target !== el || (e.propertyName !== 'opacity' && e.propertyName !== 'clip-path')) return;
       el.removeEventListener('transitionend', done);
@@ -171,10 +155,9 @@
       if (en.isIntersecting) { en.target.classList.add('in'); inView.unobserve(en.target); }
     });
   }, { threshold: 0.4 });
-  [$('.steps'), $('.speedo')].forEach(function (el) { if (el) inView.observe(el); });
+  [$('.steps')].forEach(function (el) { if (el) inView.observe(el); });
   $$('.steps li').forEach(function (li, i) { li.style.setProperty('--d', i); });
 
-  /* ---------- Contadores ---------- */
   function countUp(el, end, dur, fmt) {
     if (reduce) { el.textContent = fmt ? fmt(end) : end; return; }
     var start = performance.now();
@@ -191,28 +174,6 @@
     setTimeout(function () { countUp(el, end, 1400); }, 1100);
   });
 
-  /* ---------- Holofote dos cards e paralaxe do hero ---------- */
-  $$('.spot').forEach(function (el) {
-    el.addEventListener('pointermove', function (e) {
-      var r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
-    });
-  });
-  var stage = $('.hero-stage');
-  if (hero && stage && !reduce && window.matchMedia('(hover: hover)').matches) {
-    hero.addEventListener('pointermove', function (e) {
-      var r = hero.getBoundingClientRect();
-      stage.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
-      stage.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
-    });
-    hero.addEventListener('pointerleave', function () {
-      stage.style.setProperty('--px', 0);
-      stage.style.setProperty('--py', 0);
-    });
-  }
-
-  /* ---------- Estoque: filtros, busca e contagem ---------- */
   var pills = $$('.pill');
   var input = $('#busca');
   var count = $('#contagem');
@@ -276,43 +237,6 @@
     update();
   });
 
-  /* ---------- FAQ com abertura animada ---------- */
-  var items = $$('.faq-list details');
-  function animate(d, open) {
-    var body = $('p', d);
-    if (reduce) { d.open = open; return; }
-    if (d._anim) d._anim.cancel();
-    if (open) {
-      d.open = true;
-      var h = body.scrollHeight;
-      d._anim = body.animate(
-        [{ height: '0px', opacity: 0, paddingBottom: '0px' }, { height: h + 'px', opacity: 1, paddingBottom: '20px' }],
-        { duration: 380, easing: 'cubic-bezier(.2,.7,.2,1)' }
-      );
-      d._anim.onfinish = function () { d._anim = null; };
-    } else {
-      var from = body.offsetHeight;
-      d._anim = body.animate(
-        [{ height: from + 'px', opacity: 1, paddingBottom: '20px' }, { height: '0px', opacity: 0, paddingBottom: '0px' }],
-        { duration: 280, easing: 'cubic-bezier(.4,0,.2,1)' }
-      );
-      d._anim.onfinish = function () { d.open = false; d._anim = null; };
-    }
-  }
-  items.forEach(function (d) {
-    $('summary', d).addEventListener('click', function (e) {
-      e.preventDefault();
-      var isOpen = d._state === undefined ? d.open : d._state;
-      items.forEach(function (o) {
-        var oOpen = o._state === undefined ? o.open : o._state;
-        if (o !== d && oOpen) { o._state = false; animate(o, false); }
-      });
-      d._state = !isOpen;
-      animate(d, d._state);
-    });
-  });
-
-  /* ---------- Diálogo "Receba uma proposta" ---------- */
   var dlg = $('#lead');
   var form = $('#lead-form');
   var ok = $('#lead-ok');
@@ -340,7 +264,6 @@
       dlg.close();
     }, { once: true });
   }
-  // Delegação: funciona também para botões criados depois (cartões e tela de detalhes)
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-open-lead]');
     if (b) { openLead(b.getAttribute('data-car')); return; }
@@ -357,8 +280,6 @@
     erro.hidden = true;
     var concluir = function () { form.hidden = true; ok.hidden = false; form.reset(); };
     var L = window.LANDORA;
-    // Com o Firebase ativo (js/dados.js), o pedido é gravado na coleção "leads" e aparece no painel.
-    // No modo de demonstração (carros de exemplo), apenas simula o envio.
     if (L && L.salvarLead) {
       var btn = form.querySelector('button[type="submit"]');
       btn.disabled = true;
@@ -367,17 +288,20 @@
         erro.hidden = false;
       }).then(function () { btn.disabled = false; });
     } else {
+      var zapLoja = ($('[data-href="whatsapp"]') || {}).href || 'https://wa.me/5514996547171';
+      var txt = 'Olá! Sou ' + nome + '. Tenho interesse em: ' + select.value + '. Meu WhatsApp: ' + form.elements.whatsapp.value.trim();
+      window.open(zapLoja.split('?')[0] + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
       concluir();
     }
   });
 
-  /* ---------- Tela de detalhes do carro ---------- */
   var sheet = $('#detalhe');
   var corpo = $('#detalhe-corpo');
   var ROTA = /^#carro\/([\w-]+)$/;
-  var atual = null;      // slug aberto
-  var viaApp = false;    // abriu por clique dentro do site (então "voltar" pode usar o histórico)
+  var atual = null;
+  var viaApp = false;
 
+  function linkCarro(slug) { return location.origin + '/carro/' + encodeURIComponent(slug); }
   function find(slug) { for (var i = 0; i < CARROS.length; i++) if (CARROS[i].slug === slug) return i; return -1; }
 
   function renderDetalhe(i, troca) {
@@ -391,9 +315,9 @@
     corpo.className = 'sheet-body' + (troca ? ' swap' : '');
     corpo.innerHTML = '' +
       '<div class="d-media">' +
-        '<figure class="d-photo"><img id="d-img" src="' + urlSegura(g[0].src) + '" alt="' + esc(g[0].alt) + '" style="object-position:' + posSegura(g[0].pos || c.foto.pos) + '"></figure>' +
+        '<figure class="d-photo"><img id="d-img" decoding="async" src="' + urlSegura(g[0].src) + '" alt="' + esc(g[0].alt) + '" style="object-position:' + posSegura(g[0].pos || c.foto.pos) + '"></figure>' +
         (g.length > 1 ? '<div class="d-thumbs" role="group" aria-label="Fotos do carro">' + g.map(function (f, k) {
-          return '<button type="button" class="d-thumb' + (k === 0 ? ' is-on' : '') + '" data-foto="' + k + '" aria-label="Ver foto ' + (k + 1) + '"><img src="' + urlSegura(f.src) + '" alt=""></button>';
+          return '<button type="button" class="d-thumb' + (k === 0 ? ' is-on' : '') + '" data-foto="' + k + '" aria-label="Ver foto ' + (k + 1) + '"><img src="' + urlSegura(f.src) + '" alt="" loading="lazy" decoding="async"></button>';
         }).join('') + '</div>' : '') +
         '<span class="d-tag">' + esc(c.condicao) + '</span>' +
       '</div>' +
@@ -407,7 +331,7 @@
         '<p class="d-sub d-i" style="--i:2">' + [c.motor, c.potencia, c.cambio].filter(Boolean).map(esc).join(' · ') + '</p>' +
         '<p class="d-price d-i" style="--i:3">' + brl(c.preco) + '</p>' +
         '<div class="d-stats d-i" style="--i:4">' +
-          stat('Quilometragem', c.km === 0 ? '0 km' : '0 km', ' data-km="' + c.km + '"') +
+          stat('Quilometragem', '', ' data-km="' + c.km + '"') +
           stat('Ano', esc(c.ano)) + stat('Câmbio', esc(c.cambio)) + stat('Combustível', esc(c.combustivel)) +
         '</div>' +
         (c.ficha.length ? '<section class="d-sec d-i" style="--i:5"><h3>Ficha técnica</h3><dl class="d-specs">' +
@@ -422,6 +346,7 @@
         (c.descricao ? '<section class="d-sec d-i" style="--i:9"><h3>Sobre o carro</h3><p class="d-desc">' + esc(c.descricao) + '</p></section>' : '') +
         '<div class="d-actions">' +
           '<button class="btn btn-primary" type="button" data-open-lead data-car="' + esc(c.nome) + '">Falar com consultor ' + icon('arrow') + '</button>' +
+          '<a class="btn btn-ghost" href="https://wa.me/?text=' + encodeURIComponent(c.nome + ' · ' + brl(c.preco) + '\n' + linkCarro(c.slug)) + '" target="_blank" rel="noopener">' + icon('whatsapp') + '<span>Enviar</span></a>' +
           '<button class="btn btn-ghost" type="button" data-copiar>' + icon('link') + '<span>Copiar link</span></button>' +
         '</div>' +
       '</div>';
@@ -434,7 +359,6 @@
     sheet.scrollTop = 0;
   }
 
-  // As fotos da galeria vêm do banco só quando o carro é aberto (window.LANDORA.preparar).
   function preparar(c) {
     var L = window.LANDORA;
     return L && L.preparar ? L.preparar(c) : Promise.resolve();
@@ -480,7 +404,6 @@
     else if (sheet.open) fecharDetalheAnimado();
   }
   window.addEventListener('hashchange', rota);
-  // /#proposta (vindo do perfil) abre o pedido de proposta direto
   if (location.hash === '#proposta') { history.replaceState(null, '', location.pathname); setTimeout(function () { openLead(); }, 900); }
 
   document.addEventListener('click', function (e) {
@@ -521,7 +444,7 @@
     var cp = e.target.closest('[data-copiar]');
     if (cp) {
       var rot = $('span', cp);
-      var url = location.href;
+      var url = linkCarro(atual);
       var feito = function () { rot.textContent = 'Link copiado'; setTimeout(function () { rot.textContent = 'Copiar link'; }, 2000); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(feito, function () { rot.textContent = 'Copie pela barra do navegador'; });
       else rot.textContent = 'Copie pela barra do navegador';
