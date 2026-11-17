@@ -33,11 +33,12 @@ function mostrar() {
     fechar();
   });
   document.body.appendChild(aviso);
-  requestAnimationFrame(function () { requestAnimationFrame(function () { if (aviso) aviso.classList.add("is-on"); }); });
+  void aviso.offsetWidth;
+  aviso.classList.add("is-on");
 }
 
 document.addEventListener("click", function (e) {
   if (e.target.closest("[data-cookies]")) { e.preventDefault(); mostrar(); }
 });
 
-if (!escolha()) setTimeout(mostrar, document.querySelector(".loader") ? 2600 : 600);
+if (!escolha()) setTimeout(mostrar, document.querySelector(".loader") ? 2000 : 400);
