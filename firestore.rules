@@ -10,6 +10,10 @@ service cloud.firestore {
       return logado() &&
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
+    function emailConfiavel() {
+      return request.auth.token.firebase.sign_in_provider == 'google.com' ||
+        request.auth.token.email.lower().matches('^[a-z0-9._%+-]+@(gmail[.]com|googlemail[.]com|hotmail[.]com|hotmail[.]com[.]br|outlook[.]com|outlook[.]com[.]br|live[.]com|live[.]com[.]br|msn[.]com|yahoo[.]com|yahoo[.]com[.]br|ymail[.]com|rocketmail[.]com|icloud[.]com|me[.]com|mac[.]com|uol[.]com[.]br|bol[.]com[.]br|terra[.]com[.]br|ig[.]com[.]br|globo[.]com|globomail[.]com|r7[.]com|zipmail[.]com[.]br|proton[.]me|protonmail[.]com|aol[.]com|gmx[.]com|zoho[.]com)$');
+    }
     function master() {
       return admin() &&
         get(/databases/$(database)/documents/config/equipe).data.master == request.auth.uid;
@@ -40,6 +44,7 @@ service cloud.firestore {
     match /usuarios/{uid} {
       allow read: if (logado() && request.auth.uid == uid) || admin();
       allow create, update: if logado() && request.auth.uid == uid
+        && (resource != null || emailConfiavel() || admin())
         && request.resource.data.keys().hasOnly(['nome', 'email', 'telefone', 'foto', 'criadoEm', 'atualizadoEm'])
         && (!('nome' in request.resource.data) || (request.resource.data.nome is string && request.resource.data.nome.size() <= 100))
         && (!('telefone' in request.resource.data) || (request.resource.data.telefone is string && request.resource.data.telefone.size() <= 20))

@@ -1,5 +1,6 @@
 import { iniciar } from "./firebase-boot.js";
 import { STATUS_LEAD } from "./modelo.js";
+import { checarEmail, bloqueio, falhou, acertou, errouSenha, podePedir, tempoTxt } from "./protecao.js";
 
 const MARCA = "autocar:logado";
 const $ = function (s) { return document.querySelector(s); };
@@ -76,7 +77,11 @@ function quando(v) {
     const el = e.target.elements, erro = $("#ct-erro"), bt = $("#ct-enviar");
     const email = el.email.value.trim(), senha = el.senha.value, nome = el.nome.value.trim();
     erro.hidden = true;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erro.textContent = "Digite um e-mail válido."; erro.hidden = false; return; }
+    const ruim = aba === "criar" ? checarEmail(email) : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : "Digite um e-mail válido.");
+    if (ruim) { erro.textContent = ruim; erro.hidden = false; return; }
+    const trava = aba === "entrar" ? bloqueio(email) : 0;
+    if (trava) { erro.textContent = "Muitas tentativas com senha errada. Tente de novo em " + tempoTxt(trava) + "."; erro.hidden = false; return; }
+    if (aba === "criar" && podePedir("criar")) { erro.textContent = "Você já criou uma conta agora há pouco. Espere um pouco antes de tentar de novo."; erro.hidden = false; return; }
     if (senha.length < 6) { erro.textContent = "A senha precisa ter pelo menos 6 caracteres."; erro.hidden = false; return; }
     if (aba === "criar" && !nome) { erro.textContent = "Digite seu nome."; erro.hidden = false; return; }
     bt.disabled = true;
@@ -88,8 +93,13 @@ function quando(v) {
         await enviarConfirmacao(cred.user);
       } else {
         await a.signInWithEmailAndPassword(c.auth, email, senha);
+        acertou(email);
       }
-    } catch (err) { erro.textContent = msgAuth(err); erro.hidden = false; }
+    } catch (err) {
+      let msg = msgAuth(err);
+      if (aba === "entrar" && errouSenha(err)) { const t = falhou(email); if (t) msg += " Por segurança, espere " + tempoTxt(t) + " para tentar de novo."; }
+      erro.textContent = msg; erro.hidden = false;
+    }
     bt.disabled = false;
   };
   const voltar = { url: location.origin + "/conta/" };
@@ -129,6 +139,8 @@ function quando(v) {
   $("#ct-esqueci").onclick = async function () {
     const email = $("#ct-form").elements.email.value.trim(), erro = $("#ct-erro");
     if (!email) { erro.textContent = "Digite seu e-mail acima e clique de novo em “Esqueci minha senha”."; erro.hidden = false; return; }
+    const esperar = podePedir("senha");
+    if (esperar) { erro.textContent = "Já enviamos um link há pouco. Tente de novo em " + tempoTxt(esperar) + "."; erro.hidden = false; return; }
     try { await a.sendPasswordResetEmail(c.auth, email); erro.hidden = true; toast("Se o e-mail tiver conta, enviamos um link para criar uma nova senha."); }
     catch (err) { erro.textContent = msgAuth(err); erro.hidden = false; }
   };

@@ -1,6 +1,7 @@
 import { iniciar } from "/js/firebase-boot.js";
 import { OPCOES } from "/js/firebase-config.js";
 import { $, $$, esc, toast } from "./ui.js";
+import { checarEmail, bloqueio, falhou, acertou, errouSenha, podePedir, tempoTxt } from "/js/protecao.js";
 import { criarRepo } from "./repo.js";
 import { aplicarPerfil, abrirPerfil } from "./perfil.js";
 
@@ -61,6 +62,10 @@ function ligarLogin() {
     const email = f.elements.email.value.trim().toLowerCase(), senha = f.elements.senha.value;
     if (!email || !senha) { erroAuth("Preencha e-mail e senha."); return; }
     if (modo === "criar" && senha !== f.elements.senha2.value) { erroAuth("As senhas não são iguais."); return; }
+    if (modo === "criar") { const ruim = checarEmail(email); if (ruim) { erroAuth(ruim); return; } }
+    const trava = modo === "criar" ? 0 : bloqueio(email);
+    if (trava) { erroAuth("Muitas tentativas com senha errada. Tente de novo em " + tempoTxt(trava) + "."); return; }
+    if (modo === "criar" && podePedir("criar")) { erroAuth("Você já criou uma conta agora há pouco. Espere um pouco antes de tentar de novo."); return; }
     const btn = $("#auth-enviar"); btn.disabled = true; erroAuth("");
     try {
       if (modo === "criar") {
@@ -68,17 +73,26 @@ function ligarLogin() {
         try { await a.sendEmailVerification(cred.user); } catch (e) { }
       } else {
         await a.signInWithEmailAndPassword(auth, email, senha);
+        acertou(email);
       }
-    } catch (e) { erroAuth(msgAuth(e)); }
+    } catch (e) {
+      let msg = msgAuth(e);
+      if (modo !== "criar" && errouSenha(e)) { const t = falhou(email); if (t) msg += " Por segurança, espere " + tempoTxt(t) + " para tentar de novo."; }
+      erroAuth(msg);
+    }
     btn.disabled = false;
   };
   $("#auth-esqueci").onclick = async function () {
     const email = $("#form-auth").elements.email.value.trim();
     if (!email) { erroAuth("Digite seu e-mail acima e clique de novo."); return; }
+    const esperar = podePedir("senha");
+    if (esperar) { erroAuth("Já enviamos um link há pouco. Tente de novo em " + tempoTxt(esperar) + "."); return; }
     try { await app.ctx.authSdk.sendPasswordResetEmail(app.ctx.auth, email); erroAuth(""); toast("Enviamos o link para redefinir a senha, se o e-mail existir."); }
     catch (e) { erroAuth(msgAuth(e)); }
   };
   $("#ver-reenviar").onclick = async function () {
+    const esperar = podePedir("verificar");
+    if (esperar) { toast("Já enviamos há pouco. Tente de novo em " + tempoTxt(esperar) + ".", "info"); return; }
     try { await app.ctx.authSdk.sendEmailVerification(app.ctx.auth.currentUser); toast("E-mail reenviado."); }
     catch (e) { toast(msgAuth(e), "erro"); }
   };

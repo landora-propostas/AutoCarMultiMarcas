@@ -363,3 +363,6 @@ code.uid { font-size: 12px; overflow-wrap: anywhere; }
 }
 .auth-voltar { justify-self: center; color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; padding: 6px 0; }
 .auth-voltar:hover { color: var(--brand-light); }
+
+html, body { overflow-x: clip; max-width: 100%; touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (max-width: 900px) { input, select, textarea { font-size: 16px !important; } }

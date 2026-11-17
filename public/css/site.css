@@ -1022,3 +1022,6 @@ main::before { background:
   .lead-sub { font-size: 14px; margin-bottom: 14px; }
 }
 .lead-ok-bts { display: flex; flex-wrap: wrap; gap: 10px; } .lead-ok-bts .btn { margin-top: 0; }
+
+html, body { overflow-x: clip; max-width: 100%; touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (max-width: 900px) { input, select, textarea { font-size: 16px !important; } }
