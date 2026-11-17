@@ -99,3 +99,15 @@
 }
 .ct-lgpd { margin: 0; font-size: 12.5px; color: var(--muted); text-align: center; }
 .ct-lgpd a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+
+.ct-google { width: 100%; height: 50px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid var(--line-2); border-radius: 999px; background: #fff; color: #1f1f1f; font: 700 15px "Manrope", sans-serif; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+.ct-google:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgba(255, 255, 255, .35); }
+.ct-google:disabled { opacity: .6; cursor: default; transform: none; }
+.ct-google svg { width: 20px; height: 20px; }
+.ct-ou { display: flex; align-items: center; gap: 12px; margin: 18px 0 2px; color: var(--muted); font-size: 13px; }
+.ct-ou::before, .ct-ou::after { content: ""; flex: 1; height: 1px; background: var(--line-2); }
+.ct-verificar { display: grid; gap: 12px; }
+.ct-verificar[hidden] { display: none; }
+.ct-verificar .ct-sub { margin-bottom: 8px; line-height: 1.6; }
+.ct-verificar .ct-sub b { color: #fff; overflow-wrap: anywhere; }
+.ct-verificar .btn { width: 100%; height: 50px; justify-content: center; }

@@ -39,6 +39,8 @@
       <button type="button" role="tab" data-aba="entrar" aria-selected="true">Entrar</button>
       <button type="button" role="tab" data-aba="criar" aria-selected="false">Criar conta</button>
     </div>
+    <button class="ct-google" type="button" id="ct-google"><svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3a7.2 7.2 0 0 1-10.8-3.8h-4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6h-4a12 12 0 0 0 0 10.8z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.3 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg><span>Continuar com Google</span></button>
+    <p class="ct-ou"><span>ou com e-mail</span></p>
     <form id="ct-form" novalidate>
       <label class="ct-campo" data-so="criar" hidden>Nome<input name="nome" autocomplete="name" maxlength="80" placeholder="Seu nome"></label>
       <label class="ct-campo">E-mail<input name="email" type="email" autocomplete="email" maxlength="120" placeholder="voce@email.com" required></label>
@@ -48,6 +50,16 @@
       <p class="ct-lgpd">Seus dados são tratados conforme a <a href="/privacidade">Política de privacidade</a>.</p>
       <button class="ct-link" type="button" id="ct-esqueci" data-so="entrar">Esqueci minha senha</button>
     </form>
+  </section>
+
+  <section class="ct-card ct-auth ct-verificar" id="ct-verificar" hidden>
+    <span class="eyebrow"><span class="dot"></span>Falta pouco</span>
+    <h1>Confirme seu e&#8209;mail</h1>
+    <p class="ct-sub">Enviamos um link de confirmação para <b id="ct-ver-email"></b>. Abra o e-mail e clique no link para ativar sua conta. Se não encontrar, confira a caixa de spam.</p>
+    <p class="ct-erro" id="ct-ver-erro" hidden></p>
+    <button class="btn btn-primary" type="button" id="ct-ver-ok">Já confirmei</button>
+    <button class="btn btn-ghost" type="button" id="ct-ver-reenviar">Reenviar e-mail</button>
+    <button class="ct-link" type="button" id="ct-ver-sair">Usar outro e-mail</button>
   </section>
 
   <section class="ct-perfil" id="ct-perfil" hidden>

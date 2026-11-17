@@ -308,7 +308,7 @@ function montarSite(d) {
         status: "novo", origem: "site", criadoEm: f.serverTimestamp()
       };
       const s = window.SESSAO;
-      if (s && s.user) { lead.uid = s.user.uid; if (s.user.email) lead.email = String(s.user.email).slice(0, 120); }
+      if (s && s.user && s.user.emailVerified) { lead.uid = s.user.uid; if (s.user.email) lead.email = String(s.user.email).slice(0, 120); }
       const r = await f.addDoc(f.collection(c.db, "leads"), lead);
       rastrear("Lead", { content_name: lead.carro });
       return r;

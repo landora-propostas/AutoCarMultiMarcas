@@ -28,6 +28,7 @@ export async function iniciar(quer) {
     const a = await import(CDN + "firebase-auth.js");
     ctx.authSdk = a;
     ctx.auth = a.getAuth(ctx.app);
+    ctx.auth.languageCode = "pt-BR";
   }
   if (quer.storage && !ctx.storage) {
     const s = await import(CDN + "firebase-storage.js");

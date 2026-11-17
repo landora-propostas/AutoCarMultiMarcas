@@ -17,6 +17,7 @@ function tela(qual) {
   $("#ct-carregando").hidden = qual !== "carregando";
   $("#ct-auth").hidden = qual !== "auth";
   $("#ct-perfil").hidden = qual !== "perfil";
+  $("#ct-verificar").hidden = qual !== "verificar";
 }
 function msgAuth(e) {
   const c = (e && e.code) || "";
@@ -26,6 +27,8 @@ function msgAuth(e) {
   if (c === "auth/weak-password") return "A senha precisa ter pelo menos 6 caracteres.";
   if (c === "auth/too-many-requests") return "Muitas tentativas. Espere alguns minutos e tente de novo.";
   if (c === "auth/network-request-failed") return "Sem conexão. Confira sua internet.";
+  if (c === "auth/account-exists-with-different-credential") return "Esse e-mail já tem conta com senha. Entre com e-mail e senha.";
+  if (c === "auth/unauthorized-domain" || c === "auth/operation-not-allowed") return "O login com Google ainda não está liberado. Use e-mail e senha.";
   return "Não foi possível continuar agora. Tente de novo.";
 }
 function recortar(arquivo) {
@@ -82,12 +85,47 @@ function quando(v) {
         nomeCadastro = nome;
         const cred = await a.createUserWithEmailAndPassword(c.auth, email, senha);
         try { await a.updateProfile(cred.user, { displayName: nome }); } catch (x) { }
+        await enviarConfirmacao(cred.user);
       } else {
         await a.signInWithEmailAndPassword(c.auth, email, senha);
       }
     } catch (err) { erro.textContent = msgAuth(err); erro.hidden = false; }
     bt.disabled = false;
   };
+  const voltar = { url: location.origin + "/conta/" };
+  async function enviarConfirmacao(u) {
+    try { await a.sendEmailVerification(u, voltar); } catch (e) { try { await a.sendEmailVerification(u); } catch (x) { } }
+  }
+  $("#ct-google").onclick = async function () {
+    const erro = $("#ct-erro"), bt = this;
+    erro.hidden = true; bt.disabled = true;
+    const prov = new a.GoogleAuthProvider();
+    prov.setCustomParameters({ prompt: "select_account" });
+    try { await a.signInWithPopup(c.auth, prov); }
+    catch (err) {
+      if (err && (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment")) { await a.signInWithRedirect(c.auth, prov); return; }
+      if (!err || (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request")) { erro.textContent = msgAuth(err); erro.hidden = false; }
+    }
+    bt.disabled = false;
+  };
+  try { await a.getRedirectResult(c.auth); } catch (err) { $("#ct-erro").textContent = msgAuth(err); $("#ct-erro").hidden = false; }
+
+  let ultimoEnvio = 0;
+  $("#ct-ver-reenviar").onclick = async function () {
+    if (Date.now() - ultimoEnvio < 60000) { toast("Aguarde um minuto para pedir outro e-mail."); return; }
+    ultimoEnvio = Date.now();
+    try { await a.sendEmailVerification(c.auth.currentUser, voltar); toast("E-mail reenviado para " + c.auth.currentUser.email + "."); }
+    catch (err) { toast(msgAuth(err), "erro"); }
+  };
+  $("#ct-ver-ok").onclick = async function () {
+    const u = c.auth.currentUser, erro = $("#ct-ver-erro");
+    if (!u) return;
+    try { await u.reload(); await u.getIdToken(true); } catch (e) { }
+    if (c.auth.currentUser.emailVerified) { erro.hidden = true; mostrarConta(c.auth.currentUser); }
+    else { erro.textContent = "Ainda não aparece como confirmado. Clique no link do e-mail e tente de novo."; erro.hidden = false; }
+  };
+  $("#ct-ver-sair").onclick = async function () { marcar(false); await a.signOut(c.auth); };
+
   $("#ct-esqueci").onclick = async function () {
     const email = $("#ct-form").elements.email.value.trim(), erro = $("#ct-erro");
     if (!email) { erro.textContent = "Digite seu e-mail acima e clique de novo em “Esqueci minha senha”."; erro.hidden = false; return; }
@@ -141,13 +179,25 @@ function quando(v) {
     } catch (err) { lista.innerHTML = '<p class="ct-vazio">Não foi possível carregar seus pedidos agora.</p>'; }
   }
 
-  a.onAuthStateChanged(c.auth, async function (user) {
+  a.onAuthStateChanged(c.auth, function (user) {
     if (!user) { uid = null; marcar(false); tela("auth"); return; }
+    if (!user.emailVerified) {
+      user.reload().then(function () {
+        if (c.auth.currentUser && c.auth.currentUser.emailVerified) return c.auth.currentUser.getIdToken(true).then(function () { mostrarConta(c.auth.currentUser); });
+      }).catch(function () {});
+      marcar(false);
+      $("#ct-ver-email").textContent = user.email || "";
+      $("#ct-ver-erro").hidden = true;
+      tela("verificar");
+      return;
+    }
+    mostrarConta(user);
+  });
+
+  async function mostrarConta(user) {
     marcar(true);
     tela("carregando");
-    if (user.emailVerified) {
-      try { const d = await f.getDoc(f.doc(db, "admins", user.uid)); if (d.exists()) { location.replace("/admin/"); return; } } catch (e) { }
-    }
+    try { const d = await f.getDoc(f.doc(db, "admins", user.uid)); if (d.exists()) { location.replace("/admin/"); return; } } catch (e) { }
     uid = user.uid;
     let p = {};
     try {
@@ -167,5 +217,5 @@ function quando(v) {
     desenharAvatar(nome || user.email);
     tela("perfil");
     carregarPedidos();
-  });
+  }
 })();

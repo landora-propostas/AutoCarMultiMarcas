@@ -41,9 +41,9 @@ async function ligar() {
   const a = c.authSdk, f = c.fs;
   $("#hu-sair").onclick = async function () { tirarMarca(); try { await a.signOut(c.auth); } catch (e) { } location.reload(); };
   a.onAuthStateChanged(c.auth, async function (user) {
-    if (!user) { tirarMarca(); window.SESSAO = null; return; }
+    if (!user || !user.emailVerified) { if (!user) tirarMarca(); window.SESSAO = null; return; }
     let admin = null, cliente = null;
-    if (user.emailVerified) { try { const d = await f.getDoc(f.doc(c.db, "admins", user.uid)); if (d.exists()) admin = d.data(); } catch (e) { } }
+    try { const d = await f.getDoc(f.doc(c.db, "admins", user.uid)); if (d.exists()) admin = d.data(); } catch (e) { }
     if (!admin) { try { const d = await f.getDoc(f.doc(c.db, "usuarios", user.uid)); if (d.exists()) cliente = d.data(); } catch (e) { } }
     const p = admin || cliente || {};
     const s = { user: user, admin: !!admin, perfil: { nome: p.nome || user.displayName || "", foto: p.foto || null, telefone: p.telefone || "" } };
