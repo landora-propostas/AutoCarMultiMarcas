@@ -99,6 +99,8 @@
   if (!inner || !CARROS.length) { window.BUSCA = { passa: function () { return true; }, ordenar: function (s) { return s; }, porSlug: porSlug, limpar: function () {} }; return; }
 
   selOrdem.innerHTML = ORDENS.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('');
+  var selHero = $('#hero-ordem');
+  if (selHero && !selHero.options.length) { selHero.innerHTML = selOrdem.innerHTML; selHero.value = selOrdem.value; }
 
   function chips(grupo, lista, rotulo, extra) {
     return '<div class="fgroup"><h4>' + rotulo + '</h4><div class="fchips">' + lista.map(function (v) {

@@ -1,8 +1,17 @@
 const fila = [];
 let id = "", carregado = false;
 
+function escolha() { try { return localStorage.getItem("autocar:cookies"); } catch (e) { return null; } }
+function aceitou() { return escolha() === "sim"; }
+
+window.addEventListener("cookies", function (e) {
+  if (e.detail === "sim") carregar();
+  else if (carregado) window.fbq("consent", "revoke");
+});
+
 function carregar() {
-  if (carregado || !id) return;
+  if (!id || !aceitou()) return;
+  if (carregado) { window.fbq("consent", "grant"); return; }
   carregado = true;
   const f = window.fbq = function () { f.callMethod ? f.callMethod.apply(f, arguments) : f.queue.push(arguments); };
   if (!window._fbq) window._fbq = f;
@@ -17,7 +26,7 @@ function carregar() {
 }
 
 export function rastrear(evento, dados) {
-  if (!id) return;
+  if (!id || escolha() === "nao") return;
   if (carregado) window.fbq("track", evento, dados || {});
   else fila.push([evento, dados || {}]);
 }

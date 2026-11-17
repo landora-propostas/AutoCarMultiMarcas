@@ -994,3 +994,15 @@ main::before { background:
 ::view-transition-group(menu-topo) { z-index: 101; }
 ::view-transition-old(barra-busca), ::view-transition-new(barra-busca),
 ::view-transition-old(menu-topo), ::view-transition-new(menu-topo) { animation: none; }
+
+.cookies { position: fixed; left: 50%; bottom: 18px; z-index: 250; width: min(100% - 28px, 760px); display: flex; align-items: center; gap: 18px; padding: 16px 18px 16px 22px; border: 1px solid var(--line-2); border-radius: 20px; background: rgba(22, 22, 22, .92); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .8); opacity: 0; transform: translate(-50%, 24px); transition: opacity .4s var(--ease), transform .4s var(--ease); }
+.cookies.is-on { opacity: 1; transform: translate(-50%, 0); }
+.cookies p { margin: 0; font-size: 14px; line-height: 1.55; color: #cfcfcf; }
+.cookies p b { display: block; margin-bottom: 2px; color: #fff; font-size: 15px; }
+.cookies p a { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+.cookies-acoes { display: flex; gap: 10px; flex: none; }
+@media (max-width: 640px) {
+  .cookies { flex-direction: column; align-items: stretch; gap: 14px; bottom: 12px; padding: 18px; }
+  .cookies-acoes .btn { flex: 1; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .cookies { transition: none; } }
