@@ -16,6 +16,13 @@ export function checarEmail(email) {
   return "";
 }
 
+export function checarSenha(senha) {
+  const s = String(senha || "");
+  if (s.length < 8) return "A senha precisa ter pelo menos 8 caracteres.";
+  if (!/[a-zA-Z]/.test(s) || !/\d/.test(s)) return "A senha precisa ter letras e números.";
+  return "";
+}
+
 const CHAVE = "autocar:tentativas";
 const PASSOS = [0, 0, 0, 30, 60, 300, 900, 1800, 3600];
 

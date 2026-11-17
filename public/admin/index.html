@@ -19,19 +19,14 @@
       <p class="auth-sub">Painel administrativo</p>
 
       <div id="auth-form">
-        <div class="tabs auth-tabs" role="tablist">
-          <button type="button" class="tab is-on" data-modo="entrar" role="tab">Entrar</button>
-          <button type="button" class="tab" data-modo="criar" role="tab">Criar conta</button>
-        </div>
         <form id="form-auth" novalidate>
           <label>E-mail<input type="email" name="email" autocomplete="email" required placeholder="voce@exemplo.com"></label>
           <label>Senha<input type="password" name="senha" autocomplete="current-password" required minlength="6" placeholder="Sua senha"></label>
-          <label class="so-criar" hidden>Repita a senha<input type="password" name="senha2" autocomplete="new-password" minlength="6" placeholder="Repita a senha"></label>
           <p class="auth-erro" id="auth-erro" role="alert" hidden></p>
           <button class="btn primary grande" type="submit" id="auth-enviar">Entrar</button>
           <button class="link" type="button" id="auth-esqueci">Esqueci minha senha</button>
         </form>
-        <p class="auth-nota so-criar" hidden>Depois de criar a conta, confirme o e-mail pelo link que enviaremos. O acesso ao painel só é liberado se um administrador já tiver autorizado esse e-mail.</p>
+        <p class="auth-nota">O acesso ao painel é criado pelo administrador principal, na tela Equipe.</p>
       </div>
 
       <div id="auth-verificar" hidden>

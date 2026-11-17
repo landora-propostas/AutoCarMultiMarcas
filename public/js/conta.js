@@ -1,6 +1,6 @@
 import { iniciar } from "./firebase-boot.js";
 import { STATUS_LEAD } from "./modelo.js";
-import { checarEmail, bloqueio, falhou, acertou, errouSenha, podePedir, tempoTxt } from "./protecao.js";
+import { checarEmail, checarSenha, bloqueio, falhou, acertou, errouSenha, podePedir, tempoTxt } from "./protecao.js";
 
 const MARCA = "autocar:logado";
 const $ = function (s) { return document.querySelector(s); };
@@ -67,6 +67,7 @@ function quando(v) {
     $("#ct-auth-titulo").textContent = v === "criar" ? "Criar conta" : "Entrar";
     $("#ct-enviar").textContent = v === "criar" ? "Criar minha conta" : "Entrar";
     $("#ct-form").elements.senha.autocomplete = v === "criar" ? "new-password" : "current-password";
+    $("#ct-form").elements.senha.placeholder = v === "criar" ? "8+ caracteres, letras e números" : "Sua senha";
     $("#ct-erro").hidden = true;
   }
   $$("[data-aba]").forEach(function (b) { b.onclick = function () { trocarAba(b.dataset.aba); }; });
@@ -82,7 +83,8 @@ function quando(v) {
     const trava = aba === "entrar" ? bloqueio(email) : 0;
     if (trava) { erro.textContent = "Muitas tentativas com senha errada. Tente de novo em " + tempoTxt(trava) + "."; erro.hidden = false; return; }
     if (aba === "criar" && podePedir("criar")) { erro.textContent = "Você já criou uma conta agora há pouco. Espere um pouco antes de tentar de novo."; erro.hidden = false; return; }
-    if (senha.length < 6) { erro.textContent = "A senha precisa ter pelo menos 6 caracteres."; erro.hidden = false; return; }
+    const fraca = aba === "criar" ? checarSenha(senha) : (senha.length < 6 ? "Digite sua senha." : "");
+    if (fraca) { erro.textContent = fraca; erro.hidden = false; return; }
     if (aba === "criar" && !nome) { erro.textContent = "Digite seu nome."; erro.hidden = false; return; }
     bt.disabled = true;
     try {

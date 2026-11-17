@@ -25,6 +25,12 @@ export async function iniciar(quer) {
     ctx = { app: app, db: fs.getFirestore(app), fs: fs, cfg: cfg, opcoes: OPCOES };
   }
   if (quer.auth && !ctx.auth) {
+    if (OPCOES.appCheck && !ctx.appCheck) {
+      try {
+        const ac = await import(CDN + "firebase-app-check.js");
+        ctx.appCheck = ac.initializeAppCheck(ctx.app, { provider: new ac.ReCaptchaV3Provider(OPCOES.appCheck), isTokenAutoRefreshEnabled: true });
+      } catch (e) { ctx.appCheck = null; }
+    }
     const a = await import(CDN + "firebase-auth.js");
     ctx.authSdk = a;
     ctx.auth = a.getAuth(ctx.app);

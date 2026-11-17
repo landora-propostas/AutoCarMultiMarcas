@@ -1,7 +1,7 @@
 import { iniciar } from "/js/firebase-boot.js";
 import { OPCOES } from "/js/firebase-config.js";
 import { $, $$, esc, toast } from "./ui.js";
-import { checarEmail, bloqueio, falhou, acertou, errouSenha, podePedir, tempoTxt } from "/js/protecao.js";
+import { bloqueio, falhou, acertou, errouSenha, podePedir, tempoTxt } from "/js/protecao.js";
 import { criarRepo } from "./repo.js";
 import { aplicarPerfil, abrirPerfil } from "./perfil.js";
 
@@ -42,42 +42,23 @@ const ERROS_AUTH = {
 };
 function msgAuth(e) { return ERROS_AUTH[e && e.code] || "Não deu certo (" + ((e && (e.code || e.message)) || "erro desconhecido") + ")."; }
 
-let modo = "entrar";
-function definirModo(m) {
-  modo = m;
-  $$(".auth-tabs .tab").forEach(function (b) { b.classList.toggle("is-on", b.dataset.modo === m); });
-  $$(".so-criar").forEach(function (el) { el.hidden = m !== "criar"; });
-  $("#auth-enviar").textContent = m === "criar" ? "Criar conta" : "Entrar";
-  $("#form-auth").elements.senha.autocomplete = m === "criar" ? "new-password" : "current-password";
-  $("#auth-esqueci").hidden = m === "criar";
-  erroAuth("");
-}
 function erroAuth(t) { const e = $("#auth-erro"); e.textContent = t; e.hidden = !t; }
 
 function ligarLogin() {
-  $$(".auth-tabs .tab").forEach(function (b) { b.onclick = function () { definirModo(b.dataset.modo); }; });
   $("#form-auth").onsubmit = async function (ev) {
     ev.preventDefault();
     const f = ev.target, a = app.ctx.authSdk, auth = app.ctx.auth;
     const email = f.elements.email.value.trim().toLowerCase(), senha = f.elements.senha.value;
     if (!email || !senha) { erroAuth("Preencha e-mail e senha."); return; }
-    if (modo === "criar" && senha !== f.elements.senha2.value) { erroAuth("As senhas não são iguais."); return; }
-    if (modo === "criar") { const ruim = checarEmail(email); if (ruim) { erroAuth(ruim); return; } }
-    const trava = modo === "criar" ? 0 : bloqueio(email);
+    const trava = bloqueio(email);
     if (trava) { erroAuth("Muitas tentativas com senha errada. Tente de novo em " + tempoTxt(trava) + "."); return; }
-    if (modo === "criar" && podePedir("criar")) { erroAuth("Você já criou uma conta agora há pouco. Espere um pouco antes de tentar de novo."); return; }
     const btn = $("#auth-enviar"); btn.disabled = true; erroAuth("");
     try {
-      if (modo === "criar") {
-        const cred = await a.createUserWithEmailAndPassword(auth, email, senha);
-        try { await a.sendEmailVerification(cred.user); } catch (e) { }
-      } else {
-        await a.signInWithEmailAndPassword(auth, email, senha);
-        acertou(email);
-      }
+      await a.signInWithEmailAndPassword(auth, email, senha);
+      acertou(email);
     } catch (e) {
       let msg = msgAuth(e);
-      if (modo !== "criar" && errouSenha(e)) { const t = falhou(email); if (t) msg += " Por segurança, espere " + tempoTxt(t) + " para tentar de novo."; }
+      if (errouSenha(e)) { const t = falhou(email); if (t) msg += " Por segurança, espere " + tempoTxt(t) + " para tentar de novo."; }
       erroAuth(msg);
     }
     btn.disabled = false;
@@ -216,6 +197,5 @@ async function atualizarContador() {
   }
   app.repo = criarRepo(app.ctx);
   ligarLogin();
-  definirModo("entrar");
   app.ctx.authSdk.onAuthStateChanged(app.ctx.auth, aoMudarUsuario);
 })();

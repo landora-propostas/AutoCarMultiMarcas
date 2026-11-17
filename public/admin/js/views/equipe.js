@@ -1,5 +1,7 @@
 import { esc, toast, confirmar, dataHora, milis } from "../ui.js";
 import { VERSAO_SDK } from "/js/firebase-boot.js";
+import { checarSenha } from "/js/protecao.js";
+import { OPCOES } from "/js/firebase-config.js";
 
 const CDN = "https://www.gstatic.com/firebasejs/" + VERSAO_SDK + "/";
 let cadastro = null;
@@ -8,6 +10,9 @@ async function authCadastro(cfg) {
   const [appSdk, a] = await Promise.all([import(CDN + "firebase-app.js"), import(CDN + "firebase-auth.js")]);
   const existente = appSdk.getApps().filter(function (x) { return x.name === "cadastro-equipe"; })[0];
   const sec = existente || appSdk.initializeApp(cfg, "cadastro-equipe");
+  if (!existente && OPCOES.appCheck) {
+    try { const ac = await import(CDN + "firebase-app-check.js"); ac.initializeAppCheck(sec, { provider: new ac.ReCaptchaV3Provider(OPCOES.appCheck), isTokenAutoRefreshEnabled: true }); } catch (e) { }
+  }
   let auth;
   try { auth = a.initializeAuth(sec, { persistence: a.inMemoryPersistence }); } catch (e) { auth = a.getAuth(sec); }
   cadastro = { a: a, auth: auth };
@@ -37,11 +42,11 @@ export async function equipe(root, app) {
       '<form id="f-novo" class="grade g2" novalidate autocomplete="off">' +
         '<label>Nome<input name="nome" placeholder="Ex.: Maria Souza" maxlength="80"></label>' +
         '<label>E-mail<input name="email" type="email" placeholder="maria@exemplo.com" maxlength="120" required autocomplete="off"></label>' +
-        '<label>Senha inicial<input name="senha" type="text" placeholder="Mínimo 6 caracteres" minlength="6" maxlength="64" required autocomplete="new-password"></label>' +
+        '<label>Senha inicial<input name="senha" type="text" placeholder="8+ caracteres, letras e números" minlength="8" maxlength="64" required autocomplete="new-password"></label>' +
         '<div style="align-self:end"><button class="btn primary" type="submit">Criar acesso</button></div>' +
       '</form>' +
       '<details class="ja-tem" style="margin-top:18px"><summary style="cursor:pointer;color:var(--muted,#aaa);font-size:14px">Já tem conta? Autorizar pelo UID</summary>' +
-        '<p style="margin:10px 0 12px;font-size:14px;opacity:.8">Se a pessoa já criou a conta em <code>/admin</code>, o UID aparece na tela “Sem acesso” dela.</p>' +
+        '<p style="margin:10px 0 12px;font-size:14px;opacity:.8">Se a pessoa já criou a conta na área do cliente (<code>/conta</code>), o UID aparece na tela “Sem acesso” dela.</p>' +
         '<form id="f-eq" class="grade g2" novalidate>' +
           '<label>UID da conta<input name="uid" placeholder="Ex.: fCbLrbw3O0SrlFkiJcMspdTghxj2" maxlength="128" autocomplete="off" required></label>' +
           '<label>Nome ou e-mail (para identificar)<input name="nome" placeholder="Ex.: Maria · maria@exemplo.com" maxlength="120"></label>' +
@@ -74,7 +79,8 @@ export async function equipe(root, app) {
     const email = form.elements.email.value.trim().toLowerCase();
     const senha = form.elements.senha.value;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast("Digite um e-mail válido.", "erro"); return; }
-    if (senha.length < 6) { toast("A senha precisa ter pelo menos 6 caracteres.", "erro"); return; }
+    const fraca = checarSenha(senha);
+    if (fraca) { toast(fraca, "erro"); return; }
     const botao = form.querySelector("button[type=submit]");
     botao.disabled = true; botao.textContent = "Criando…";
     let c = null;
