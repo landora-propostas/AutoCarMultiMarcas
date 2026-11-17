@@ -902,7 +902,6 @@ main::before { background:
 @media (max-width: 420px) { .filtro-fixo .adv-toggle { font-size: 0; gap: 0; width: 44px; justify-content: center; } .filtro-fixo .adv-toggle .badge { font-size: 11px; } }
 
 .filtro-fixo { transition: none; }
-.filtro-fixo.preso.auto-recolhe .adv-wrap { display: none; }
 .filtro-fixo.preso { box-shadow: 0 14px 30px -20px rgba(0, 0, 0, .9); }
 
 .filtro-fixo.preso { background: #121212; }
