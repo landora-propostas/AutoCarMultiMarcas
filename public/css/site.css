@@ -1,3 +1,5 @@
+@font-face { font-family: "Archivo"; font-style: normal; font-weight: 500 900; font-stretch: 85% 100%; font-display: swap; src: url(/fonts/archivo.woff2) format("woff2"); }
+@font-face { font-family: "Manrope"; font-style: normal; font-weight: 400 800; font-display: swap; src: url(/fonts/manrope.woff2) format("woff2"); }
 :root {
   --bg: #121212;
   --bg-2: #0e0e0e;
@@ -57,7 +59,7 @@ svg { fill: none; }
 
 .loader { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 22px; background: var(--bg-2);
   animation: loader-out .7s var(--ease-io) 1s forwards; pointer-events: none; }
-.loader img { width: 190px; opacity: 0; animation: fade-in .6s var(--ease) .05s forwards; }
+.loader img { width: 190px; height: auto; opacity: 0; animation: fade-in .6s var(--ease) .05s forwards; }
 .loader span { width: 140px; height: 2px; border-radius: 2px; background: var(--line-2); overflow: hidden; position: relative; }
 .loader span::after { content: ""; position: absolute; inset: 0; background: var(--brand); transform: scaleX(0); transform-origin: left; animation: carregar .9s var(--ease) .1s forwards; }
 @keyframes carregar { to { transform: scaleX(1); } }
@@ -106,7 +108,8 @@ svg { fill: none; }
 .hero h1 { margin: 16px 0 22px; font-size: clamp(40px, min(5.6vw, 9.6vh), 92px); font-weight: 800; line-height: .98; letter-spacing: -.035em; }
 .hero-lead { max-width: 44ch; color: #bdbdbd; font-size: 15px; }
 .ln { display: inline-block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; vertical-align: top; }
-.ln > span { display: inline-block; animation: rise 1.1s var(--ease) both; animation-delay: calc(var(--i) * 90ms + 1.05s); }
+.ln > span { display: inline-block; animation: esconde 0s linear .9s forwards, rise 1.1s var(--ease) forwards; animation-delay: .9s, calc(var(--i) * 90ms + 1.05s); }
+@keyframes esconde { to { transform: translateY(105%); } }
 @keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
 .hero-copy .eyebrow, .hero-lead, .hero-dock { animation: up-in 1s var(--ease) both; }
 .hero-copy .eyebrow { animation-delay: 1s; } .hero-lead { animation-delay: 1.5s; } .hero-dock { animation-delay: 1.65s; }
@@ -284,7 +287,7 @@ svg { fill: none; }
 .foot-brand { display: grid; gap: 18px; justify-items: start; align-content: start; }
 .foot-brand p { color: var(--muted); font-size: 14px; max-width: 26ch; }
 .site-footer nav, .foot-contact { display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: #bdbdbd; }
-.site-footer h4 { font-size: 15px; color: #fff; margin-bottom: 6px; }
+.site-footer .foot-tit { font-size: 15px; color: #fff; margin-bottom: 6px; }
 .site-footer nav a, .foot-contact a { transition: color .25s; width: fit-content; }
 .site-footer nav a:hover, .foot-contact a:hover { color: var(--brand); }
 .foot-contact a, .foot-contact p { display: flex; gap: 10px; align-items: center; }
@@ -525,7 +528,7 @@ html.lock { overflow: hidden; }
 .adv-wrap.open { grid-template-rows: 1fr; margin-top: 16px; }
 .adv-inner { overflow: hidden; min-height: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 26px 32px; padding: 0 28px; border: 1px solid transparent; border-radius: 20px; background: var(--surface); opacity: 0; transition: opacity .4s, padding .55s var(--ease), border-color .3s; }
 .adv-wrap.open .adv-inner { padding: 28px; border-color: var(--line); opacity: 1; }
-.fgroup h4 { font: 700 12px/1 'Archivo', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+.fgroup .ftit { font: 700 12px/1 'Archivo', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
 .fchips { display: flex; flex-wrap: wrap; gap: 8px; }
 .fchip { padding: 9px 15px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: #d5d5d5; font: 600 13px/1 inherit; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .2s var(--ease); }
 .fchip:hover { border-color: #4b4b4b; transform: translateY(-1px); }
@@ -591,7 +594,7 @@ h1, h2, h3, h4 { font-weight: 800; letter-spacing: -.03em; }
 .steps h3, .adv h3 { font-weight: 700; letter-spacing: -.02em; }
 .adv h3 { font-size: 19px; }
 .cc-title h3 { font-weight: 700; letter-spacing: -.01em; }
-.site-footer h4 { font-weight: 700; letter-spacing: -.01em; }
+.site-footer .foot-tit { font-weight: 700; letter-spacing: -.01em; }
 .price, .step-n, .adv-n, .mo-count b, .d-price, .d-stat b { font-weight: 800; letter-spacing: -.03em; }
 .price { font-size: 22px; }
 .step-n { font-size: 34px; }
@@ -870,7 +873,7 @@ main::before { background:
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px 24px; }
 .adv-wrap.open .adv-inner { animation: adv-in .28s var(--ease) both; }
 @keyframes adv-in { from { opacity: 0; transform: translate3d(0, -8px, 0); } to { opacity: 1; transform: none; } }
-.fgroup h4 { margin-bottom: 10px; }
+.fgroup .ftit { margin-bottom: 10px; }
 .fchips { gap: 6px; }
 .fchip { padding: 8px 13px; }
 @media (prefers-reduced-motion: reduce) { .adv-wrap.open .adv-inner { animation: none; } }
@@ -908,7 +911,7 @@ main::before { background:
 
 @media (min-width: 901px) {
   .adv-inner, .adv-wrap.open .adv-inner { padding: 16px 20px; gap: 12px 22px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
-  .fgroup h4 { font-size: 10.5px; margin-bottom: 8px; }
+  .fgroup .ftit { font-size: 10.5px; margin-bottom: 8px; }
   .fchips { gap: 5px; }
   .fchip { padding: 6px 11px; font-size: 12px; }
   .fsel { gap: 4px; font-size: 11px; }

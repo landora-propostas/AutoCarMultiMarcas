@@ -103,12 +103,12 @@
   if (selHero && !selHero.options.length) { selHero.innerHTML = selOrdem.innerHTML; selHero.value = selOrdem.value; }
 
   function chips(grupo, lista, rotulo, extra) {
-    return '<div class="fgroup"><h4>' + rotulo + '</h4><div class="fchips">' + lista.map(function (v) {
+    return '<div class="fgroup"><p class="ftit">' + rotulo + '</p><div class="fchips">' + lista.map(function (v) {
       return '<button type="button" class="fchip' + (S[grupo][v] ? ' on' : '') + '" data-g="' + grupo + '" data-v="' + esc(v) + '" aria-pressed="' + !!S[grupo][v] + '">' + (extra ? extra(v) : '') + esc(v) + '</button>';
     }).join('') + '</div></div>';
   }
   function faixa(id, rotulo, min, max, passo, fmt, unid) {
-    return '<div class="fgroup frange" data-range="' + id + '"><h4>' + rotulo + '</h4>' +
+    return '<div class="fgroup frange" data-range="' + id + '"><p class="ftit">' + rotulo + '</p>' +
       '<div class="dual"><div class="dual-fill"></div>' +
         '<input type="range" data-r="' + id + 'Min" min="' + min + '" max="' + max + '" step="' + passo + '" aria-label="' + rotulo + ' mínimo">' +
         '<input type="range" data-r="' + id + 'Max" min="' + min + '" max="' + max + '" step="' + passo + '" aria-label="' + rotulo + ' máximo"></div>' +
@@ -122,7 +122,7 @@
 
   inner.innerHTML =
     chips('marcas', marcas, 'Marca') +
-    '<div class="fgroup"><h4>Ano do modelo</h4><div class="anos">' + selAno('anoDe', 'De') + selAno('anoAte', 'Até') + '</div>' +
+    '<div class="fgroup"><p class="ftit">Ano do modelo</p><div class="anos">' + selAno('anoDe', 'De') + selAno('anoAte', 'Até') + '</div>' +
       '<label class="check"><input type="checkbox" id="ano-exato"><span>Só este ano</span></label></div>' +
     faixa('km', 'Quilometragem', B.km[0], B.km[1], 1000, num, 'km') +
     faixa('p', 'Preço', B.preco[0], B.preco[1], 5000, brl, 'R$') +
@@ -130,7 +130,7 @@
     chips('comb', combs, 'Combustível') +
     chips('cond', conds, 'Condição') +
     chips('cor', cores, 'Cor') +
-    '<div class="fgroup"><h4>Potência mínima</h4><div class="fchips" data-cv>' +
+    '<div class="fgroup"><p class="ftit">Potência mínima</p><div class="fchips" data-cv>' +
       [0, 100, 120, 150, 300, 500].filter(function (v) { return v <= B.cv[1]; }).map(function (v) {
         return '<button type="button" class="fchip' + (v === 0 ? ' on' : '') + '" data-cvv="' + v + '">' + (v ? v + ' cv +' : 'Qualquer') + '</button>';
       }).join('') + '</div></div>' +

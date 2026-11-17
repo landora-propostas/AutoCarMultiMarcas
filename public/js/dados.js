@@ -341,6 +341,18 @@ function montarSite(d) {
   };
 }
 
+function primeiraPintura() {
+  return new Promise(function (ok) {
+    let feito = false;
+    const vai = function () { if (!feito) { feito = true; setTimeout(ok, 0); } };
+    try {
+      if (performance.getEntriesByName("first-contentful-paint").length) return vai();
+      new PerformanceObserver(function (l) { if (l.getEntriesByName("first-contentful-paint").length) vai(); }).observe({ type: "paint", buffered: true });
+    } catch (e) {}
+    setTimeout(vai, 1500);
+  });
+}
+
 async function atualizarCache(anterior, idade) {
   const fotos = function () { return Object.assign({}, anterior.midia || {}, (window.LANDORA && window.LANDORA._midia) || {}); };
   try {
@@ -363,6 +375,7 @@ async function carregarDoFirebase() {
     atualizarCache(guardado.dados, idade);
     return;
   }
+  await primeiraPintura();
   const dados = await buscarDados();
   montarSite(dados);
   gravarCache(dados);

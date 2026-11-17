@@ -1,4 +1,4 @@
-const VERSAO = "v1";
+const VERSAO = "v2";
 const SITE = "autocar-site-" + VERSAO;
 const IMAGENS = "autocar-img-" + VERSAO;
 const FOTOS = "autocar-fotos-" + VERSAO;
@@ -69,6 +69,6 @@ self.addEventListener("fetch", function (e) {
   if (u.origin !== self.location.origin) return;
   if (u.pathname.indexOf("/admin") === 0 || u.pathname.indexOf("/__/") === 0 || u.pathname === "/sw.js") return;
 
-  if (/\.(webp|png|jpe?g|avif|svg|ico)$/.test(u.pathname)) { e.respondWith(cacheAtualiza(req, IMAGENS)); return; }
+  if (/\.(webp|png|jpe?g|avif|svg|ico|woff2)$/.test(u.pathname)) { e.respondWith(cacheAtualiza(req, IMAGENS)); return; }
   e.respondWith(primeiroRede(req));
 });
