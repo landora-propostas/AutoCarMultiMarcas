@@ -54,6 +54,14 @@ O primeiro administrador é criado no Console do Firebase: Firestore → coleç�
 
 Cole o ID do pixel em **Site e marca → Textos → Pixel da Meta**. O script da Meta só é baixado depois da primeira interação do visitante (toque, rolagem ou tecla), sem pesar no carregamento. Eventos enviados: `PageView`, `ViewContent` (abrir um carro), `Lead` (pedido de proposta) e `Contact` (clique no WhatsApp ou telefone).
 
+## Cache e leituras do banco
+
+- Primeira visita: lê o estoque do Firestore e guarda tudo no aparelho (IndexedDB).
+- Volta em até 5 minutos: nenhuma leitura.
+- Depois disso: lê só o documento `config/versao` (1 leitura). O painel atualiza esse documento a cada alteração em carros, categorias, adicionais ou configurações; só então o site baixa o que mudou. A cada 6 horas é feita uma conferência completa.
+- Fotos da galeria são guardadas no aparelho e nunca são lidas duas vezes.
+- `public/sw.js` (Service Worker) guarda o site, as imagens e as fotos, e permite abrir o estoque já visto mesmo sem internet. Ao mudar a estratégia de cache, troque `VERSAO` no topo do arquivo.
+
 ## Fotos
 
 As fotos são reduzidas no navegador, convertidas para WebP e guardadas no Firestore (coleção `midia`), o que funciona no plano gratuito. Para usar o Firebase Storage (plano Blaze), adicione `"storage": { "rules": "storage.rules" }` ao `firebase.json`, troque `armazenamento` para `"storage"` em `public/js/firebase-config.js` e rode `firebase deploy --only storage`.

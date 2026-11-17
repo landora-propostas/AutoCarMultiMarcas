@@ -21,7 +21,11 @@ function esquecer(col) {
 export function criarRepo(ctx) {
   const f = ctx.fs, db = ctx.db;
   const ref = function (col, id) { return f.doc(db, col, id); };
-  const mudou = function (col) { esquecer(col); limparCacheDoSite(); };
+  const DO_SITE = ["carros", "categorias", "adicionais", "config"];
+  const mudou = function (col) {
+    esquecer(col); limparCacheDoSite();
+    if (col === null || DO_SITE.indexOf(col) >= 0) f.setDoc(ref("config", "versao"), { em: f.serverTimestamp() }).catch(function () {});
+  };
   return {
     async listar(col) {
       const lista = await lembrar("l:" + col, async function () {

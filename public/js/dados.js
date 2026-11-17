@@ -146,7 +146,7 @@ async function resolverImagens(ctx, cfg) {
   return urls;
 }
 
-const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v4", VALIDADE = 30 * 60 * 1000;
+const CACHE_DB = "autocar-cache", CACHE_CHAVE = "site-v5", RECENTE = 5 * 60 * 1000, CHECAR = 6 * 60 * 60 * 1000;
 function abrirCache() {
   return new Promise(function (ok, erro) {
     if (!("indexedDB" in window)) return erro(new Error("sem-indexeddb"));
@@ -171,6 +171,7 @@ async function gravarCache(dados) {
     const db = await abrirCache();
     if (dados.midia) { const ks = Object.keys(dados.midia); if (ks.length > 120) ks.slice(0, ks.length - 120).forEach(function (k) { delete dados.midia[k]; }); }
     db.transaction("kv", "readwrite").objectStore("kv").put({ t: Date.now(), dados: dados }, CACHE_CHAVE);
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
   } catch (e) { }
 }
 
@@ -213,8 +214,14 @@ async function midiaRest(id, guardadas) {
   if (o.data && guardadas) guardadas[id] = o.data;
   return o.data || "";
 }
+async function versaoRest() {
+  const R = await restCfg();
+  const o = docRest(await pegaJson(R.base + "/config/versao" + R.chave).catch(function (e) { if (e.message === "rest-404") return {}; throw e; }));
+  return o.em || "sem";
+}
 async function buscarRest(anterior) {
   const R = await restCfg();
+  const versao = await versaoRest().catch(function () { return ""; });
   const rawAnt = (anterior && anterior.raw) || {}, midia = Object.assign({}, (anterior && anterior.midia) || {});
   const lista = function (caminho) {
     return pegaJson(R.base + "/" + caminho + R.chave + "&pageSize=300").then(function (j) { return (j.documents || []).map(docRest); });
@@ -253,7 +260,7 @@ async function buscarRest(anterior) {
   Object.keys(cfgDoc.imagens || {}).forEach(function (k) { img(k, cfgDoc.imagens[k]); });
   await Promise.all(jobs);
   delete cfgDoc.id;
-  return { cfg: cfgDoc, categorias: categorias, carros: carros, urls: urls, raw: raw, midia: midia, novos: faltam.length };
+  return { cfg: cfgDoc, categorias: categorias, carros: carros, urls: urls, raw: raw, midia: midia, novos: faltam.length, versao: versao };
 }
 async function buscarDados(anterior) {
   try { return await buscarRest(anterior); }
@@ -334,14 +341,26 @@ function montarSite(d) {
   };
 }
 
+async function atualizarCache(anterior, idade) {
+  const fotos = function () { return Object.assign({}, anterior.midia || {}, (window.LANDORA && window.LANDORA._midia) || {}); };
+  try {
+    if (anterior.versao && idade < CHECAR) {
+      const v = await versaoRest();
+      if (v === anterior.versao) { gravarCache(Object.assign({}, anterior, { midia: fotos() })); return; }
+    }
+    const novo = await buscarDados(anterior);
+    novo.midia = Object.assign(fotos(), novo.midia || {});
+    gravarCache(novo);
+  } catch (e) {}
+}
+
 async function carregarDoFirebase() {
   const guardado = await lerCache();
   if (guardado && guardado.dados && guardado.dados.carros) {
     montarSite(guardado.dados);
-    buscarDados(guardado.dados).then(function (novo) {
-      novo.midia = Object.assign({}, guardado.dados.midia || {}, novo.midia || {}, (window.LANDORA && window.LANDORA._midia) || {});
-      gravarCache(novo);
-    }).catch(function () {});
+    const idade = Date.now() - (guardado.t || 0);
+    if (idade < RECENTE) return;
+    atualizarCache(guardado.dados, idade);
     return;
   }
   const dados = await buscarDados();
@@ -353,6 +372,10 @@ function semEstoque() {
   window.CARROS = []; window.ADICIONAIS = []; window.LANDORA = {};
   const v = $("#vazio");
   if (v) { v.hidden = false; const p = $("p", v), b = $("button", v); if (p) p.textContent = "Estamos atualizando o estoque. Volte em breve!"; if (b) b.hidden = true; }
+}
+
+if ("serviceWorker" in navigator && window.isSecureContext) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
 }
 
 const cinemaP = carregarScript("/js/cinema.js").catch(function (e) { console.error(e); });
