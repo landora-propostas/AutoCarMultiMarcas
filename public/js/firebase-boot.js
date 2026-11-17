@@ -28,7 +28,7 @@ export async function iniciar(quer) {
     if (OPCOES.appCheck && !ctx.appCheck) {
       try {
         const ac = await import(CDN + "firebase-app-check.js");
-        ctx.appCheck = ac.initializeAppCheck(ctx.app, { provider: new ac.ReCaptchaV3Provider(OPCOES.appCheck), isTokenAutoRefreshEnabled: true });
+        ctx.appCheck = ac.initializeAppCheck(ctx.app, { provider: new ac.ReCaptchaEnterpriseProvider(OPCOES.appCheck), isTokenAutoRefreshEnabled: true });
       } catch (e) { ctx.appCheck = null; }
     }
     const a = await import(CDN + "firebase-auth.js");

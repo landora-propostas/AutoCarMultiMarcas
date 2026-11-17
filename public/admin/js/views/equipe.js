@@ -11,7 +11,7 @@ async function authCadastro(cfg) {
   const existente = appSdk.getApps().filter(function (x) { return x.name === "cadastro-equipe"; })[0];
   const sec = existente || appSdk.initializeApp(cfg, "cadastro-equipe");
   if (!existente && OPCOES.appCheck) {
-    try { const ac = await import(CDN + "firebase-app-check.js"); ac.initializeAppCheck(sec, { provider: new ac.ReCaptchaV3Provider(OPCOES.appCheck), isTokenAutoRefreshEnabled: true }); } catch (e) { }
+    try { const ac = await import(CDN + "firebase-app-check.js"); ac.initializeAppCheck(sec, { provider: new ac.ReCaptchaEnterpriseProvider(OPCOES.appCheck), isTokenAutoRefreshEnabled: true }); } catch (e) { }
   }
   let auth;
   try { auth = a.initializeAuth(sec, { persistence: a.inMemoryPersistence }); } catch (e) { auth = a.getAuth(sec); }
