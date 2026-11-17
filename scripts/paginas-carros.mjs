@@ -82,6 +82,7 @@ function pagina(c, img) {
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
+  <script>(function(h){if(h==="autocar-multimarcas.web.app"||h==="autocar-multimarcas.firebaseapp.com")location.replace("https://autocarpiraju.com.br"+location.pathname+location.search+location.hash)})(location.hostname)</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(titulo)}</title>
   <meta name="description" content="${esc(desc)}">
