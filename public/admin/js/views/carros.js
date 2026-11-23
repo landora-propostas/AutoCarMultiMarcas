@@ -27,7 +27,8 @@ async function lista(root, app) {
     '<div id="tabela"></div>';
 
   function ordemLista() {
-    return todos.slice().sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+    const peso = { rascunho: 0, publicado: 1, vendido: 2 };
+    return todos.slice().sort(function (a, b) { return (peso[a.status] ?? 1) - (peso[b.status] ?? 1) || (a.ordem || 0) - (b.ordem || 0); });
   }
   function desenhar() {
     const q = norm(f.q);

@@ -86,6 +86,8 @@ footer{border-top:1px solid #262626;margin-top:20px;padding:24px 0 40px;color:#9
 .lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:24px 0;list-style:none;margin:0}
 .lista li{margin:0;background:#1a1a1a;border:1px solid #262626;border-radius:16px;overflow:hidden}.lista a{text-decoration:none;display:block}
 .lista .foto{border-radius:0}.lista div.t{padding:12px 14px}.lista b{display:block;font-size:16px}.lista span{color:#bdbdbd;font-size:14px}.lista strong{display:block;color:#fcd308;margin-top:4px}
+.vendido-aviso{display:none;margin:18px 0 0;padding:16px;border:1px solid #3a3a3a;border-radius:14px;background:#1a1a1a}.vendido-aviso b{display:block;font-size:18px}.vendido-aviso span{display:block;color:#bdbdbd;margin:4px 0 12px}
+html.vendido .vendido-aviso{display:block}html.vendido .topo .bts,html.vendido dl,html.vendido .preco{display:none}html.vendido .foto img{filter:grayscale(1);opacity:.6}
 @media (max-width:520px){.lista{grid-template-columns:1fr 1fr;gap:10px}.lista b{font-size:14px}.lista div.t{padding:10px}}
 @media (max-width:760px){.topo{grid-template-columns:minmax(0,1fr);gap:18px;padding:18px 0}}`;
 function casca({ titulo, desc, url, imagem, tipo, alt, schema, corpo, ogTipo }) {
@@ -162,6 +164,7 @@ function pagina(c, img, nomeCat) {
   <div>
     ${nomeCat ? `<p class="cat">${esc(nomeCat)}</p>` : ""}<h1>${esc(c.nome)}</h1>
     <p class="preco">${esc(precoTxt(c))}</p>
+    <div class="vendido-aviso"><b>Este carro já foi vendido.</b><span>Veja os outros carros disponíveis na AutoCar.</span><a class="bt p" href="/estoque">Ver carros disponíveis</a></div>
     <dl>${ficha.slice(0, 6).map((x) => `<div><dt>${esc(x[0])}</dt><dd>${esc(x[1])}</dd></div>`).join("")}</dl>
     <div class="bts"><a class="bt p" href="${esc(zap)}" target="_blank" rel="noopener">Falar com consultor no WhatsApp</a><a class="bt s" href="/#carro/${esc(encodeURIComponent(c.slug))}">Ver todas as fotos</a></div>
   </div>
@@ -171,6 +174,7 @@ ${c.descricao ? `<section><h2>Sobre o carro</h2><p class="desc">${esc(c.descrica
 ${ficha.length > 6 ? `<section><h2>Ficha técnica</h2><dl>${ficha.slice(6).map((x) => `<div><dt>${esc(x[0])}</dt><dd>${esc(x[1])}</dd></div>`).join("")}</dl></section>` : ""}
 ${hist.length ? `<section><h2>Histórico</h2><ul>${hist.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></section>` : ""}
 ${ads.length ? `<section><h2>Adicionais da entrega</h2><ul>${ads.map((a) => `<li><b>${esc(a[0])}</b>${a[1] ? " · " + esc(a[1]) : ""}</li>`).join("")}</ul></section>` : ""}
+<script>(function(){fetch('/__/firebase/init.json').then(function(r){return r.json()}).then(function(c){return fetch('https://firestore.googleapis.com/v1/projects/'+c.projectId+'/databases/(default)/documents/carros/${c.slug}?mask.fieldPaths=status&key='+c.apiKey)}).then(function(r){if(r.status===403||r.status===404){document.documentElement.classList.add('vendido');return null}return r.ok?r.json():null}).then(function(j){if(j&&!(j.fields&&j.fields.status&&j.fields.status.stringValue==='publicado'))document.documentElement.classList.add('vendido')}).catch(function(){})})()</script>
 <section><h2>Onde ver este carro</h2><p>AutoCar Multimarcas, ${esc(LOJA.endereco || "Piraju-SP")}. Agende uma visita ou peça uma proposta pelo WhatsApp.</p></section>`;
   return casca({ titulo, desc, url, imagem, tipo: img && img.tipo, alt: c.nome, ogTipo: "product", corpo,
     schema: [carro, migalhas([["Início", SITE + "/"], ["Estoque", SITE + "/estoque"], [c.nome, url]])] });

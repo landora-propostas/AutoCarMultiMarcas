@@ -14,16 +14,22 @@ service cloud.firestore {
       return request.auth.token.firebase.sign_in_provider == 'google.com' ||
         request.auth.token.email.lower().matches('^[a-z0-9._%+-]+@(gmail[.]com|googlemail[.]com|hotmail[.]com|hotmail[.]com[.]br|outlook[.]com|outlook[.]com[.]br|live[.]com|live[.]com[.]br|msn[.]com|yahoo[.]com|yahoo[.]com[.]br|ymail[.]com|rocketmail[.]com|icloud[.]com|me[.]com|mac[.]com|uol[.]com[.]br|bol[.]com[.]br|terra[.]com[.]br|ig[.]com[.]br|globo[.]com|globomail[.]com|r7[.]com|zipmail[.]com[.]br|proton[.]me|protonmail[.]com|aol[.]com|gmx[.]com|zoho[.]com)$');
     }
+    function equipe() {
+      return get(/databases/$(database)/documents/config/equipe).data;
+    }
     function master() {
-      return admin() &&
-        get(/databases/$(database)/documents/config/equipe).data.master == request.auth.uid;
+      return admin() && equipe().master == request.auth.uid;
+    }
+    function supremo() {
+      return admin() && equipe().get('supremo', '') == request.auth.uid;
     }
 
     match /admins/{uid} {
       allow get: if (logado() && request.auth.uid == uid) || admin();
       allow list: if admin();
-      allow create, delete: if master();
-      allow update: if master() || (
+      allow create: if supremo();
+      allow delete: if supremo() || (master() && uid != equipe().get('supremo', ''));
+      allow update: if supremo() || (master() && uid != equipe().get('supremo', '')) || (
         admin() && request.auth.uid == uid &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'foto', 'email', 'atualizadoEm']) &&
         (!('email' in request.resource.data) || request.resource.data.email == null || (request.resource.data.email is string && request.resource.data.email.lower() == request.auth.token.email.lower()))
@@ -33,7 +39,13 @@ service cloud.firestore {
     match /config/equipe {
       allow read: if admin();
       allow create: if admin() && request.resource.data.master == request.auth.uid;
-      allow update, delete: if master();
+      allow update: if supremo() || (master() && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['master', 'transferidoPor', 'transferidoEm', 'atualizadoEm']) &&
+          exists(/databases/$(database)/documents/admins/$(request.resource.data.master))) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supremo', 'atualizadoEm']) &&
+          resource.data.get('supremo', null) == null && request.resource.data.supremo == request.auth.uid)
+      ));
+      allow delete: if supremo();
     }
 
     match /config/{doc} {

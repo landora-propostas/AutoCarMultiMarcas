@@ -95,7 +95,7 @@ async function sair() { app.sujo = false; try { await app.ctx.authSdk.signOut(ap
 async function aoMudarUsuario(user) {
   app.user = user;
   if (!user) {
-    app.email = ""; app.uid = ""; app.master = false;
+    app.email = ""; app.uid = ""; app.master = false; app.supremo = false;
     if (location.hash !== "#/login") history.replaceState(null, "", "/admin/#/login");
     const v = $("#view"); if (v) v.innerHTML = "";
     mostrar("entrar"); return;
@@ -110,12 +110,18 @@ async function aoMudarUsuario(user) {
   if (!autorizado) { $("#neg-email").textContent = email; $("#neg-uid").textContent = user.uid; mostrar("negado"); return; }
   app.email = email;
   app.uid = user.uid;
+  if (!doc.email && email) { try { await app.repo.salvar("admins", user.uid, { email: email }); } catch (e) { } }
   try {
     let eq = await app.repo.obter("config", "equipe");
     if (!eq) { await app.repo.salvar("config", "equipe", { master: user.uid, criadoEm: app.ctx.fs.serverTimestamp() }, true); eq = { master: user.uid }; }
+    if (eq.master === user.uid && !eq.supremo) {
+      try { await app.repo.salvar("config", "equipe", { supremo: user.uid }); eq.supremo = user.uid; } catch (e) { }
+    }
     app.master = eq.master === user.uid;
     app.masterUid = eq.master;
-  } catch (e) { app.master = false; }
+    app.supremo = !!eq.supremo && eq.supremo === user.uid;
+    app.supremoUid = eq.supremo || "";
+  } catch (e) { app.master = false; app.supremo = false; }
   entrarNoApp();
 }
 

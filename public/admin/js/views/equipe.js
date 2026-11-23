@@ -1,4 +1,4 @@
-import { esc, toast, confirmar, dataHora, milis } from "../ui.js";
+import { esc, toast, confirmar, dataHora, milis, abrirModal } from "../ui.js";
 import { VERSAO_SDK } from "/js/firebase-boot.js";
 import { checarSenha } from "/js/protecao.js";
 import { OPCOES } from "/js/firebase-config.js";
@@ -33,44 +33,66 @@ export async function equipe(root, app) {
   const repo = app.repo;
   let membros = await repo.listar("admins");
 
+  const visiveis = function () { return membros.filter(function (m) { return app.supremo || m.id !== app.supremoUid; }); };
   function desenhar() {
-    if (!app.master) { desenharLeitura(); return; }
-    const lista = membros.slice().sort(function (a, b) { return milis(a.criadoEm) - milis(b.criadoEm) || a.id.localeCompare(b.id); });
+    if (!app.master && !app.supremo) { desenharLeitura(); return; }
+    const lista = visiveis().sort(function (a, b) { return milis(a.criadoEm) - milis(b.criadoEm) || a.id.localeCompare(b.id); });
+    const criar = app.supremo
+      ? '<section class="cartao"><div class="cartao-topo"><div><h2>Criar acesso para uma pessoa</h2><p>Preencha os dados e clique em <b>Criar acesso</b>. A conta já fica liberada no painel. A pessoa recebe um e-mail para confirmar o endereço e depois entra em <code>/admin</code> com o e-mail e a senha que você definiu.</p></div></div>' +
+        '<form id="f-novo" class="grade g2" novalidate autocomplete="off">' +
+          '<label>Nome<input name="nome" placeholder="Ex.: Maria Souza" maxlength="80"></label>' +
+          '<label>E-mail<input name="email" type="email" placeholder="maria@exemplo.com" maxlength="120" required autocomplete="off"></label>' +
+          '<label>Senha inicial<input name="senha" type="text" placeholder="8+ caracteres, letras e números" minlength="8" maxlength="64" required autocomplete="new-password"></label>' +
+          '<div style="align-self:end"><button class="btn primary" type="submit">Criar acesso</button></div>' +
+        '</form>' +
+        '<details class="ja-tem" style="margin-top:18px"><summary style="cursor:pointer;color:var(--muted,#aaa);font-size:14px">Já tem conta? Autorizar pelo UID</summary>' +
+          '<p style="margin:10px 0 12px;font-size:14px;opacity:.8">Se a pessoa já criou a conta na área do cliente (<code>/conta</code>), o UID aparece na tela “Sem acesso” dela.</p>' +
+          '<form id="f-eq" class="grade g2" novalidate>' +
+            '<label>UID da conta<input name="uid" placeholder="Ex.: fCbLrbw3O0SrlFkiJcMspdTghxj2" maxlength="128" autocomplete="off" required></label>' +
+            '<label>Nome ou e-mail (para identificar)<input name="nome" placeholder="Ex.: Maria · maria@exemplo.com" maxlength="120"></label>' +
+            '<div><button class="btn" type="submit">Autorizar</button></div>' +
+          '</form></details></section>'
+      : "";
     root.innerHTML =
-      '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div></div>' +
-      '<section class="cartao"><div class="cartao-topo"><div><h2>Criar acesso para uma pessoa</h2><p>Preencha os dados e clique em <b>Criar acesso</b>. A conta já fica liberada no painel. A pessoa recebe um e-mail para confirmar o endereço e depois entra em <code>/admin</code> com o e-mail e a senha que você definiu.</p></div></div>' +
-      '<form id="f-novo" class="grade g2" novalidate autocomplete="off">' +
-        '<label>Nome<input name="nome" placeholder="Ex.: Maria Souza" maxlength="80"></label>' +
-        '<label>E-mail<input name="email" type="email" placeholder="maria@exemplo.com" maxlength="120" required autocomplete="off"></label>' +
-        '<label>Senha inicial<input name="senha" type="text" placeholder="8+ caracteres, letras e números" minlength="8" maxlength="64" required autocomplete="new-password"></label>' +
-        '<div style="align-self:end"><button class="btn primary" type="submit">Criar acesso</button></div>' +
-      '</form>' +
-      '<details class="ja-tem" style="margin-top:18px"><summary style="cursor:pointer;color:var(--muted,#aaa);font-size:14px">Já tem conta? Autorizar pelo UID</summary>' +
-        '<p style="margin:10px 0 12px;font-size:14px;opacity:.8">Se a pessoa já criou a conta na área do cliente (<code>/conta</code>), o UID aparece na tela “Sem acesso” dela.</p>' +
-        '<form id="f-eq" class="grade g2" novalidate>' +
-          '<label>UID da conta<input name="uid" placeholder="Ex.: fCbLrbw3O0SrlFkiJcMspdTghxj2" maxlength="128" autocomplete="off" required></label>' +
-          '<label>Nome ou e-mail (para identificar)<input name="nome" placeholder="Ex.: Maria · maria@exemplo.com" maxlength="120"></label>' +
-          '<div><button class="btn" type="submit">Autorizar</button></div>' +
-        '</form></details></section>' +
+      '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div>' +
+      (app.supremo ? "" : '<div class="acoes"><button class="btn primary" type="button" id="eq-add">+ Novo acesso</button></div>') + "</div>" +
+      criar +
       '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Pessoa</th><th>UID</th><th>Autorizado por</th><th>Em</th><th></th></tr></thead><tbody>' +
       lista.map(function (m) {
         const eu = m.id === app.uid;
+        const principal = m.id === app.masterUid;
         const quem = m.nome || m.email || (eu ? app.email : "—");
         const sub = m.nome && m.email ? '<div style="font-size:12px;opacity:.65;margin-top:2px">' + esc(m.email) + "</div>" : "";
-        return "<tr data-id=\"" + esc(m.id) + "\"><td><b>" + esc(quem) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + (m.id === app.masterUid ? ' <span class="selo">principal</span>' : "") + sub + "</td>" +
+        let bts = "";
+        if (app.supremo) {
+          if (!principal) bts += '<button class="btn peq" type="button" data-principal>Tornar principal</button>';
+          if (!eu) bts += '<button class="btn peq perigo" type="button" data-del>Remover acesso</button>';
+        } else if (!eu) {
+          bts = '<button class="btn peq" type="button" data-principal>Transferir principal</button><button class="btn peq perigo" type="button" data-del>Remover acesso</button>';
+        }
+        return "<tr data-id=\"" + esc(m.id) + "\"><td><b>" + esc(quem) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + (principal ? ' <span class="selo">principal</span>' : "") + (m.id === app.supremoUid ? ' <span class="selo">desenvolvedor</span>' : "") + sub + "</td>" +
           '<td data-l="UID"><code class="uid">' + esc(m.id) + '</code></td><td data-l="Autorizado por">' + esc(m.adicionadoPor || "—") + '</td><td data-l="Em">' + esc(dataHora(m.criadoEm)) + "</td>" +
-          '<td class="acoes-col">' + (eu ? "" : '<button class="btn peq perigo" type="button" data-del>Remover acesso</button>') + "</td></tr>";
+          '<td class="acoes-col">' + bts + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
   function desenharLeitura() {
     root.innerHTML =
       '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div></div>' +
-      '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> pode criar ou remover acessos ao painel. Peça a ele caso precise liberar alguém.</p></section>' +
+      '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> gerencia a equipe. Para criar um novo acesso ao painel, fale com os desenvolvedores.</p></section>' +
       '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Pessoa</th><th>Função</th></tr></thead><tbody>' +
-      membros.map(function (m) {
+      visiveis().map(function (m) {
         const eu = m.id === app.uid;
         return "<tr><td><b>" + esc(m.nome || m.email || (eu ? app.email : "—")) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + '</td><td data-l="Função">' + (m.id === app.masterUid ? "Administrador principal" : "Administrador") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
+  }
+  function avisoNovoAcesso() {
+    const j = abrirModal(
+      "<h2>Novo acesso ao painel</h2>" +
+      "<p>Por segurança, novas contas de administrador são criadas pelos desenvolvedores. Para liberar o painel para outra pessoa, entre em contato com os desenvolvedores.</p>" +
+      '<p class="dica">Landora · <a class="link" href="mailto:landora.proposta@gmail.com">landora.proposta@gmail.com</a></p>' +
+      '<div class="modal-acoes"><button class="btn primary" type="button" data-ok>Entendi</button></div>'
+    );
+    j.el.querySelector("[data-ok]").onclick = j.fechar;
   }
   desenhar();
 
@@ -105,7 +127,7 @@ export async function equipe(root, app) {
 
   root.onsubmit = async function (e) {
     e.preventDefault();
-    if (!app.master) return;
+    if (!app.supremo) return;
     if (e.target.id === "f-novo") { criarAcesso(e.target); return; }
     const uid = e.target.elements.uid.value.trim();
     const nome = e.target.elements.nome.value.trim();
@@ -119,10 +141,25 @@ export async function equipe(root, app) {
     } catch (err) { toast("Não consegui autorizar: " + (err.code || err.message), "erro"); }
   };
   root.onclick = async function (e) {
+    if (e.target.closest("#eq-add")) { avisoNovoAcesso(); return; }
     const tr = e.target.closest("tr[data-id]");
-    if (!tr || !e.target.closest("[data-del]")) return;
+    if (!tr || !(app.master || app.supremo)) return;
     const id = tr.dataset.id;
     const m = membros.filter(function (x) { return x.id === id; })[0] || {};
+    if (e.target.closest("[data-principal]")) {
+      const quem = m.nome || m.email || id;
+      const texto = app.supremo
+        ? quem + " passa a gerenciar a equipe deste painel."
+        : "Você continua com acesso ao painel, mas deixa de gerenciar a equipe. Para voltar, só " + quem + " pode devolver.";
+      if (!(await confirmar({ titulo: "Tornar " + quem + " o administrador principal?", texto: texto, ok: "Confirmar" }))) return;
+      try {
+        await repo.salvar("config", "equipe", { master: id, transferidoPor: app.email, transferidoEm: app.ctx.fs.serverTimestamp() });
+        app.masterUid = id; app.master = id === app.uid; desenhar();
+        toast(quem + " agora é o administrador principal.");
+      } catch (err) { toast("Não consegui transferir: " + (err.code || err.message), "erro"); }
+      return;
+    }
+    if (!e.target.closest("[data-del]")) return;
     if (!(await confirmar({ titulo: "Remover o acesso de " + (m.nome || id) + "?", texto: "Essa pessoa não conseguirá mais abrir o painel.", ok: "Remover", perigo: true }))) return;
     try { await repo.remover("admins", id); membros = membros.filter(function (x) { return x.id !== id; }); desenhar(); toast("Acesso removido."); }
     catch (err) { toast("Não consegui remover: " + (err.code || err.message), "erro"); }

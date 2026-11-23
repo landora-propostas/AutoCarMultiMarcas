@@ -1,0 +1,57 @@
+name: Publicar site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: publicar-site
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Ver se o estoque mudou
+        id: estoque
+        run: |
+          KEY=$(curl -fsS https://autocarpiraju.com.br/__/firebase/init.json | python3 -c "import sys,json;print(json.load(sys.stdin)['apiKey'])")
+          V=$(curl -fsS "https://firestore.googleapis.com/v1/projects/autocar-multimarcas/databases/(default)/documents/config/versao?mask.fieldPaths=em&key=$KEY" | python3 -c "import sys,json;print(json.load(sys.stdin).get('updateTime','sem-versao'))")
+          echo "versao=$V" >> "$GITHUB_OUTPUT"
+          mkdir -p .estoque && echo "$V" > .estoque/versao
+
+      - name: Última versão publicada
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .estoque
+          key: estoque-${{ steps.estoque.outputs.versao }}
+
+      - name: Nada mudou
+        if: github.event_name == 'schedule' && steps.cache.outputs.cache-hit == 'true'
+        run: echo "Estoque igual ao último deploy. Nada a publicar."
+
+      - uses: actions/checkout@v4
+        if: github.event_name != 'schedule' || steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: site
+
+      - uses: actions/setup-node@v4
+        if: github.event_name != 'schedule' || steps.cache.outputs.cache-hit != 'true'
+        with:
+          node-version: 20
+
+      - name: Publicar no Firebase Hosting
+        if: github.event_name != 'schedule' || steps.cache.outputs.cache-hit != 'true'
+        working-directory: site
+        env:
+          CHAVE: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AUTOCAR_MULTIMARCAS }}
+        run: |
+          if [ -z "$CHAVE" ]; then echo "Falta o segredo FIREBASE_SERVICE_ACCOUNT_AUTOCAR_MULTIMARCAS no GitHub."; exit 1; fi
+          printf '%s' "$CHAVE" > "$RUNNER_TEMP/firebase.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase.json"
+          npx --yes firebase-tools@13 deploy --only hosting --project autocar-multimarcas --non-interactive
