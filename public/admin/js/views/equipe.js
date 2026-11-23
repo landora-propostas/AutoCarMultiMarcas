@@ -1,4 +1,4 @@
-import { esc, toast, confirmar, dataHora, milis, abrirModal } from "../ui.js";
+import { esc, toast, confirmar, dataHora, milis } from "../ui.js";
 import { VERSAO_SDK } from "/js/firebase-boot.js";
 import { checarSenha } from "/js/protecao.js";
 import { OPCOES } from "/js/firebase-config.js";
@@ -37,7 +37,7 @@ export async function equipe(root, app) {
   function desenhar() {
     if (!app.master && !app.supremo) { desenharLeitura(); return; }
     const lista = visiveis().sort(function (a, b) { return milis(a.criadoEm) - milis(b.criadoEm) || a.id.localeCompare(b.id); });
-    const criar = app.supremo
+    const criar = (app.supremo || app.master)
       ? '<section class="cartao"><div class="cartao-topo"><div><h2>Criar acesso para uma pessoa</h2><p>Preencha os dados e clique em <b>Criar acesso</b>. A conta já fica liberada no painel. A pessoa recebe um e-mail para confirmar o endereço e depois entra em <code>/admin</code> com o e-mail e a senha que você definiu.</p></div></div>' +
         '<form id="f-novo" class="grade g2" novalidate autocomplete="off">' +
           '<label>Nome<input name="nome" placeholder="Ex.: Maria Souza" maxlength="80"></label>' +
@@ -55,7 +55,7 @@ export async function equipe(root, app) {
       : "";
     root.innerHTML =
       '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div>' +
-      (app.supremo ? "" : '<div class="acoes"><button class="btn primary" type="button" id="eq-add">+ Novo acesso</button></div>') + "</div>" +
+      "</div>" +
       criar +
       '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Pessoa</th><th>UID</th><th>Autorizado por</th><th>Em</th><th></th></tr></thead><tbody>' +
       lista.map(function (m) {
@@ -78,21 +78,12 @@ export async function equipe(root, app) {
   function desenharLeitura() {
     root.innerHTML =
       '<div class="cab"><div><h1>Equipe</h1><p>Quem pode entrar neste painel.</p></div></div>' +
-      '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> gerencia a equipe. Para criar um novo acesso ao painel, fale com os desenvolvedores.</p></section>' +
+      '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> gerencia a equipe. Para liberar o painel para outra pessoa, peça a ele.</p></section>' +
       '<div class="tabela-rolagem t-lista"><table><thead><tr><th>Pessoa</th><th>Função</th></tr></thead><tbody>' +
       visiveis().map(function (m) {
         const eu = m.id === app.uid;
         return "<tr><td><b>" + esc(m.nome || m.email || (eu ? app.email : "—")) + "</b>" + (eu ? ' <span class="selo publicado">você</span>' : "") + '</td><td data-l="Função">' + (m.id === app.masterUid ? "Administrador principal" : "Administrador") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
-  }
-  function avisoNovoAcesso() {
-    const j = abrirModal(
-      "<h2>Novo acesso ao painel</h2>" +
-      "<p>Por segurança, novas contas de administrador são criadas pelos desenvolvedores. Para liberar o painel para outra pessoa, entre em contato com os desenvolvedores.</p>" +
-      '<p class="dica">Landora · <a class="link" href="mailto:landora.proposta@gmail.com">landora.proposta@gmail.com</a></p>' +
-      '<div class="modal-acoes"><button class="btn primary" type="button" data-ok>Entendi</button></div>'
-    );
-    j.el.querySelector("[data-ok]").onclick = j.fechar;
   }
   desenhar();
 
@@ -127,7 +118,7 @@ export async function equipe(root, app) {
 
   root.onsubmit = async function (e) {
     e.preventDefault();
-    if (!app.supremo) return;
+    if (!app.supremo && !app.master) return;
     if (e.target.id === "f-novo") { criarAcesso(e.target); return; }
     const uid = e.target.elements.uid.value.trim();
     const nome = e.target.elements.nome.value.trim();
@@ -141,7 +132,6 @@ export async function equipe(root, app) {
     } catch (err) { toast("Não consegui autorizar: " + (err.code || err.message), "erro"); }
   };
   root.onclick = async function (e) {
-    if (e.target.closest("#eq-add")) { avisoNovoAcesso(); return; }
     const tr = e.target.closest("tr[data-id]");
     if (!tr || !(app.master || app.supremo)) return;
     const id = tr.dataset.id;

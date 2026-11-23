@@ -27,7 +27,7 @@ service cloud.firestore {
     match /admins/{uid} {
       allow get: if (logado() && request.auth.uid == uid) || admin();
       allow list: if admin();
-      allow create: if supremo();
+      allow create: if supremo() || master();
       allow delete: if supremo() || (master() && uid != equipe().get('supremo', ''));
       allow update: if supremo() || (master() && uid != equipe().get('supremo', '')) || (
         admin() && request.auth.uid == uid &&
