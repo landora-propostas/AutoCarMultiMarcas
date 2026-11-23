@@ -98,9 +98,19 @@ export async function site(root, app, args) {
   });
   root.oninput = function () { app.sujo = true; };
 
+  const pode = app.master || app.supremo;
+  if (!pode) {
+    root.querySelectorAll("input, textarea, select, [data-slot] button, [data-slot] input").forEach(function (el) { el.disabled = true; });
+    root.querySelectorAll("[data-slot] .botoes").forEach(function (b) { b.style.display = "none"; });
+    const barra = root.querySelector(".barra-salvar"); if (barra) barra.remove();
+    const cab = root.querySelector(".cab");
+    if (cab) cab.insertAdjacentHTML("afterend", '<section class="cartao"><p style="margin:0">Somente o <b>administrador principal</b> pode alterar o site e a marca. Você pode ver como está, mas para mudar algo peça a ele.</p></section>');
+    root.oninput = null;
+  }
+
   let salvando = false;
   root.onclick = async function (e) {
-    if (!e.target.closest("#b-salvar") || salvando) return;
+    if (!pode || !e.target.closest("#b-salvar") || salvando) return;
     salvando = true;
     const btn = root.querySelector("#b-salvar"); btn.disabled = true;
     root.querySelector("#estado-salvar").textContent = "Salvando…";

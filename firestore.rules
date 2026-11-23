@@ -50,7 +50,7 @@ service cloud.firestore {
 
     match /config/{doc} {
       allow read: if doc != 'equipe';
-      allow write: if admin() && doc != 'equipe';
+      allow write: if admin() && doc != 'equipe' && (doc != 'site' || master() || supremo() || !exists(/databases/$(database)/documents/config/site));
     }
 
     match /usuarios/{uid} {
