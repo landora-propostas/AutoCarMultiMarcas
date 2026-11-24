@@ -112,6 +112,7 @@ ${tipo ? `  <meta property="og:image:type" content="${tipo}">\n` : ""}  <meta pr
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="${esc(imagem)}">
   <meta name="theme-color" content="#121212">
+  <meta name="color-scheme" content="dark">
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
   <link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 ${schema.map((s) => `  <script type="application/ld+json">${JSON.stringify(s).replace(/</g, "\\u003c")}</script>`).join("\n")}
