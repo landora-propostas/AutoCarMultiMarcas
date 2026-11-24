@@ -1025,4 +1025,9 @@ main::before { background:
 html, body { overflow-x: clip; max-width: 100%; touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (max-width: 900px) { input, select, textarea { font-size: 16px !important; } }
 
-html, body { background-color: #121212; color-scheme: dark; }
+
+@media (max-width: 900px) {
+  .site-header { background: #121212; padding-bottom: 8px; }
+  .filtro-fixo { top: 84px; }
+  .filtro-fixo.preso { margin: 0 -16px; padding: 8px 16px; border-radius: 0; box-shadow: 0 18px 30px -22px rgba(0, 0, 0, .9); }
+}
