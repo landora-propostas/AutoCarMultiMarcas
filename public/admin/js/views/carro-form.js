@@ -39,7 +39,6 @@ export async function carroForm(root, app, slugEditar) {
     };
     await prepararPrevias(app, S.fotos);
   }
-  let slugAuto = novo;
   const marcar = function () { app.sujo = true; };
 
   const campo = function (k, rotulo, extra, dica) {
@@ -65,7 +64,6 @@ export async function carroForm(root, app, slugEditar) {
       '<label data-campo="status">Situação do anúncio<select data-k="status">' +
         Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (k === S.status ? " selected" : "") + ">" + STATUS[k] + "</option>"; }).join("") +
         "</select><small>Só “Publicado” aparece no site. “Vendido” guarda o histórico sem mostrar ao público.</small></label>" +
-      campo("slug", "Endereço do anúncio", (novo ? "" : "readonly ") + 'maxlength="60"', novo ? "Gerado pelo nome. É a parte final do link: /#carro/<b>endereço</b>" : "Não muda depois de criado, para os links continuarem funcionando.") +
     "</div></section>" +
 
     '<section class="cartao"><div class="cartao-topo"><h2>Dados do carro</h2></div><div class="grade g3">' +
@@ -151,8 +149,6 @@ export async function carroForm(root, app, slugEditar) {
     const k = t.dataset.k;
     if (!k) return;
     S[k] = t.hasAttribute("data-num") ? mascaraNumero(t) : t.value;
-    if (k === "nome" && slugAuto) { S.slug = slugify(S.nome); root.querySelector('[data-k="slug"]').value = S.slug; }
-    if (k === "slug") { slugAuto = false; }
     if (k === "ano1" || k === "ano2") limparErro("ano"); else limparErro(k);
     marcar();
   };
@@ -214,10 +210,20 @@ export async function carroForm(root, app, slugEditar) {
     S.potencia = potenciaTxt(S.potencia);
     root.querySelector('[data-k="potencia"]').value = S.potencia;
     if (S.fotos.some(function (f) { return f._carregando; })) { toast("Aguarde as fotos terminarem de ser reduzidas.", "info"); return; }
-    const erros = validarCarro(S, { novo: novo, slugs: [] });
-    if (!erros.slug && novo) {
-      try { if (await repo.obter("carros", S.slug)) erros.slug = "Já existe um carro com esse endereço."; } catch (e) { }
+    if (novo) {
+      const anos = String(S.ano || "").match(/\d{4}/g) || [];
+      const ano = anos[anos.length - 1] || "";
+      const base = slugify(S.nome + (ano && S.nome.indexOf(ano) < 0 ? " " + ano : "")) || "carro";
+      S.slug = base;
+      for (let n = 2; n < 50; n++) {
+        let existe = false;
+        try { existe = !!(await repo.obter("carros", S.slug)); } catch (e) { existe = false; }
+        if (!existe) break;
+        S.slug = base.slice(0, 56) + "-" + n;
+      }
     }
+    const erros = validarCarro(S, { novo: novo, slugs: [] });
+    delete erros.slug;
     mostrarErros(erros);
     if (Object.keys(erros).length) { toast("Confira os campos destacados.", "erro"); return; }
 
